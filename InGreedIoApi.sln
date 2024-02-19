@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InGreedIoApi", "InGreedIoApi\InGreedIoApi.csproj", "{A5501FF5-83E1-4C09-88CB-09FEC11BCB4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InGreedIoApi.UnitTests", "InGreedIoApi.UnitTests\InGreedIoApi.UnitTests.csproj", "{11965A29-F53B-4C11-BF02-C22CD7D1577B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5501FF5-83E1-4C09-88CB-09FEC11BCB4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5501FF5-83E1-4C09-88CB-09FEC11BCB4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5501FF5-83E1-4C09-88CB-09FEC11BCB4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5501FF5-83E1-4C09-88CB-09FEC11BCB4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11965A29-F53B-4C11-BF02-C22CD7D1577B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11965A29-F53B-4C11-BF02-C22CD7D1577B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11965A29-F53B-4C11-BF02-C22CD7D1577B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11965A29-F53B-4C11-BF02-C22CD7D1577B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
