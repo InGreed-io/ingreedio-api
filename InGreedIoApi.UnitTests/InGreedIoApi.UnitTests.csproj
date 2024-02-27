@@ -22,4 +22,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\InGreedIoApi\InGreedIoApi.csproj" />
+  </ItemGroup>
+
 </Project>
