@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Model;
 
 namespace InGreedIoApi.Data;
 
-public class ApiDbContext : DbContext
+public class ApiDbContext : IdentityDbContext
 {
     public ApiDbContext()
     { }
@@ -33,4 +34,5 @@ public class ApiDbContext : DbContext
     public DbSet<Ingredient> Ingredients { get; set; }
 
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<ApiUser> ApiUsers { get; set; }
 }
