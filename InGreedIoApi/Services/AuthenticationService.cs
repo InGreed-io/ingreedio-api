@@ -38,6 +38,7 @@ public class AuthenticationService : IAuthenticationService
         {
             Email = registrationRequest.Email,
             UserName = registrationRequest.Email,
+            IsBlocked = false
         };
 
         var isCreated = await _userManager.CreateAsync(newUser, registrationRequest.Password);

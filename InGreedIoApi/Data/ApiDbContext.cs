@@ -35,4 +35,6 @@ public class ApiDbContext : IdentityDbContext
 
     public DbSet<Review> Reviews { get; set; }
     public DbSet<ApiUser> ApiUsers { get; set; }
+
+    public DbSet<CompanyInfo> CompanyInfo { get; set; }
 }
