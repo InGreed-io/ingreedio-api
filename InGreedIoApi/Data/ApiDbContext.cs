@@ -4,7 +4,7 @@ using InGreedIoApi.Model;
 
 namespace InGreedIoApi.Data;
 
-public class ApiDbContext : IdentityDbContext<User>
+public class ApiDbContext : IdentityDbContext
 {
     public ApiDbContext()
     { }
@@ -34,4 +34,5 @@ public class ApiDbContext : IdentityDbContext<User>
     public DbSet<Ingredient> Ingredients { get; set; }
 
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<ApiUser> ApiUsers { get; set; }
 }
