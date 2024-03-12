@@ -3,6 +3,7 @@ using InGreedIoApi.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using InGreedIoApi.Data;
+using InGreedIoApi.Model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -38,7 +39,7 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<User, IdentityRole>(options =>
     {
         // options are set here
     }).AddEntityFrameworkStores<ApiDbContext>()
