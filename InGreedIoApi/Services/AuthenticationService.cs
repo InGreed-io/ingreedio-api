@@ -97,7 +97,7 @@ public class AuthenticationService : IAuthenticationService
             Result = true
         };
     }
-    
+
     private string GenerateJwtToken(IdentityUser user)
     {
         var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -121,5 +121,5 @@ public class AuthenticationService : IAuthenticationService
         var token = jwtTokenHandler.CreateToken(tokenDescriptor);
         return jwtTokenHandler.WriteToken(token);
     }
-    
+
 }

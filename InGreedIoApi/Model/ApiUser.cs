@@ -4,5 +4,5 @@ namespace InGreedIoApi.Model;
 
 public class ApiUser : IdentityUser
 {
-    
+
 }

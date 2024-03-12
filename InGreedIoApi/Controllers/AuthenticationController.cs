@@ -50,7 +50,7 @@ public class AuthenticationController : ControllerBase
 
         var loginResult = await _authenticationService.Login(loginRequest);
         if (loginResult.Result == false) return BadRequest(loginResult);
-        
+
         return Ok(loginResult);
     }
 }

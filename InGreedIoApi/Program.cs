@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
 
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
-builder.Services.AddAuthentication(options => 
+builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -47,10 +47,10 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
     {
-        
+
     }).AddEntityFrameworkStores<ApiDbContext>()
     .AddDefaultTokenProviders();
-    
+
 /*
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -85,4 +85,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-app.Run();  
+app.Run();
