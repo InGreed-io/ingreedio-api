@@ -3,6 +3,7 @@ using System;
 using InGreedIoApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InGreedIoApi.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240312153047_AddIndetityToDbContext")]
+    partial class AddIndetityToDbContext
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,31 +40,6 @@ namespace InGreedIoApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category");
-                });
-
-            modelBuilder.Entity("InGreedIoApi.Model.CompanyInfo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("NIP")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CompanyInfo");
                 });
 
             modelBuilder.Entity("InGreedIoApi.Model.Featuring", b =>
@@ -118,9 +96,6 @@ namespace InGreedIoApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ApiUserId")
-                        .HasColumnType("text");
-
                     b.Property<int>("CategoryId")
                         .HasColumnType("integer");
 
@@ -140,8 +115,6 @@ namespace InGreedIoApi.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApiUserId");
 
                     b.HasIndex("CategoryId");
 
@@ -251,11 +224,6 @@ namespace InGreedIoApi.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -306,10 +274,6 @@ namespace InGreedIoApi.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -393,21 +357,6 @@ namespace InGreedIoApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("InGreedIoApi.Model.ApiUser", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsBlocked")
-                        .HasColumnType("boolean");
-
-                    b.HasIndex("CompanyId");
-
-                    b.HasDiscriminator().HasValue("ApiUser");
-                });
-
             modelBuilder.Entity("InGreedIoApi.Model.Featuring", b =>
                 {
                     b.HasOne("InGreedIoApi.Model.Product", "Product")
@@ -421,10 +370,6 @@ namespace InGreedIoApi.Migrations
 
             modelBuilder.Entity("InGreedIoApi.Model.Product", b =>
                 {
-                    b.HasOne("InGreedIoApi.Model.ApiUser", null)
-                        .WithMany("FavouriteProducts")
-                        .HasForeignKey("ApiUserId");
-
                     b.HasOne("InGreedIoApi.Model.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
@@ -511,23 +456,9 @@ namespace InGreedIoApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("InGreedIoApi.Model.ApiUser", b =>
-                {
-                    b.HasOne("InGreedIoApi.Model.CompanyInfo", "Company")
-                        .WithMany("Users")
-                        .HasForeignKey("CompanyId");
-
-                    b.Navigation("Company");
-                });
-
             modelBuilder.Entity("InGreedIoApi.Model.Category", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("InGreedIoApi.Model.CompanyInfo", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("InGreedIoApi.Model.Product", b =>
@@ -535,11 +466,6 @@ namespace InGreedIoApi.Migrations
                     b.Navigation("Featuring");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("InGreedIoApi.Model.ApiUser", b =>
-                {
-                    b.Navigation("FavouriteProducts");
                 });
 #pragma warning restore 612, 618
         }
