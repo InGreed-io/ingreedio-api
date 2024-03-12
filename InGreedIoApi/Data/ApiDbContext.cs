@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Model;
 
 namespace InGreedIoApi.Data;
 
-public class ApiDbContext : DbContext
+public class ApiDbContext : IdentityDbContext
 {
     public ApiDbContext()
     { }
