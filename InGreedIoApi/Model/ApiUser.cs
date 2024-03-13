@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using InGreedIoApi.POCO;
 
 namespace InGreedIoApi.Model
 {
     public class ApiUser : IdentityUser
     {
-        public required bool IsBlocked { get; set; }
+        public bool IsBlocked { get; set; }
         public int? CompanyId { get; set; }
-        public CompanyInfo? Company { get; set; }
-        public ICollection<Product> FavouriteProducts { get; set; }
+        public CompanyInfoPOCO? Company { get; set; }
+        public ICollection<ProductPOCO> FavouriteProducts { get; set; }
+        public ICollection<ProductPOCO> ProduceProducts { get; set; }
     }
 }

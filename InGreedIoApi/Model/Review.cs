@@ -1,11 +1,22 @@
-﻿namespace InGreedIoApi.Model
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace InGreedIoApi.Model
 {
     public class Review
     {
+        [Key]
         public int Id { get; set; }
-        public required string Text { get; set; }
-        public required float Rating { get; set; }
-        public required int ProductId { get; set; }
+
+        [MaxLength(500)]
+        public string Text { get; set; }
+
+        [Required]
+        public float Rating { get; set; }
+
+        [ForeignKey("Product")]
+        public int ProductId { get; set; }
+
         public Product Product { get; set; }
     }
 }

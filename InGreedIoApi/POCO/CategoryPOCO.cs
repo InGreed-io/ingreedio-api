@@ -1,11 +1,9 @@
-﻿using InGreedIoApi.Model;
-
-namespace InGreedIoApi.POCO
+﻿namespace InGreedIoApi.POCO
 {
     public class CategoryPOCO
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public virtual ICollection<ProductPOCO> Products { get; set; }
+        public ICollection<ProductPOCO> Products { get; set; }
     }
 }
