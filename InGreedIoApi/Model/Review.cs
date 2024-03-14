@@ -8,7 +8,6 @@ namespace InGreedIoApi.Model
         [Key]
         public int Id { get; set; }
 
-        [MaxLength(500)]
         public string Text { get; set; }
 
         [Required]
