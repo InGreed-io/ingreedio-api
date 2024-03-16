@@ -17,6 +17,9 @@ namespace InGreedIoApi.Model
 
         public int CategoryId { get; set; }
 
+        public string ProducerId { get; set; }
+        public ICollection<ApiUser> FavouriteBy { get; set; }
+        public ApiUser Producer { get; set; }
         public Category Category { get; set; }
         public ICollection<Ingredient> Ingredients { get; set; }
         public ICollection<Review> Reviews { get; set; }
