@@ -7,13 +7,21 @@ using InGreedIoApi.Model;
 using InGreedIoApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using InGreedIoApi.Data.Configuration;
+using InGreedIoApi.POCO;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-
+builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<CategoryPOCO>, CategoryConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<ApiUser>, ApiUserConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<IngredientPOCO>, IngredientConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<CompanyInfoPOCO>, CompanyInfoConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<FeaturingPOCO>, FeaturingConfiguration>();
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
@@ -26,7 +34,6 @@ builder.Services.AddAuthentication(options =>
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
     })
     .AddJwtBearer(jwt =>
     {
@@ -40,14 +47,11 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = false, // similar ^
             RequireExpirationTime = false, // TODO: potentially can have refresh tokens
             ValidateLifetime = true
-
         };
     });
 
-
 builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
     {
-
     }).AddEntityFrameworkStores<ApiDbContext>()
     .AddDefaultTokenProviders();
 
@@ -83,6 +87,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
 
 app.Run();
