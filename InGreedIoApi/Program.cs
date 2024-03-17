@@ -22,6 +22,9 @@ builder.Services.AddSingleton<IEntityTypeConfiguration<ApiUser>, ApiUserConfigur
 builder.Services.AddSingleton<IEntityTypeConfiguration<IngredientPOCO>, IngredientConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CompanyInfoPOCO>, CompanyInfoConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<FeaturingPOCO>, FeaturingConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<OperationTypePOCO>, OperationTypeConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<OperationLogPOCO>, OperationLogConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<AppNotificationPOCO>, AppNotificationConfiguration>();
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<ApiDbContext>(options =>

@@ -1,0 +1,15 @@
+﻿using InGreedIoApi.Model.Enum;
+
+namespace InGreedIoApi.Model
+{
+    public class AppNotification
+    {
+        public int Id { get; set; }
+        public DateTime? Seen { get; set; }
+        public string UserId { get; set; }
+        public ApiUser User { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public NotificationType NotificationType { get; set; }
+    }
+}

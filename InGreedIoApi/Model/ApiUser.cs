@@ -10,5 +10,7 @@ namespace InGreedIoApi.Model
         public CompanyInfoPOCO? Company { get; set; }
         public ICollection<ProductPOCO> FavouriteProducts { get; set; }
         public ICollection<ProductPOCO> ProduceProducts { get; set; }
+        public ICollection<AppNotificationPOCO> AppNotifications { get; set; }
+        public ICollection<OperationLogPOCO> Operations { get; set; }
     }
 }
