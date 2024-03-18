@@ -14,6 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddControllers();
+
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
@@ -24,6 +27,7 @@ builder.Services.AddSingleton<IEntityTypeConfiguration<CompanyInfoPOCO>, Company
 builder.Services.AddSingleton<IEntityTypeConfiguration<FeaturingPOCO>, FeaturingConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<PreferencePOCO>, PreferenceConfiguration>();
 builder.Services.AddControllers();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseNpgsql(conn));
