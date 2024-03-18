@@ -14,6 +14,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
     private readonly IEntityTypeConfiguration<CategoryPOCO> _categoryConfiguration;
     private readonly IEntityTypeConfiguration<CompanyInfoPOCO> _companyInfoConfiguration;
     private readonly IEntityTypeConfiguration<ApiUser> _apiUserConfiguration;
+    private readonly IEntityTypeConfiguration<PreferencePOCO> _preferenceConfiguration;
 
     public ApiDbContext()
     {
@@ -26,6 +27,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
         IEntityTypeConfiguration<FeaturingPOCO> featuringConfiguration,
         IEntityTypeConfiguration<CategoryPOCO> categoryConfiguration,
         IEntityTypeConfiguration<CompanyInfoPOCO> companyInfoConfiguration,
+        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration,
         IEntityTypeConfiguration<ApiUser> apiUserConfiguration) : base(options)
     {
         _productConfiguration = productConfiguration;
@@ -35,6 +37,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
         _categoryConfiguration = categoryConfiguration;
         _companyInfoConfiguration = companyInfoConfiguration;
         _apiUserConfiguration = apiUserConfiguration;
+        _preferenceConfiguration = preferenceConfiguration;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,6 +50,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
         modelBuilder.ApplyConfiguration(_ingredientConfiguration);
         modelBuilder.ApplyConfiguration(_companyInfoConfiguration);
         modelBuilder.ApplyConfiguration(_apiUserConfiguration);
+        modelBuilder.ApplyConfiguration(_preferenceConfiguration);
     }
 
     public DbSet<ProductPOCO> Products { get; set; }
@@ -61,4 +65,6 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
     public DbSet<ApiUser> ApiUsers { get; set; }
 
     public DbSet<CompanyInfoPOCO> CompanyInfo { get; set; }
+
+    public DbSet<PreferencePOCO> Preferences { get; set; }
 }
