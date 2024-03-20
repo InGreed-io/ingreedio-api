@@ -14,6 +14,7 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
     private readonly IEntityTypeConfiguration<CategoryPOCO> _categoryConfiguration;
     private readonly IEntityTypeConfiguration<CompanyInfoPOCO> _companyInfoConfiguration;
     private readonly IEntityTypeConfiguration<ApiUserPOCO> _apiUserConfiguration;
+    private readonly IEntityTypeConfiguration<PreferencePOCO> _preferenceConfiguration;
 
     public ApiDbContext()
     {
@@ -26,7 +27,9 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         IEntityTypeConfiguration<FeaturingPOCO> featuringConfiguration,
         IEntityTypeConfiguration<CategoryPOCO> categoryConfiguration,
         IEntityTypeConfiguration<CompanyInfoPOCO> companyInfoConfiguration,
-        IEntityTypeConfiguration<ApiUserPOCO> apiUserConfiguration) : base(options)
+        IEntityTypeConfiguration<ApiUserPOCO> apiUserConfiguration,
+        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration) : base(options)
+
     {
         _productConfiguration = productConfiguration;
         _ingredientConfiguration = ingredientConfiguration;
@@ -35,6 +38,7 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         _categoryConfiguration = categoryConfiguration;
         _companyInfoConfiguration = companyInfoConfiguration;
         _apiUserConfiguration = apiUserConfiguration;
+        _preferenceConfiguration = preferenceConfiguration;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,6 +51,7 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         modelBuilder.ApplyConfiguration(_ingredientConfiguration);
         modelBuilder.ApplyConfiguration(_companyInfoConfiguration);
         modelBuilder.ApplyConfiguration(_apiUserConfiguration);
+        modelBuilder.ApplyConfiguration(_preferenceConfiguration);
     }
 
     public DbSet<ProductPOCO> Products { get; set; }
@@ -61,4 +66,6 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
     public DbSet<ApiUserPOCO> ApiUsers { get; set; }
 
     public DbSet<CompanyInfoPOCO> CompanyInfo { get; set; }
+
+    public DbSet<PreferencePOCO> Preferences { get; set; }
 }

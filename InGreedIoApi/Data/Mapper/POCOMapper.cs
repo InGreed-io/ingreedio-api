@@ -16,6 +16,7 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<ReviewPOCO, Review>();
             CreateMap<ProductPOCO, Product>();
             CreateMap<ApiUserPOCO, ApiUser>();
+            CreateMap<PreferencePOCO, Preference>();
 
             // From Models to POCO
             CreateMap<Category, CategoryPOCO>();
@@ -25,6 +26,7 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<Review, ReviewPOCO>();
             CreateMap<Product, ProductPOCO>();
             CreateMap<ApiUser, ApiUserPOCO>();
+            CreateMap<Preference, PreferencePOCO>();
         }
     }
 }

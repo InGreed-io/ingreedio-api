@@ -3,6 +3,7 @@ using System;
 using InGreedIoApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InGreedIoApi.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240318190256_AddPreferences")]
+    partial class AddPreferences
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace InGreedIoApi.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("ApiUserPOCOProductPOCO", b =>
+            modelBuilder.Entity("ApiUserProductPOCO", b =>
                 {
                     b.Property<string>("FavouriteById")
                         .HasColumnType("text");
@@ -34,10 +37,10 @@ namespace InGreedIoApi.Migrations
 
                     b.HasIndex("FavouriteProductsId");
 
-                    b.ToTable("ApiUserPOCOProductPOCO");
+                    b.ToTable("ApiUserProductPOCO");
                 });
 
-            modelBuilder.Entity("InGreedIoApi.POCO.ApiUserPOCO", b =>
+            modelBuilder.Entity("InGreedIoApi.Model.ApiUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -449,9 +452,9 @@ namespace InGreedIoApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ApiUserPOCOProductPOCO", b =>
+            modelBuilder.Entity("ApiUserProductPOCO", b =>
                 {
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", null)
+                    b.HasOne("InGreedIoApi.Model.ApiUser", null)
                         .WithMany()
                         .HasForeignKey("FavouriteById")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -464,7 +467,7 @@ namespace InGreedIoApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("InGreedIoApi.POCO.ApiUserPOCO", b =>
+            modelBuilder.Entity("InGreedIoApi.Model.ApiUser", b =>
                 {
                     b.HasOne("InGreedIoApi.POCO.CompanyInfoPOCO", "Company")
                         .WithMany("Users")
@@ -503,7 +506,7 @@ namespace InGreedIoApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "Producer")
+                    b.HasOne("InGreedIoApi.Model.ApiUser", "Producer")
                         .WithMany("ProduceProducts")
                         .HasForeignKey("ProducerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -551,7 +554,7 @@ namespace InGreedIoApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", null)
+                    b.HasOne("InGreedIoApi.Model.ApiUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -560,7 +563,7 @@ namespace InGreedIoApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", null)
+                    b.HasOne("InGreedIoApi.Model.ApiUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -575,7 +578,7 @@ namespace InGreedIoApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", null)
+                    b.HasOne("InGreedIoApi.Model.ApiUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -584,14 +587,14 @@ namespace InGreedIoApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", null)
+                    b.HasOne("InGreedIoApi.Model.ApiUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("InGreedIoApi.POCO.ApiUserPOCO", b =>
+            modelBuilder.Entity("InGreedIoApi.Model.ApiUser", b =>
                 {
                     b.Navigation("ProduceProducts");
                 });

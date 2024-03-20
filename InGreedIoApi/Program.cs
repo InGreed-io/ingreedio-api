@@ -25,6 +25,8 @@ builder.Services.AddSingleton<IEntityTypeConfiguration<ApiUserPOCO>, ApiUserConf
 builder.Services.AddSingleton<IEntityTypeConfiguration<IngredientPOCO>, IngredientConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CompanyInfoPOCO>, CompanyInfoConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<FeaturingPOCO>, FeaturingConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<PreferencePOCO>, PreferenceConfiguration>();
+builder.Services.AddControllers();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDbContext<ApiDbContext>(options =>
