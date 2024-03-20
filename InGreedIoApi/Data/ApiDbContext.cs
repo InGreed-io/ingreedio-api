@@ -33,7 +33,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
         IEntityTypeConfiguration<ApiUser> apiUserConfiguration,
         IEntityTypeConfiguration<OperationLogPOCO> operationLogConfiguration,
         IEntityTypeConfiguration<OperationTypePOCO> operationTypeConfiguration,
-        IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration) : base(options)
+        IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration,
         IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration) : base(options)
     {
         _productConfiguration = productConfiguration;
