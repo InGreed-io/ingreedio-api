@@ -2,8 +2,8 @@ namespace InGreedIoApi.Model;
 
 public class AuthResult
 {
-    public string Token;
-    public bool Result;
-    public List<string> Errors;
+    public string Token { get; set; }
+    public bool Result { get; set; }
+    public List<string> Errors { get; set; }
 }
 

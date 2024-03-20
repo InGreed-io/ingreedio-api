@@ -17,6 +17,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
     private readonly IEntityTypeConfiguration<OperationLogPOCO> _operationLogConfiguration;
     private readonly IEntityTypeConfiguration<OperationTypePOCO> _operationTypeConfiguration;
     private readonly IEntityTypeConfiguration<AppNotificationPOCO> _appNotificationConfiguration;
+    private readonly IEntityTypeConfiguration<PreferencePOCO> _preferenceConfiguration;
 
     public ApiDbContext()
     {
@@ -33,6 +34,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
         IEntityTypeConfiguration<OperationLogPOCO> operationLogConfiguration,
         IEntityTypeConfiguration<OperationTypePOCO> operationTypeConfiguration,
         IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration) : base(options)
+        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration) : base(options)
     {
         _productConfiguration = productConfiguration;
         _ingredientConfiguration = ingredientConfiguration;
@@ -44,6 +46,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
         _operationLogConfiguration = operationLogConfiguration;
         _operationTypeConfiguration = operationTypeConfiguration;
         _appNotificationConfiguration = appNotificationConfiguration;
+        _preferenceConfiguration = preferenceConfiguration;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -59,6 +62,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
         modelBuilder.ApplyConfiguration(_operationLogConfiguration);
         modelBuilder.ApplyConfiguration(_operationTypeConfiguration);
         modelBuilder.ApplyConfiguration(_appNotificationConfiguration);
+        modelBuilder.ApplyConfiguration(_preferenceConfiguration);
     }
 
     public DbSet<ProductPOCO> Products { get; set; }
@@ -77,4 +81,6 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
     public DbSet<AppNotificationPOCO> AppNotifications { get; set; }
     public DbSet<OperationLogPOCO> OperationLog { get; set; }
     public DbSet<OperationTypePOCO> OperationTypes { get; set; }
+
+    public DbSet<PreferencePOCO> Preferences { get; set; }
 }
