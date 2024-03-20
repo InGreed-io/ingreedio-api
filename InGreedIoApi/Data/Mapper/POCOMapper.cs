@@ -16,6 +16,9 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<ReviewPOCO, Review>();
             CreateMap<ProductPOCO, Product>();
             CreateMap<PreferencePOCO, Preference>();
+            CreateMap<AppNotificationPOCO, AppNotification>();
+            CreateMap<OperationLogPOCO, OperationLog>();
+            CreateMap<OperationTypePOCO, OperationType>();
 
             // From Models to POCO
             CreateMap<Category, CategoryPOCO>();
@@ -25,6 +28,9 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<Review, ReviewPOCO>();
             CreateMap<Product, ProductPOCO>();
             CreateMap<Preference, PreferencePOCO>();
+            CreateMap<AppNotification, AppNotificationPOCO>();
+            CreateMap<OperationType, OperationTypePOCO>();
+            CreateMap<OperationLog, OperationLogPOCO>();
         }
     }
 }
