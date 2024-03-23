@@ -10,9 +10,6 @@ namespace InGreedIoApi.Data.Mapper
         {
             // From models to DTO
             CreateMap<Category, CategoryDTO>();
-
-            // From DTO to models
-            CreateMap<CategoryDTO, Category>();
         }
     }
 }
