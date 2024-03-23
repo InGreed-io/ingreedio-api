@@ -6,7 +6,7 @@ namespace InGreedIoApi.Data.Mapper
 {
     public class DTOMapper : Profile
     {
-        public DTOMapper() 
+        public DTOMapper()
         {
             // From models to DTO
             CreateMap<Category, CategoryDTO>();
