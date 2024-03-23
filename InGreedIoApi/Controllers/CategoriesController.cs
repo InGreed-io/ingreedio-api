@@ -1,4 +1,7 @@
-﻿using InGreedIoApi.Repository;
+﻿using AutoMapper;
+using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.DTO;
+using InGreedIoApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InGreedIoApi.Controllers
@@ -8,17 +11,18 @@ namespace InGreedIoApi.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
-
-        public CategoriesController(ICategoryRepository categoryRepository)
+        private readonly IMapper _mapper;
+        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetCategories()
         {
             var categories = await _categoryRepository.GetAll();
-            return Ok(categories);
+            return Ok(_mapper.Map<List<CategoryDTO>>(categories));
         }
     }
 }
