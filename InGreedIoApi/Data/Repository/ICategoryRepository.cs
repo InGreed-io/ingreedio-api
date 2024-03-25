@@ -1,6 +1,6 @@
 ﻿using InGreedIoApi.Model;
 
-namespace InGreedIoApi.Repository
+namespace InGreedIoApi.Data.Repository
 {
     public interface ICategoryRepository
     {

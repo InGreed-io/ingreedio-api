@@ -3,7 +3,7 @@ using InGreedIoApi.Data;
 using InGreedIoApi.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace InGreedIoApi.Repository
+namespace InGreedIoApi.Data.Repository
 {
     public class CategoryRepository : ICategoryRepository
     {
