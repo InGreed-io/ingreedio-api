@@ -26,7 +26,13 @@ public class ProductRepository : IProductRepository
         {
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
         }
+        queryable = queryable.Where(p => p.Ingredients.Where(i => productQueryDto.ingredients.Contains(i)));
         queryable = queryable.Where(p => productQueryDto.ingredients.All(i => p.Ingredients.Contains(i)));
+        
+        var products = queryable.AsEnumerable();
+        
+        return products;
+    
     }
     
 }

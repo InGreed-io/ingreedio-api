@@ -9,5 +9,5 @@ public enum ProductQuerySortBy
     RatingCount,
     BestMatch
 }
-public record ProductQueryDTO(string query, int? categoryId, int[] ingredients, int? preferenceId,
+public record ProductQueryDTO(string query, int? categoryId, ICollection<int> ingredients, int? preferenceId,
     ProductQuerySortBy? SortBy,[Range(0, int.MaxValue)] int page, int limit);
