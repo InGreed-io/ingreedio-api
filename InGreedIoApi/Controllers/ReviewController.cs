@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using InGreedIoApi.Data.Repository;
 using InGreedIoApi.DTO;
-using InGreedIoApi.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,36 +36,6 @@ namespace InGreedIoApi.Controllers
                 return NotFound("There is no such reviewId");
             }
             return Ok("The review was reported");
-        }
-
-        [HttpPatch("/{reviewId}/rate")]
-        public async Task<IActionResult> Rate(int reviewId, [FromBody] float rating)
-        {
-            if (rating > 5 | rating < 1)
-            {
-                return BadRequest("Rating should be >=1 and <=5");
-            }
-            var review = await _reviewRepository.Rate(reviewId, rating);
-            if (review == null)
-            {
-                return NotFound("There is no such reviewId");
-            }
-            return Ok("The review was rated");
-        }
-
-        [HttpPut("/{reviewId}")]
-        public async Task<IActionResult> Update(int reviewId, [FromBody] string content, [FromBody] float rating)
-        {
-            if (rating > 5 | rating < 1)
-            {
-                return BadRequest("Rating should be >=1 and <=5");
-            }
-            var review = await _reviewRepository.Update(reviewId, content, rating);
-            if (review == null)
-            {
-                return NotFound("There is no such reviewId");
-            }
-            return Ok("The review was updated");
         }
     }
 }
