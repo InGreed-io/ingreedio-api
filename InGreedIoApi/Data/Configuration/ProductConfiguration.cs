@@ -32,8 +32,8 @@ namespace InGreedIoApi.Data.Configuration
                 .WithMany(r => r.FavouriteProducts);
 
             builder.HasOne(p => p.Producer)
-                .WithMany(r => r.ProduceProducts)
-                .HasForeignKey(p => p.ProducerId);
+                   .WithMany(r => r.ProduceProducts)
+                   .HasForeignKey(p => p.ProducerId);
         }
     }
 }

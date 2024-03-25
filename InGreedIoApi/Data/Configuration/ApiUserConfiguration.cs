@@ -1,12 +1,12 @@
-﻿using InGreedIoApi.Model;
+﻿using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InGreedIoApi.Data.Configuration
 {
-    public class ApiUserConfiguration : IEntityTypeConfiguration<ApiUser>
+    public class ApiUserConfiguration : IEntityTypeConfiguration<ApiUserPOCO>
     {
-        public void Configure(EntityTypeBuilder<ApiUser> builder)
+        public void Configure(EntityTypeBuilder<ApiUserPOCO> builder)
         {
             builder.HasKey(p => p.Id);
 
@@ -27,6 +27,10 @@ namespace InGreedIoApi.Data.Configuration
                 .WithOne(r => r.User);
 
             builder.HasMany(p => p.Operations)
+                .WithOne(r => r.User);
+                .WithOne(r => r.Producer);
+
+            builder.HasMany(p => p.Reviews)
                 .WithOne(r => r.User);
         }
     }

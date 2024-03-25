@@ -5,7 +5,7 @@ using InGreedIoApi.POCO;
 
 namespace InGreedIoApi.Data;
 
-public class ApiDbContext : IdentityDbContext<ApiUser>
+public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
 {
     private readonly IEntityTypeConfiguration<ProductPOCO> _productConfiguration;
     private readonly IEntityTypeConfiguration<IngredientPOCO> _ingredientConfiguration;
@@ -13,10 +13,10 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
     private readonly IEntityTypeConfiguration<FeaturingPOCO> _featuringConfiguration;
     private readonly IEntityTypeConfiguration<CategoryPOCO> _categoryConfiguration;
     private readonly IEntityTypeConfiguration<CompanyInfoPOCO> _companyInfoConfiguration;
-    private readonly IEntityTypeConfiguration<ApiUser> _apiUserConfiguration;
     private readonly IEntityTypeConfiguration<OperationLogPOCO> _operationLogConfiguration;
     private readonly IEntityTypeConfiguration<OperationTypePOCO> _operationTypeConfiguration;
     private readonly IEntityTypeConfiguration<AppNotificationPOCO> _appNotificationConfiguration;
+    private readonly IEntityTypeConfiguration<ApiUserPOCO> _apiUserConfiguration;
     private readonly IEntityTypeConfiguration<PreferencePOCO> _preferenceConfiguration;
 
     public ApiDbContext()
@@ -30,7 +30,8 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
         IEntityTypeConfiguration<FeaturingPOCO> featuringConfiguration,
         IEntityTypeConfiguration<CategoryPOCO> categoryConfiguration,
         IEntityTypeConfiguration<CompanyInfoPOCO> companyInfoConfiguration,
-        IEntityTypeConfiguration<ApiUser> apiUserConfiguration,
+        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration,
+        IEntityTypeConfiguration<ApiUserPOCO> apiUserConfiguration,
         IEntityTypeConfiguration<OperationLogPOCO> operationLogConfiguration,
         IEntityTypeConfiguration<OperationTypePOCO> operationTypeConfiguration,
         IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration,
@@ -74,7 +75,7 @@ public class ApiDbContext : IdentityDbContext<ApiUser>
     public DbSet<IngredientPOCO> Ingredients { get; set; }
 
     public DbSet<ReviewPOCO> Reviews { get; set; }
-    public DbSet<ApiUser> ApiUsers { get; set; }
+    public DbSet<ApiUserPOCO> ApiUsers { get; set; }
 
     public DbSet<CompanyInfoPOCO> CompanyInfo { get; set; }
 
