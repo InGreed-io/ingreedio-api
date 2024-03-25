@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using InGreedIoApi.Data.Configuration;
 using InGreedIoApi.POCO;
+using InGreedIoApi.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddControllers();
+
+builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
