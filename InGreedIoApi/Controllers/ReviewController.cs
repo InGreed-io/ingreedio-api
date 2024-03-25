@@ -37,5 +37,35 @@ namespace InGreedIoApi.Controllers
             }
             return Ok("The review was reported");
         }
+
+        [HttpPatch("/{reviewId}/rate")]
+        public async Task<IActionResult> Rate(int reviewId, [FromBody] float reviewRating)
+        {
+            var review = await _reviewRepository.Rate(reviewId, reviewRating);
+            if (reviewRating < 1 || reviewRating > 5)
+            {
+                return BadRequest("The rating should be from [1;5]");
+            }
+            if (review == null)
+            {
+                return NotFound("There is no such reviewId");
+            }
+            return Ok("The review was rated");
+        }
+
+        [HttpPut("/{reviewId}")]
+        public async Task<IActionResult> Update(int reviewId, [FromBody] ReviewUpdateDTO reviewUpdateDto)
+        {
+            var review = await _reviewRepository.Update(reviewId, reviewUpdateDto);
+            if (reviewUpdateDto.Rating < 1 || reviewUpdateDto.Rating > 5)
+            {
+                return BadRequest("The rating should be from [1;5]");
+            }
+            if (review == null)
+            {
+                return NotFound("There is no such reviewId");
+            }
+            return Ok("The review was updated");
+        }
     }
 }
