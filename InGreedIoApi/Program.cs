@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using InGreedIoApi.Data.Configuration;
 using InGreedIoApi.POCO;
 using Serilog;
+using InGreedIoApi.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +27,15 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+builder.Services.AddTransient<IIngredientRepository, IngredientRepository>();
+builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
+builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
+
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CategoryPOCO>, CategoryConfiguration>();
-builder.Services.AddSingleton<IEntityTypeConfiguration<ApiUser>, ApiUserConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<ApiUserPOCO>, ApiUserConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<IngredientPOCO>, IngredientConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CompanyInfoPOCO>, CompanyInfoConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<FeaturingPOCO>, FeaturingConfiguration>();
