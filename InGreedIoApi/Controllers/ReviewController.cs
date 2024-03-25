@@ -41,7 +41,7 @@ namespace InGreedIoApi.Controllers
         [HttpPatch("/{reviewId}/rate")]
         public async Task<IActionResult> Rate(int reviewId, [FromBody] float rating)
         {
-            if(rating > 5 | rating < 1)
+            if (rating > 5 | rating < 1)
             {
                 return BadRequest("Rating should be >=1 and <=5");
             }

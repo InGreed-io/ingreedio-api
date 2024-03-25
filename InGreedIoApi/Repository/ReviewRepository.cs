@@ -28,7 +28,7 @@ namespace InGreedIoApi.Repository
         {
             var reviewPOCO = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == reviewId);
 
-            if(reviewPOCO == null)
+            if (reviewPOCO == null)
             {
                 return null;
             }
