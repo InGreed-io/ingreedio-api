@@ -1,8 +1,4 @@
 ﻿namespace InGreedIoApi.DTO
 {
-    public class CategoryDTO
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
+    public record CategoryDTO(int Id, string Name);
 }
