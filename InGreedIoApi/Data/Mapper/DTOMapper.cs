@@ -10,6 +10,8 @@ namespace InGreedIoApi.Data.Mapper
         {
             // From models to DTO
             CreateMap<Review, ReviewDTO>();
+            CreateMap<Ingredient, IngredientDTO>();
+            CreateMap<Category, CategoryDTO>();
         }
     }
 }

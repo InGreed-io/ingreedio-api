@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using InGreedIoApi.Data.Configuration;
 using InGreedIoApi.POCO;
-using InGreedIoApi.Repository;
+using InGreedIoApi.Data.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +21,8 @@ builder.Services.AddControllers();
 builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddTransient<IIngredientRepository, IngredientRepository>();
+builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CategoryPOCO>, CategoryConfiguration>();
