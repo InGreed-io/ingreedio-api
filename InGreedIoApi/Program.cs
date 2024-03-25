@@ -18,11 +18,11 @@ var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddControllers();
 
+builder.Services.AddTransient<IIngredientRepository, IngredientRepository>();
+builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddTransient<IIngredientRepository, IngredientRepository>();
-builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CategoryPOCO>, CategoryConfiguration>();
