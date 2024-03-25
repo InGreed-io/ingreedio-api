@@ -569,7 +569,7 @@ namespace InGreedIoApi.Migrations
 
             modelBuilder.Entity("InGreedIoApi.POCO.AppNotificationPOCO", b =>
                 {
-                    b.HasOne("InGreedIoApi.Model.ApiUser", "User")
+                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "User")
                         .WithMany("AppNotifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -589,25 +589,6 @@ namespace InGreedIoApi.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("InGreedIoApi.POCO.OperationLogPOCO", b =>
-                {
-                    b.HasOne("InGreedIoApi.POCO.OperationTypePOCO", "OperationType")
-                        .WithMany("Operations")
-                        .HasForeignKey("OperationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InGreedIoApi.Model.ApiUser", "User")
-                        .WithMany("Operations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OperationType");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("InGreedIoApi.POCO.IngredientPOCO", b =>
                 {
                     b.HasOne("InGreedIoApi.POCO.PreferencePOCO", null)
@@ -617,6 +598,25 @@ namespace InGreedIoApi.Migrations
                     b.HasOne("InGreedIoApi.POCO.PreferencePOCO", null)
                         .WithMany("Wanted")
                         .HasForeignKey("PreferencePOCOId1");
+                });
+
+            modelBuilder.Entity("InGreedIoApi.POCO.OperationLogPOCO", b =>
+                {
+                    b.HasOne("InGreedIoApi.POCO.OperationTypePOCO", "OperationType")
+                        .WithMany("Operations")
+                        .HasForeignKey("OperationTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "User")
+                        .WithMany("Operations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OperationType");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.ProductPOCO", b =>
