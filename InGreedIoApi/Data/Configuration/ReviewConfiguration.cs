@@ -15,6 +15,10 @@ namespace InGreedIoApi.Data.Configuration
             builder.HasOne(r => r.Product)
                    .WithMany(p => p.Reviews)
                    .HasForeignKey(r => r.ProductId);
+
+            builder.HasOne(r => r.User)
+                .WithMany(p => p.Reviews)
+                .HasForeignKey(r => r.UserID);
         }
     }
 }
