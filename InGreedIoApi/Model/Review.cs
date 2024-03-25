@@ -11,6 +11,8 @@ namespace InGreedIoApi.Model
 
         public float Rating { get; set; }
 
+        public int ReportsCount { get; set; }
+
         public int ProductId { get; set; }
 
         public Product Product { get; set; }
