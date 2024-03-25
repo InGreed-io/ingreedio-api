@@ -23,8 +23,19 @@ namespace InGreedIoApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var reviews = await _reviewRepository.GetAll()
-;           return Ok(_mapper.Map<ReviewDTO>(reviews));
+            var reviews = await _reviewRepository.GetAll();
+            return Ok(_mapper.Map<ReviewDTO>(reviews));
+        }
+
+        [HttpPatch("/{reviewId}/report")]
+        public async Task<IActionResult> Report(int reviewId)
+        {
+            var review = await _reviewRepository.Report(reviewId);
+            if (review == null)
+            {
+                return NotFound("There is no such reviewId");
+            }
+            return Ok("The review was reported");
         }
     }
 }
