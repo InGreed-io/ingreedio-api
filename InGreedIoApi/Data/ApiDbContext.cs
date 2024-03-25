@@ -34,8 +34,7 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         IEntityTypeConfiguration<ApiUserPOCO> apiUserConfiguration,
         IEntityTypeConfiguration<OperationLogPOCO> operationLogConfiguration,
         IEntityTypeConfiguration<OperationTypePOCO> operationTypeConfiguration,
-        IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration,
-        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration) : base(options)
+        IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration) : base(options)
     {
         _productConfiguration = productConfiguration;
         _ingredientConfiguration = ingredientConfiguration;
