@@ -22,6 +22,9 @@ namespace InGreedIoApi.Data.Configuration
 
             builder.HasMany(p => p.ProduceProducts)
                 .WithOne(r => r.Producer);
+
+            builder.HasMany(p => p.Reviews)
+                .WithOne(r => r.User);
         }
     }
 }

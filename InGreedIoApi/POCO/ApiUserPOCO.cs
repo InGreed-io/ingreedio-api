@@ -9,5 +9,6 @@ namespace InGreedIoApi.POCO
         public CompanyInfoPOCO? Company { get; set; }
         public ICollection<ProductPOCO> FavouriteProducts { get; set; }
         public ICollection<ProductPOCO> ProduceProducts { get; set; }
+        public ICollection<ReviewPOCO> Reviews { get; set; }
     }
 }

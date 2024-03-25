@@ -9,5 +9,6 @@ namespace InGreedIoApi.Model
         public CompanyInfo? Company { get; set; }
         public ICollection<Product> FavouriteProducts { get; set; }
         public ICollection<Product> ProduceProducts { get; set; }
+        public ICollection<Review> Reviews { get; set; }
     }
 }
