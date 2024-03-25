@@ -4,6 +4,6 @@ namespace InGreedIoApi.Data.Repository
 {
     public interface ICategoryRepository
     {
-        public Task<IEnumerable<Category>> GetAll();
+        Task<IEnumerable<Category>> GetAll();
     }
 }
