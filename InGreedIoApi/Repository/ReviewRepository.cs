@@ -23,5 +23,15 @@ namespace InGreedIoApi.Repository
 
             return _mapper.Map<IEnumerable<Review>>(reviewsPOCO);
         }
+
+        public async Task<Review?> Report(int reviewId)
+        {
+            var reviewPOCO = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == reviewId);
+
+            if(reviewPOCO == null)
+            {
+                return null;
+            }
+        }
     }
 }
