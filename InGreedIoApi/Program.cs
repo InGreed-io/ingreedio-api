@@ -95,7 +95,8 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<ApiDbContext>();
     if (context.Database.GetPendingMigrations().Any())
     {
-        context.Database.Migrate();
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
     }
 }
 
