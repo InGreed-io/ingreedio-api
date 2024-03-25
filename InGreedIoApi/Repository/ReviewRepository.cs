@@ -32,6 +32,37 @@ namespace InGreedIoApi.Repository
             {
                 return null;
             }
+
+            return _mapper.Map<Review>(reviewPOCO);
+        }
+        public async Task<Review?> Rate(int reviewId, float reviewRating)
+        {
+            var reviewPOCO = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == reviewId);
+
+            if (reviewPOCO == null)
+            {
+                return null;
+            }
+
+            reviewPOCO.Rating = reviewRating;
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<Review>(reviewPOCO);
+        }
+        public async Task<Review?> Update(int reviewId, string content, float reviewRating)
+        {
+            var reviewPOCO = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == reviewId);
+
+            if (reviewPOCO == null)
+            {
+                return null;
+            }
+
+            reviewPOCO.Text = content;
+            reviewPOCO.Rating = reviewRating; 
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<Review>(reviewPOCO);
         }
     }
 }

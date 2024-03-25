@@ -6,6 +6,10 @@ namespace InGreedIoApi.Repository
     {
         Task<IEnumerable<Review>> GetAll();
 
-        Task<Review> Report(int reviewId);
+        Task<Review?> Report(int reviewId);
+
+        Task<Review?> Rate(int reviewId, float reviewRating);
+
+        Task<Review?> Update(int reviewId, string content, float reviewRating);
     }
 }
