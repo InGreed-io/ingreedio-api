@@ -8,6 +8,6 @@ namespace InGreedIoApi.POCO
         public string Name { get; set; }
         public string Description { get; set; }
         public string NIP { get; set; }
-        public ICollection<ApiUser> Users { get; set; }
+        public ICollection<ApiUserPOCO> Users { get; set; }
     }
 }

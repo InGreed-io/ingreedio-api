@@ -15,7 +15,7 @@ namespace InGreedIoApi.POCO
         public ICollection<ReviewPOCO> Reviews { get; set; }
         public FeaturingPOCO? Featuring { get; set; }
         public string ProducerId { get; set; }
-        public ApiUser Producer { get; set; }
-        public ICollection<ApiUser> FavouriteBy { get; set; }
+        public ApiUserPOCO Producer { get; set; }
+        public ICollection<ApiUserPOCO> FavouriteBy { get; set; }
     }
 }
