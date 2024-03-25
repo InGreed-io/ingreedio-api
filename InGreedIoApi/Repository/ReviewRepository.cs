@@ -59,7 +59,7 @@ namespace InGreedIoApi.Repository
             }
 
             reviewPOCO.Text = content;
-            reviewPOCO.Rating = reviewRating; 
+            reviewPOCO.Rating = reviewRating;
             await _context.SaveChangesAsync();
 
             return _mapper.Map<Review>(reviewPOCO);
