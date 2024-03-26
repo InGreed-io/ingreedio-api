@@ -26,8 +26,19 @@ public class ProductRepository : IProductRepository
         {
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
         }
-        //queryable = queryable.Where(p => p.Ingredients.Where(i => productQueryDto.ingredients.Contains(i)));
-        //queryable = queryable.Where(p => productQueryDto.ingredients.All(i => p.Ingredients.Contains(i)));
+        
+        queryable = queryable.Where(p => p.Ingredients
+            .Any(i => productQueryDto.ingredients.Contains(i.Id)));
+        
+        if (productQueryDto.preferenceId.HasValue)
+        {
+            //Get preference 
+            var preferencePoco = _context.Preferences.Single(pref => pref.Id == productQueryDto.preferenceId);
+            //Remove all products which have any unwanted ingredient or and have all wanted ingredientsp
+            _mapper.Map<Preference>(preferencePoco);
+            
+            
+        }
         
         var productsPoco = queryable.AsEnumerable();
 
