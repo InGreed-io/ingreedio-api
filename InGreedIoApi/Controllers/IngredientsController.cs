@@ -19,16 +19,9 @@ namespace InGreedIoApi.Controllers
         }
 
         [HttpGet]
-<<<<<<< HEAD
         public async Task<IActionResult> GetIngredients([FromBody] GetIngredientsQuery query)
         {
             var ingredients = await _ingredientRepository.FindAll(query.Query, query.Page, query.Limit);
-=======
-        public async Task<IActionResult> GetIngredients([FromQuery]IngredientQueryDTO ingredientQuery)
-        {
-            var ingredients = await _ingredientRepository.FindAll(ingredientQuery.query,
-                ingredientQuery.page, ingredientQuery.limit);
->>>>>>> 085c96f (fixed ingredients controller)
             return Ok(_mapper.Map<List<IngredientDTO>>(ingredients));
         }
     }
