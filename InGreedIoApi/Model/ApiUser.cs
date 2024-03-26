@@ -10,5 +10,7 @@ namespace InGreedIoApi.Model
         public ICollection<Product> FavouriteProducts { get; set; }
         public ICollection<Product> ProduceProducts { get; set; }
         public ICollection<Review> Reviews { get; set; }
+        public ICollection<AppNotification> AppNotifications { get; set; }
+        public ICollection<OperationLog> Operations { get; set; }
     }
 }
