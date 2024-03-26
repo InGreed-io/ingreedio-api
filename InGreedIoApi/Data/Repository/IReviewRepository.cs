@@ -5,7 +5,7 @@ namespace InGreedIoApi.Data.Repository
 {
     public interface IReviewRepository
     {
-        Task<IEnumerable<Review>> GetAll();
+        Task<IEnumerable<Review>> GetAll(string userId);
 
         Task<Review?> Report(int reviewId);
 
