@@ -54,7 +54,7 @@ namespace InGreedIoApi.Data.Repository
             return _mapper.Map<Review>(reviewPOCO);
         }
 
-        public async Task<Review?> Update(int reviewId, string content, float reviewRating)
+        public async Task<Review?> Update(int reviewId, ReviewUpdateDTO reviewUpdateDto)
         {
             var reviewPOCO = await _context.Reviews.FirstOrDefaultAsync(x => x.Id == reviewId);
 
@@ -63,8 +63,8 @@ namespace InGreedIoApi.Data.Repository
                 return null;
             }
 
-            reviewPOCO.Text = content;
-            reviewPOCO.Rating = reviewRating;
+            reviewPOCO.Text = reviewUpdateDto.Content;
+            reviewPOCO.Rating = reviewUpdateDto.Rating;
             await _context.SaveChangesAsync();
 
             return _mapper.Map<Review>(reviewPOCO);
