@@ -21,7 +21,13 @@ namespace InGreedIoApi.Data.Configuration
                 .WithMany(r => r.FavouriteBy);
 
             builder.HasMany(p => p.ProduceProducts)
-                .WithOne(r => r.Producer);
+               .WithOne(r => r.Producer);
+
+            builder.HasMany(p => p.AppNotifications)
+                .WithOne(r => r.User);
+
+            builder.HasMany(p => p.Operations)
+                .WithOne(r => r.User);
 
             builder.HasMany(p => p.Reviews)
                 .WithOne(r => r.User);

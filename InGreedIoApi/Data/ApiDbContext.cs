@@ -13,6 +13,9 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
     private readonly IEntityTypeConfiguration<FeaturingPOCO> _featuringConfiguration;
     private readonly IEntityTypeConfiguration<CategoryPOCO> _categoryConfiguration;
     private readonly IEntityTypeConfiguration<CompanyInfoPOCO> _companyInfoConfiguration;
+    private readonly IEntityTypeConfiguration<OperationLogPOCO> _operationLogConfiguration;
+    private readonly IEntityTypeConfiguration<OperationTypePOCO> _operationTypeConfiguration;
+    private readonly IEntityTypeConfiguration<AppNotificationPOCO> _appNotificationConfiguration;
     private readonly IEntityTypeConfiguration<ApiUserPOCO> _apiUserConfiguration;
     private readonly IEntityTypeConfiguration<PreferencePOCO> _preferenceConfiguration;
 
@@ -27,9 +30,11 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         IEntityTypeConfiguration<FeaturingPOCO> featuringConfiguration,
         IEntityTypeConfiguration<CategoryPOCO> categoryConfiguration,
         IEntityTypeConfiguration<CompanyInfoPOCO> companyInfoConfiguration,
+        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration,
         IEntityTypeConfiguration<ApiUserPOCO> apiUserConfiguration,
-        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration) : base(options)
-
+        IEntityTypeConfiguration<OperationLogPOCO> operationLogConfiguration,
+        IEntityTypeConfiguration<OperationTypePOCO> operationTypeConfiguration,
+        IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration) : base(options)
     {
         _productConfiguration = productConfiguration;
         _ingredientConfiguration = ingredientConfiguration;
@@ -38,6 +43,9 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         _categoryConfiguration = categoryConfiguration;
         _companyInfoConfiguration = companyInfoConfiguration;
         _apiUserConfiguration = apiUserConfiguration;
+        _operationLogConfiguration = operationLogConfiguration;
+        _operationTypeConfiguration = operationTypeConfiguration;
+        _appNotificationConfiguration = appNotificationConfiguration;
         _preferenceConfiguration = preferenceConfiguration;
     }
 
@@ -51,6 +59,9 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         modelBuilder.ApplyConfiguration(_ingredientConfiguration);
         modelBuilder.ApplyConfiguration(_companyInfoConfiguration);
         modelBuilder.ApplyConfiguration(_apiUserConfiguration);
+        modelBuilder.ApplyConfiguration(_operationLogConfiguration);
+        modelBuilder.ApplyConfiguration(_operationTypeConfiguration);
+        modelBuilder.ApplyConfiguration(_appNotificationConfiguration);
         modelBuilder.ApplyConfiguration(_preferenceConfiguration);
     }
 
@@ -66,6 +77,10 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
     public DbSet<ApiUserPOCO> ApiUsers { get; set; }
 
     public DbSet<CompanyInfoPOCO> CompanyInfo { get; set; }
+
+    public DbSet<AppNotificationPOCO> AppNotifications { get; set; }
+    public DbSet<OperationLogPOCO> OperationLog { get; set; }
+    public DbSet<OperationTypePOCO> OperationTypes { get; set; }
 
     public DbSet<PreferencePOCO> Preferences { get; set; }
 }
