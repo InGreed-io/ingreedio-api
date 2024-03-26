@@ -1,6 +1,6 @@
 using AutoMapper;
 using InGreedIoApi.DTO;
-using InGreedIoApi.Repository;
+using InGreedIoApi.Data.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InGreedIoApi.Controllers;
