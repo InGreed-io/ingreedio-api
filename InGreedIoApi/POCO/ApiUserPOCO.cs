@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using InGreedIoApi.Model;
+using Microsoft.AspNetCore.Identity;
 
 namespace InGreedIoApi.POCO
 {
@@ -12,5 +13,7 @@ namespace InGreedIoApi.POCO
         public ICollection<ReviewPOCO> Reviews { get; set; }
 
         public ICollection<PreferencePOCO> Preferences { get; set; }
+        public ICollection<AppNotificationPOCO> AppNotifications { get; set; }
+        public ICollection<OperationLogPOCO> Operations { get; set; }
     }
 }

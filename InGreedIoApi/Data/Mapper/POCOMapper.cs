@@ -17,6 +17,9 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<ProductPOCO, Product>();
             CreateMap<ApiUserPOCO, ApiUser>();
             CreateMap<PreferencePOCO, Preference>();
+            CreateMap<AppNotificationPOCO, AppNotification>();
+            CreateMap<OperationLogPOCO, OperationLog>();
+            CreateMap<OperationTypePOCO, OperationType>();
 
             // From Models to POCO
             CreateMap<Category, CategoryPOCO>();
@@ -27,6 +30,9 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<Product, ProductPOCO>();
             CreateMap<ApiUser, ApiUserPOCO>();
             CreateMap<Preference, PreferencePOCO>();
+            CreateMap<AppNotification, AppNotificationPOCO>();
+            CreateMap<OperationType, OperationTypePOCO>();
+            CreateMap<OperationLog, OperationLogPOCO>();
         }
     }
 }

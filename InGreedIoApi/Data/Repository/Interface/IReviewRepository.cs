@@ -1,4 +1,5 @@
-﻿using InGreedIoApi.Model;
+﻿using InGreedIoApi.DTO;
+using InGreedIoApi.Model;
 
 namespace InGreedIoApi.Data.Repository.Interface
 {
@@ -10,6 +11,6 @@ namespace InGreedIoApi.Data.Repository.Interface
 
         Task<Review?> Rate(int reviewId, float reviewRating);
 
-        Task<Review?> Update(int reviewId, string content, float reviewRating);
+        Task<Review?> Update(int reviewId, ReviewUpdateDTO reviewUpdateDto);
     }
 }

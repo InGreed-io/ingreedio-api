@@ -42,6 +42,9 @@ builder.Services.AddSingleton<IEntityTypeConfiguration<ApiUserPOCO>, ApiUserConf
 builder.Services.AddSingleton<IEntityTypeConfiguration<IngredientPOCO>, IngredientConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CompanyInfoPOCO>, CompanyInfoConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<FeaturingPOCO>, FeaturingConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<OperationTypePOCO>, OperationTypeConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<OperationLogPOCO>, OperationLogConfiguration>();
+builder.Services.AddSingleton<IEntityTypeConfiguration<AppNotificationPOCO>, AppNotificationConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<PreferencePOCO>, PreferenceConfiguration>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -95,7 +98,8 @@ using (var scope = app.Services.CreateScope())
     var context = services.GetRequiredService<ApiDbContext>();
     if (context.Database.GetPendingMigrations().Any())
     {
-        context.Database.Migrate();
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
     }
 }
 
