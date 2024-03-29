@@ -9,5 +9,7 @@ namespace InGreedIoApi.Model
         public bool IsActive { get; set; }
         public ICollection<Ingredient> Wanted { get; set; }
         public ICollection<Ingredient> Unwanted { get; set; }
+        public string UserId { get; set; }
+        public ApiUser User { get; set; }
     }
 }

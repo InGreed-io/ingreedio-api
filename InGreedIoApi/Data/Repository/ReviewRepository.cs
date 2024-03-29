@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using InGreedIoApi.Data;
+using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
 using Microsoft.EntityFrameworkCore;

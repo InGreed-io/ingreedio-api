@@ -25,6 +25,9 @@ namespace InGreedIoApi.Data.Configuration
 
             builder.HasMany(p => p.Reviews)
                 .WithOne(r => r.User);
+
+            builder.HasMany(p => p.Preferences)
+                .WithOne(r => r.User);
         }
     }
 }

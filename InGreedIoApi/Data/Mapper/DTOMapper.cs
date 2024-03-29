@@ -12,6 +12,16 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<Review, ReviewDTO>();
             CreateMap<Ingredient, IngredientDTO>();
             CreateMap<Category, CategoryDTO>();
+            CreateMap<ApiUser, ApiUserDTO>()
+                .ForMember(dest => dest.Mail,
+                opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Id,
+                opt => opt.MapFrom(src => src.EmailConfirmed));
+            CreateMap<Preference, PreferenceDTO>()
+                .ForMember(dest => dest.Wanted,
+                    opt => opt.MapFrom(src => src.Wanted))
+                .ForMember(dest => dest.Unwanted,
+                    opt => opt.MapFrom(src => src.Unwanted));
         }
     }
 }
