@@ -21,9 +21,9 @@ namespace InGreedIoApi.Controllers
 
         [Authorize(Roles = "Moderator")]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string userId)
         {
-            var reviews = await _reviewRepository.GetAll();
+            var reviews = await _reviewRepository.GetAll(userId);
             return Ok(_mapper.Map<ReviewDTO>(reviews));
         }
 
