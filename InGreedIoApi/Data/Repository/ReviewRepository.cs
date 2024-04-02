@@ -18,9 +18,9 @@ namespace InGreedIoApi.Data.Repository
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Review>> GetAll()
+        public async Task<IEnumerable<Review>> GetAll(string userId)
         {
-            var reviewsPOCO = await _context.Reviews.ToListAsync();
+            var reviewsPOCO = await _context.Reviews.Where(x => x.UserID == userId).ToListAsync();
 
             return _mapper.Map<IEnumerable<Review>>(reviewsPOCO);
         }
