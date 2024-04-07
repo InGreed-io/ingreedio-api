@@ -19,7 +19,7 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
     private readonly IEntityTypeConfiguration<ApiUserPOCO> _apiUserConfiguration;
     private readonly IEntityTypeConfiguration<PreferencePOCO> _preferenceConfiguration;
 
-    public ApiDbContext()
+    public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
     {
     }
 
@@ -52,6 +52,7 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.ApplyConfiguration(_productConfiguration);
         modelBuilder.ApplyConfiguration(_reviewConfiguration);
         modelBuilder.ApplyConfiguration(_categoryConfiguration);
@@ -65,22 +66,22 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         modelBuilder.ApplyConfiguration(_preferenceConfiguration);
     }
 
-    public DbSet<ProductPOCO> Products { get; set; }
+    public virtual DbSet<ProductPOCO> Products { get; set; }
 
-    public DbSet<CategoryPOCO> Category { get; set; }
+    public virtual DbSet<CategoryPOCO> Category { get; set; }
 
-    public DbSet<FeaturingPOCO> Features { get; set; }
+    public virtual DbSet<FeaturingPOCO> Features { get; set; }
 
-    public DbSet<IngredientPOCO> Ingredients { get; set; }
+    public virtual DbSet<IngredientPOCO> Ingredients { get; set; }
 
-    public DbSet<ReviewPOCO> Reviews { get; set; }
-    public DbSet<ApiUserPOCO> ApiUsers { get; set; }
+    public virtual DbSet<ReviewPOCO> Reviews { get; set; }
+    public virtual DbSet<ApiUserPOCO> ApiUsers { get; set; }
 
-    public DbSet<CompanyInfoPOCO> CompanyInfo { get; set; }
+    public virtual DbSet<CompanyInfoPOCO> CompanyInfo { get; set; }
 
-    public DbSet<AppNotificationPOCO> AppNotifications { get; set; }
-    public DbSet<OperationLogPOCO> OperationLog { get; set; }
-    public DbSet<OperationTypePOCO> OperationTypes { get; set; }
+    public virtual DbSet<AppNotificationPOCO> AppNotifications { get; set; }
+    public virtual DbSet<OperationLogPOCO> OperationLog { get; set; }
+    public virtual DbSet<OperationTypePOCO> OperationTypes { get; set; }
 
-    public DbSet<PreferencePOCO> Preferences { get; set; }
+    public virtual DbSet<PreferencePOCO> Preferences { get; set; }
 }
