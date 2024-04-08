@@ -5,6 +5,7 @@ using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.DTO;
 
 public class ReviewRepositoryTests
 {
@@ -49,7 +50,98 @@ public class ReviewRepositoryTests
         // Assert
         Assert.NotNull(reviews);
         Assert.Single(reviews);
-        var x = reviews.First();
         Assert.Equal("Review 1", reviews.First().Text);
+    }
+
+    [Fact]
+    public async Task Report_ExistingReview_ShouldIncrementReportsCount()
+    {
+        // Arrange
+        int reviewId = 1;
+        var repository = new ReviewRepository(_mockContext, _mockMapper);
+
+        // Act
+        var review = await repository.Report(reviewId);
+
+        // Assert
+        Assert.NotNull(review);
+        Assert.Equal(1, review.ReportsCount);
+    }
+
+    [Fact]
+    public async Task Rate_ExistingReview_ShouldUpdateRating()
+    {
+        // Arrange
+        var repository = new ReviewRepository(_mockContext, _mockMapper);
+        var reviewId = 1;
+        var newRating = 3.5f;
+
+        // Act
+        var result = await repository.Rate(reviewId, newRating);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(newRating, result.Rating);
+    }
+
+    [Fact]
+    public async Task Update_ExistingReview_ShouldUpdateContentAndRating()
+    {
+        // Arrange
+        var repository = new ReviewRepository(_mockContext, _mockMapper);
+        var reviewId = 1;
+        var updateDto = new ReviewUpdateDTO("Updated review content", 4.5f);
+
+        // Act
+        var result = await repository.Update(reviewId, updateDto);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(updateDto.Content, result.Text);
+        Assert.Equal(updateDto.Rating, result.Rating);
+    }
+
+    [Fact]
+    public async Task Report_NonExistingReview_ShouldReturnNull()
+    {
+        // Arrange
+        var repository = new ReviewRepository(_mockContext, _mockMapper);
+        var nonExistingReviewId = 999;
+
+        // Act
+        var result = await repository.Report(nonExistingReviewId);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task Rate_NonExistingReview_ShouldReturnNull()
+    {
+        // Arrange
+        var repository = new ReviewRepository(_mockContext, _mockMapper);
+        var nonExistingReviewId = 999;
+        var newRating = 3.5f;
+
+        // Act
+        var result = await repository.Rate(nonExistingReviewId, newRating);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task Update_NonExistingReview_ShouldReturnNull()
+    {
+        // Arrange
+        var repository = new ReviewRepository(_mockContext, _mockMapper);
+        var nonExistingReviewId = 999;
+        var updateDto = new ReviewUpdateDTO("Updated review content", 4.5f);
+
+        // Act
+        var result = await repository.Update(nonExistingReviewId, updateDto);
+
+        // Assert
+        Assert.Null(result);
     }
 }
