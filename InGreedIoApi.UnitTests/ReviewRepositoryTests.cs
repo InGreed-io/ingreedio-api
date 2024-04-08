@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Moq;
 using InGreedIoApi.Data.Mapper;
 using InGreedIoApi.DTO;
+using System.ComponentModel;
 
+namespace UnitTests;
 public class ReviewRepositoryTests
 {
     private readonly ApiDbContext _mockContext;
@@ -37,6 +39,7 @@ public class ReviewRepositoryTests
         _mockContext.SaveChanges();
     }
 
+    [Trait("Category", "Unit")]
     [Fact]
     public async Task GetAll_ReturnsCorrectReviews_ForGivenUserId()
     {
@@ -53,6 +56,7 @@ public class ReviewRepositoryTests
         Assert.Equal("Review 1", reviews.First().Text);
     }
 
+    [Trait("Category", "Unit")]
     [Fact]
     public async Task Report_ExistingReview_ShouldIncrementReportsCount()
     {
@@ -68,6 +72,7 @@ public class ReviewRepositoryTests
         Assert.Equal(1, review.ReportsCount);
     }
 
+    [Trait("Category", "Unit")]
     [Fact]
     public async Task Rate_ExistingReview_ShouldUpdateRating()
     {
@@ -84,6 +89,7 @@ public class ReviewRepositoryTests
         Assert.Equal(newRating, result.Rating);
     }
 
+    [Trait("Category", "Unit")]
     [Fact]
     public async Task Update_ExistingReview_ShouldUpdateContentAndRating()
     {
@@ -101,6 +107,7 @@ public class ReviewRepositoryTests
         Assert.Equal(updateDto.Rating, result.Rating);
     }
 
+    [Trait("Category", "Unit")]
     [Fact]
     public async Task Report_NonExistingReview_ShouldReturnNull()
     {
@@ -115,6 +122,7 @@ public class ReviewRepositoryTests
         Assert.Null(result);
     }
 
+    [Trait("Category", "Unit")]
     [Fact]
     public async Task Rate_NonExistingReview_ShouldReturnNull()
     {
@@ -130,6 +138,7 @@ public class ReviewRepositoryTests
         Assert.Null(result);
     }
 
+    [Trait("Category", "Unit")]
     [Fact]
     public async Task Update_NonExistingReview_ShouldReturnNull()
     {
