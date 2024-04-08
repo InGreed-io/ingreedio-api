@@ -1,7 +1,7 @@
 ﻿using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
 
-namespace InGreedIoApi.Data.Repository
+namespace InGreedIoApi.Data.Repository.Interface
 {
     public interface IReviewRepository
     {

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using InGreedIoApi.Data.Repository;
+using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using Microsoft.AspNetCore.Mvc;
 

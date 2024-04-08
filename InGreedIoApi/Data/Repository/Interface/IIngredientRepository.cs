@@ -1,6 +1,8 @@
-﻿using InGreedIoApi.Model;
+﻿using InGreedIoApi.DTO;
+using InGreedIoApi.Model;
+using InGreedIoApi.POCO;
 
-namespace InGreedIoApi.Data.Repository
+namespace InGreedIoApi.Data.Repository.Interface
 {
     public interface IIngredientRepository
     {

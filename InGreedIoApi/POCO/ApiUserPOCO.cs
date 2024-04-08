@@ -11,6 +11,8 @@ namespace InGreedIoApi.POCO
         public ICollection<ProductPOCO> FavouriteProducts { get; set; }
         public ICollection<ProductPOCO> ProduceProducts { get; set; }
         public ICollection<ReviewPOCO> Reviews { get; set; }
+
+        public ICollection<PreferencePOCO> Preferences { get; set; }
         public ICollection<AppNotificationPOCO> AppNotifications { get; set; }
         public ICollection<OperationLogPOCO> Operations { get; set; }
     }

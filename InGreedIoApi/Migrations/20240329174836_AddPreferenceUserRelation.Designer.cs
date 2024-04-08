@@ -3,6 +3,7 @@ using System;
 using InGreedIoApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InGreedIoApi.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240329174836_AddPreferenceUserRelation")]
+    partial class AddPreferenceUserRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,41 +112,6 @@ namespace InGreedIoApi.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("InGreedIoApi.POCO.AppNotificationPOCO", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int>("NotificationType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("Seen")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AppNotifications");
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.CategoryPOCO", b =>
@@ -247,56 +215,6 @@ namespace InGreedIoApi.Migrations
                     b.HasIndex("PreferencePOCOId1");
 
                     b.ToTable("Ingredients");
-                });
-
-            modelBuilder.Entity("InGreedIoApi.POCO.OperationLogPOCO", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Details")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int>("OperationTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("TimeStamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OperationTypeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("OperationLog");
-                });
-
-            modelBuilder.Entity("InGreedIoApi.POCO.OperationTypePOCO", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OperationTypes");
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.PreferencePOCO", b =>
@@ -573,17 +491,6 @@ namespace InGreedIoApi.Migrations
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("InGreedIoApi.POCO.AppNotificationPOCO", b =>
-                {
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "User")
-                        .WithMany("AppNotifications")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("InGreedIoApi.POCO.FeaturingPOCO", b =>
                 {
                     b.HasOne("InGreedIoApi.POCO.ProductPOCO", "Product")
@@ -613,25 +520,6 @@ namespace InGreedIoApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("InGreedIoApi.POCO.OperationLogPOCO", b =>
-                {
-                    b.HasOne("InGreedIoApi.POCO.OperationTypePOCO", "OperationType")
-                        .WithMany("Operations")
-                        .HasForeignKey("OperationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "User")
-                        .WithMany("Operations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OperationType");
 
                     b.Navigation("User");
                 });
@@ -742,10 +630,6 @@ namespace InGreedIoApi.Migrations
 
             modelBuilder.Entity("InGreedIoApi.POCO.ApiUserPOCO", b =>
                 {
-                    b.Navigation("AppNotifications");
-
-                    b.Navigation("Operations");
-
                     b.Navigation("Preferences");
 
                     b.Navigation("ProduceProducts");
@@ -761,11 +645,6 @@ namespace InGreedIoApi.Migrations
             modelBuilder.Entity("InGreedIoApi.POCO.CompanyInfoPOCO", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("InGreedIoApi.POCO.OperationTypePOCO", b =>
-                {
-                    b.Navigation("Operations");
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.PreferencePOCO", b =>

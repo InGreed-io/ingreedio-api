@@ -11,6 +11,7 @@ using InGreedIoApi.Data.Configuration;
 using InGreedIoApi.POCO;
 using Serilog;
 using InGreedIoApi.Data.Repository;
+using InGreedIoApi.Data.Repository.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ builder.Host.UseSerilog();
 builder.Services.AddTransient<IIngredientRepository, IngredientRepository>();
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
+builder.Services.AddTransient<IPreferenceRepository, PreferenceRepository>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();

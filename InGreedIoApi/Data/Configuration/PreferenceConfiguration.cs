@@ -16,6 +16,10 @@ namespace InGreedIoApi.Data.Configuration
             builder.HasMany(p => p.Wanted);
 
             builder.HasMany(p => p.Unwanted);
+
+            builder.HasOne(p => p.User)
+                .WithMany(r => r.Preferences)
+                .HasForeignKey(p => p.UserId);
         }
     }
 }
