@@ -4,6 +4,7 @@ using InGreedIoApi.Data;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using InGreedIoApi.Data.Mapper;
 
 public class ReviewRepositoryTests
 {
@@ -19,7 +20,12 @@ public class ReviewRepositoryTests
 
         _mockContext = new ApiDbContext(options);
 
-        _mockMapper = new Mock<IMapper>().Object;
+        var configuration = new MapperConfiguration(cfg =>
+        {
+            cfg.AddProfile<POCOMapper>();
+        });
+        _mockMapper = configuration.CreateMapper();
+
         _reviews = new List<ReviewPOCO>
         {
             new ReviewPOCO { Id = 1, Text = "Review 1", UserID = "User1", Rating = 5 },
