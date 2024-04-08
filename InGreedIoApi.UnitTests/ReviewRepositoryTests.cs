@@ -43,6 +43,7 @@ public class ReviewRepositoryTests
         // Assert
         Assert.NotNull(reviews);
         Assert.Single(reviews);
+        var x = reviews.First();
         Assert.Equal("Review 1", reviews.First().Text);
     }
 }

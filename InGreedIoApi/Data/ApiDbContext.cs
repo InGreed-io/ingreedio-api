@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Model;
 using InGreedIoApi.POCO;
+using InGreedIoApi.Data.Configuration;
 
 namespace InGreedIoApi.Data;
 
@@ -21,32 +22,17 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
 
     public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
     {
-    }
-
-    public ApiDbContext(DbContextOptions<ApiDbContext> options,
-        IEntityTypeConfiguration<ProductPOCO> productConfiguration,
-        IEntityTypeConfiguration<IngredientPOCO> ingredientConfiguration,
-        IEntityTypeConfiguration<ReviewPOCO> reviewConfiguration,
-        IEntityTypeConfiguration<FeaturingPOCO> featuringConfiguration,
-        IEntityTypeConfiguration<CategoryPOCO> categoryConfiguration,
-        IEntityTypeConfiguration<CompanyInfoPOCO> companyInfoConfiguration,
-        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration,
-        IEntityTypeConfiguration<ApiUserPOCO> apiUserConfiguration,
-        IEntityTypeConfiguration<OperationLogPOCO> operationLogConfiguration,
-        IEntityTypeConfiguration<OperationTypePOCO> operationTypeConfiguration,
-        IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration) : base(options)
-    {
-        _productConfiguration = productConfiguration;
-        _ingredientConfiguration = ingredientConfiguration;
-        _reviewConfiguration = reviewConfiguration;
-        _featuringConfiguration = featuringConfiguration;
-        _categoryConfiguration = categoryConfiguration;
-        _companyInfoConfiguration = companyInfoConfiguration;
-        _apiUserConfiguration = apiUserConfiguration;
-        _operationLogConfiguration = operationLogConfiguration;
-        _operationTypeConfiguration = operationTypeConfiguration;
-        _appNotificationConfiguration = appNotificationConfiguration;
-        _preferenceConfiguration = preferenceConfiguration;
+        _productConfiguration = new ProductConfiguration();
+        _ingredientConfiguration = new IngredientConfiguration();
+        _reviewConfiguration = new ReviewConfiguration();
+        _featuringConfiguration = new FeaturingConfiguration();
+        _categoryConfiguration = new CategoryConfiguration();
+        _companyInfoConfiguration = new CompanyInfoConfiguration();
+        _apiUserConfiguration = new ApiUserConfiguration();
+        _operationLogConfiguration = new OperationLogConfiguration();
+        _operationTypeConfiguration = new OperationTypeConfiguration();
+        _appNotificationConfiguration = new AppNotificationConfiguration();
+        _preferenceConfiguration = new PreferenceConfiguration();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
