@@ -12,8 +12,13 @@ $ dotnet build
 ```
 
 ## Testing
+To run all tests:
 ```
 $ dotnet test
+```
+To run unit tests:
+```
+$ dotnet test --filter Category=Unit
 ```
 
 ## Architecture
