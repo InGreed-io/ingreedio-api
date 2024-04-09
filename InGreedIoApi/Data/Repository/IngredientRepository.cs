@@ -19,7 +19,7 @@ namespace InGreedIoApi.Data.Repository
         public async Task<IEnumerable<Ingredient>> FindAll(string query, int page, int limit)
         {
             var ingredientsPOCO = _context.Ingredients.Where(x => x.Name.StartsWith(query)).Skip(page * limit).Take(limit);
-            return _mapper.Map<List<Ingredient>>(ingredientsPOCO);
+            return ingredientsPOCO.Select(x => _mapper.Map<Ingredient>(x));
         }
     }
 }
