@@ -21,8 +21,7 @@ namespace InGreedIoApi.Data.Repository
         public async Task<IEnumerable<Review>> GetAll(string userId)
         {
             var reviewsPOCO = await _context.Reviews.Where(x => x.UserID == userId).ToListAsync();
-
-            return _mapper.Map<IEnumerable<Review>>(reviewsPOCO);
+            return reviewsPOCO.Select(x => _mapper.Map<Review>(x));
         }
 
         public async Task<Review?> Report(int reviewId)
