@@ -3,6 +3,8 @@ using InGreedIoApi.Data;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
 using Microsoft.EntityFrameworkCore;
+using InGreedIoApi.Data.Repository.Interface;
+
 
 namespace InGreedIoApi.Data.Repository;
 
