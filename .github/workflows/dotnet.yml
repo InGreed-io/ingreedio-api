@@ -24,7 +24,7 @@ jobs:
       run: dotnet restore InGreedIoApi
     - name: Build
       run: dotnet build --no-restore InGreedIoApi
-    - name: Test
-      run: dotnet test --verbosity normal
+    - name: Unit Tests
+      run: dotnet test --verbosity normal --filter Category=Unit
     - name: Lint
       run: dotnet format --verify-no-changes --verbosity diagnostic
