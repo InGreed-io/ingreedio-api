@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Model;
 using InGreedIoApi.POCO;
+using InGreedIoApi.Data.Configuration;
 
 namespace InGreedIoApi.Data;
 
@@ -19,39 +20,25 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
     private readonly IEntityTypeConfiguration<ApiUserPOCO> _apiUserConfiguration;
     private readonly IEntityTypeConfiguration<PreferencePOCO> _preferenceConfiguration;
 
-    public ApiDbContext()
+    public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
     {
-    }
-
-    public ApiDbContext(DbContextOptions<ApiDbContext> options,
-        IEntityTypeConfiguration<ProductPOCO> productConfiguration,
-        IEntityTypeConfiguration<IngredientPOCO> ingredientConfiguration,
-        IEntityTypeConfiguration<ReviewPOCO> reviewConfiguration,
-        IEntityTypeConfiguration<FeaturingPOCO> featuringConfiguration,
-        IEntityTypeConfiguration<CategoryPOCO> categoryConfiguration,
-        IEntityTypeConfiguration<CompanyInfoPOCO> companyInfoConfiguration,
-        IEntityTypeConfiguration<PreferencePOCO> preferenceConfiguration,
-        IEntityTypeConfiguration<ApiUserPOCO> apiUserConfiguration,
-        IEntityTypeConfiguration<OperationLogPOCO> operationLogConfiguration,
-        IEntityTypeConfiguration<OperationTypePOCO> operationTypeConfiguration,
-        IEntityTypeConfiguration<AppNotificationPOCO> appNotificationConfiguration) : base(options)
-    {
-        _productConfiguration = productConfiguration;
-        _ingredientConfiguration = ingredientConfiguration;
-        _reviewConfiguration = reviewConfiguration;
-        _featuringConfiguration = featuringConfiguration;
-        _categoryConfiguration = categoryConfiguration;
-        _companyInfoConfiguration = companyInfoConfiguration;
-        _apiUserConfiguration = apiUserConfiguration;
-        _operationLogConfiguration = operationLogConfiguration;
-        _operationTypeConfiguration = operationTypeConfiguration;
-        _appNotificationConfiguration = appNotificationConfiguration;
-        _preferenceConfiguration = preferenceConfiguration;
+        _productConfiguration = new ProductConfiguration();
+        _ingredientConfiguration = new IngredientConfiguration();
+        _reviewConfiguration = new ReviewConfiguration();
+        _featuringConfiguration = new FeaturingConfiguration();
+        _categoryConfiguration = new CategoryConfiguration();
+        _companyInfoConfiguration = new CompanyInfoConfiguration();
+        _apiUserConfiguration = new ApiUserConfiguration();
+        _operationLogConfiguration = new OperationLogConfiguration();
+        _operationTypeConfiguration = new OperationTypeConfiguration();
+        _appNotificationConfiguration = new AppNotificationConfiguration();
+        _preferenceConfiguration = new PreferenceConfiguration();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.ApplyConfiguration(_productConfiguration);
         modelBuilder.ApplyConfiguration(_reviewConfiguration);
         modelBuilder.ApplyConfiguration(_categoryConfiguration);
@@ -65,22 +52,22 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         modelBuilder.ApplyConfiguration(_preferenceConfiguration);
     }
 
-    public DbSet<ProductPOCO> Products { get; set; }
+    public virtual DbSet<ProductPOCO> Products { get; set; }
 
-    public DbSet<CategoryPOCO> Category { get; set; }
+    public virtual DbSet<CategoryPOCO> Category { get; set; }
 
-    public DbSet<FeaturingPOCO> Features { get; set; }
+    public virtual DbSet<FeaturingPOCO> Features { get; set; }
 
-    public DbSet<IngredientPOCO> Ingredients { get; set; }
+    public virtual DbSet<IngredientPOCO> Ingredients { get; set; }
 
-    public DbSet<ReviewPOCO> Reviews { get; set; }
-    public DbSet<ApiUserPOCO> ApiUsers { get; set; }
+    public virtual DbSet<ReviewPOCO> Reviews { get; set; }
+    public virtual DbSet<ApiUserPOCO> ApiUsers { get; set; }
 
-    public DbSet<CompanyInfoPOCO> CompanyInfo { get; set; }
+    public virtual DbSet<CompanyInfoPOCO> CompanyInfo { get; set; }
 
-    public DbSet<AppNotificationPOCO> AppNotifications { get; set; }
-    public DbSet<OperationLogPOCO> OperationLog { get; set; }
-    public DbSet<OperationTypePOCO> OperationTypes { get; set; }
+    public virtual DbSet<AppNotificationPOCO> AppNotifications { get; set; }
+    public virtual DbSet<OperationLogPOCO> OperationLog { get; set; }
+    public virtual DbSet<OperationTypePOCO> OperationTypes { get; set; }
 
-    public DbSet<PreferencePOCO> Preferences { get; set; }
+    public virtual DbSet<PreferencePOCO> Preferences { get; set; }
 }
