@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace InGreedIoApi.Controllers
 {
     [ApiController]
-    [Route("/api/[controller]")]
+    [Route("/api/[controller]/")]
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -25,7 +25,7 @@ namespace InGreedIoApi.Controllers
             return Ok(_mapper.Map<ApiUserDTO>(user));
         }
 
-        [HttpGet("/preferences")]
+        [HttpGet("preferences")]
         public async Task<IActionResult> GetPreferences([FromQuery] string userId)
         {
             var preferences = await _userRepository.GetPreferences(userId);
