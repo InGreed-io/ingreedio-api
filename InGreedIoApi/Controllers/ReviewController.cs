@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InGreedIoApi.Controllers
 {
-    [Route("/api/[controller]")]
+    [Route("/api/[controller]/")]
     [ApiController]
     public class ReviewController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace InGreedIoApi.Controllers
             return Ok(_mapper.Map<ReviewDTO>(reviews));
         }
 
-        [HttpPatch("/{reviewId}/report")]
+        [HttpPatch("{reviewId}/report")]
         public async Task<IActionResult> Report(int reviewId)
         {
             var review = await _reviewRepository.Report(reviewId);
@@ -38,7 +38,7 @@ namespace InGreedIoApi.Controllers
             return Ok("The review was reported");
         }
 
-        [HttpPatch("/{reviewId}/rate")]
+        [HttpPatch("{reviewId}/rate")]
         public async Task<IActionResult> Rate(int reviewId, [FromBody] float reviewRating)
         {
             if (reviewRating < 1 || reviewRating > 5)
@@ -53,7 +53,7 @@ namespace InGreedIoApi.Controllers
             return Ok("The review was rated");
         }
 
-        [HttpPut("/{reviewId}")]
+        [HttpPut("{reviewId}")]
         public async Task<IActionResult> Update(int reviewId, [FromBody] ReviewUpdateDTO reviewUpdateDto)
         {
             if (reviewUpdateDto.Rating < 1 || reviewUpdateDto.Rating > 5)
