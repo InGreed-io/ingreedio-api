@@ -31,18 +31,9 @@ public class ProductRepository : IProductRepository
 
         var wanted = productQueryDto.ingredients;
         var unwanted = new List<int>();
-
-        if (productQueryDto.preferenceId.HasValue)
-        {
-            //Get preference 
-            var preferencePoco = _context.Preferences.Single(pref => pref.Id == productQueryDto.preferenceId);
-            var preference = _mapper.Map<Preference>(preferencePoco);
-
-            //Get wanted and unwanted
-            ICollection<int> wanted_from_preference = preference.Wanted.Select(i => i.Id).ToList();
-            wanted = wanted.Concat(wanted_from_preference).ToList();
-            unwanted = preference.Unwanted.Select(i => i.Id).ToList();
-        }
+        
+        if(productQueryDto.preferenceId.HasValue) 
+            UpdateWantedAndUnwantedFromPreference(productQueryDto.preferenceId,wanted, unwanted);
 
         // filter products that doesnt have any unwanted ingredient and has all wanted igredients
         queryable = queryable.Where(p => p.Ingredients.Any(i => unwanted.Contains(i.Id)) == false);
@@ -63,5 +54,18 @@ public class ProductRepository : IProductRepository
 
         var productsPoco = queryable.AsEnumerable();
         return _mapper.Map<List<Product>>(productsPoco);
+    }
+    
+    private void UpdateWantedAndUnwantedFromPreference(int? preferenceId,ICollection<int> wanted, ICollection<int> unwanted) 
+    {
+        //Get preference 
+        var preferencePoco = _context.Preferences.Single(pref => pref.Id == preferenceId);
+        var preference = _mapper.Map<Preference>(preferencePoco);
+
+        //Get wanted and unwanted
+        ICollection<int> wantedFromPreference = preference.Wanted.Select(i => i.Id).ToList();
+        wanted = wanted.Concat(wantedFromPreference).ToList();
+        unwanted = preference.Unwanted.Select(i => i.Id).ToList();
+    
     }
 }
