@@ -31,7 +31,7 @@ public class PreferenceRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _ingredients = 
+        _ingredients =
         [
             new IngredientPOCO { Id = 1, Name = "Ingredient 1", IconUrl = "Icon 1" },
             new IngredientPOCO { Id = 2, Name = "Ingredient 2", IconUrl = "Icon 2" }
@@ -41,7 +41,7 @@ public class PreferenceRepositoryTests
             new ApiUserPOCO { Id = "User1", Email = "User1@a.a" }
         ];
 
-        _preferences = 
+        _preferences =
         [
             new PreferencePOCO { Id = 1, Name = "Preference 1", IsActive = true, Wanted = _ingredients, UserId = "User1", User = _users[0] },
             new PreferencePOCO { Id = 2, Name = "Preference 2", IsActive = true, Wanted = new List<IngredientPOCO>(), UserId = "User1", User = _users[0] }

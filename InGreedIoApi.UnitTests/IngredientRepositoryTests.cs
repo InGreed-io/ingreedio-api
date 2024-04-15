@@ -28,7 +28,7 @@ public class IngredientRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _ingredients = 
+        _ingredients =
         [ 
             new IngredientPOCO { Id = 1, Name = "Ingredient 1", IconUrl = "Icon 1" },
             new IngredientPOCO { Id = 2, Name = "Ingredient 2", IconUrl = "Icon 2"  } 

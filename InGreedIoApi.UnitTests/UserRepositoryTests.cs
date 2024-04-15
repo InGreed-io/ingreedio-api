@@ -28,12 +28,12 @@ public class UserRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _preferences = 
+        _preferences =
         [
             new PreferencePOCO { Id = 1, Name = "Preference 1", UserId = "User1" }
         ];
 
-        _users = 
+        _users =
         [
             new ApiUserPOCO { Id = "User1", Email = "User1@a.a", IsBlocked = false, Preferences = _preferences },
             new ApiUserPOCO { Id = "User2", Email = "User2@a.a", IsBlocked = false }

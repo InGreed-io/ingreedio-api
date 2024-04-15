@@ -25,11 +25,12 @@ public class AuthenticationService : IAuthenticationService
     public async Task<AuthResult> Register(UserRegistrationRequest registrationRequest)
     {
         var userExist = await _userManager.FindByEmailAsync(registrationRequest.Email);
-        if (userExist != null) return new AuthResult
-        {
-            Result = false,
-            Errors = [ "Email already exist" ]
-        };
+        if (userExist != null) 
+            return new AuthResult
+            {
+                Result = false,
+                Errors = [ "Email already exist" ]
+            };
 
         var newUser = new ApiUser
         {
@@ -40,11 +41,12 @@ public class AuthenticationService : IAuthenticationService
 
         var isCreated = await _userManager.CreateAsync(newUser, registrationRequest.Password);
 
-        if (!isCreated.Succeeded) return new AuthResult
-        {
-            Errors = [ "Server error" ],
-            Result = false
-        };
+        if (!isCreated.Succeeded) 
+            return new AuthResult
+            {
+                Errors = [ "Server error" ],
+                Result = false
+            };
 
         var token = GenerateJwtToken(newUser);
         return new AuthResult
