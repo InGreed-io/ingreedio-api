@@ -4,6 +4,7 @@ using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Data.Repository.Interface;
+using InGreedIoApi.Model.Enum;
 
 
 namespace InGreedIoApi.Data.Repository;
@@ -22,13 +23,11 @@ public class ProductRepository : IProductRepository
     public async Task<IEnumerable<Product>> GetAll(ProductQueryDTO productQueryDto)
     {
         var queryable = _context.Products.AsQueryable();
-
         queryable = queryable.Where(p => p.Name.Contains(productQueryDto.query));
+        
         if (productQueryDto.categoryId.HasValue)
-        {
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
-        }
-
+        
         var wanted = productQueryDto.ingredients;
         var unwanted = new List<int>();
         
@@ -42,10 +41,10 @@ public class ProductRepository : IProductRepository
         //sort elements by enum
         queryable = productQueryDto.SortBy switch
         {
-            ProductQuerySortBy.Featured => queryable.OrderBy(p => p.Featuring != null),
-            ProductQuerySortBy.Rating => queryable.OrderBy(p => p.Reviews.Sum(r => r.Rating)),
-            ProductQuerySortBy.RatingCount => queryable.OrderBy(p => p.Reviews.Count),
-            ProductQuerySortBy.BestMatch => queryable,
+            QuerySortType.Featured => queryable.OrderBy(p => p.Featuring != null),
+            QuerySortType.Rating => queryable.OrderBy(p => p.Reviews.Sum(r => r.Rating)),
+            QuerySortType.RatingCount => queryable.OrderBy(p => p.Reviews.Count),
+            QuerySortType.BestMatch => queryable,
             _ => throw new ArgumentOutOfRangeException()
         };
 
