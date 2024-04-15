@@ -1,9 +1,9 @@
 using AutoMapper;
-using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data;
+using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.Data.Repository;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
-using InGreedIoApi.Data.Mapper;
 
 namespace UnitTests;
 
@@ -28,16 +28,16 @@ public class UserRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _preferences = new List<PreferencePOCO>
-        {
+        _preferences =
+        [
             new PreferencePOCO { Id = 1, Name = "Preference 1", UserId = "User1" }
-        };
+        ];
 
-        _users = new List<ApiUserPOCO>
-        {
+        _users =
+        [
             new ApiUserPOCO { Id = "User1", Email = "User1@a.a", IsBlocked = false, Preferences = _preferences },
             new ApiUserPOCO { Id = "User2", Email = "User2@a.a", IsBlocked = false }
-        };
+        ];
 
         _mockContext.ApiUsers.AddRange(_users);
         _mockContext.Preferences.AddRange(_preferences);

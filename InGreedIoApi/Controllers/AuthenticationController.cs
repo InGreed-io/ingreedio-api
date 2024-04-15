@@ -20,17 +20,16 @@ public class AuthenticationController : ControllerBase
     [Route("Register")]
     public async Task<IActionResult> Register([FromBody] UserRegistrationRequest requestDto)
     {
-        if (!ModelState.IsValid) return BadRequest(new AuthResult()
-        {
-            Errors = new List<string>()
+        if (!ModelState.IsValid)
+            return BadRequest(new AuthResult
             {
-                "Invalid payload",
-            },
-            Result = false
-        });
+                Errors = ["Invalid payload"],
+                Result = false
+            });
 
         var result = await _authenticationService.Register(requestDto);
-        if (result.Result == false) return BadRequest(result);
+        if (result.Result == false)
+            return BadRequest(result);
 
         return Ok(result);
     }
@@ -39,14 +38,12 @@ public class AuthenticationController : ControllerBase
     [Route("Login")]
     public async Task<IActionResult> Login([FromBody] UserLoginRequest loginRequest)
     {
-        if (!ModelState.IsValid) return BadRequest(new AuthResult()
-        {
-            Errors = new List<string>()
+        if (!ModelState.IsValid)
+            return BadRequest(new AuthResult
             {
-                "Invalid payload"
-            },
-            Result = false
-        });
+                Errors = ["Invalid payload"],
+                Result = false
+            });
 
         var loginResult = await _authenticationService.Login(loginRequest);
         if (loginResult.Result == false) return BadRequest(loginResult);

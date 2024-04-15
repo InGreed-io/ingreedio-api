@@ -1,6 +1,4 @@
-﻿using InGreedIoApi.DTO;
-using InGreedIoApi.Model;
-using InGreedIoApi.POCO;
+﻿using InGreedIoApi.Model;
 
 namespace InGreedIoApi.Data.Repository.Interface
 {

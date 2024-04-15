@@ -1,9 +1,9 @@
 using AutoMapper;
-using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data;
+using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.Data.Repository;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
-using InGreedIoApi.Data.Mapper;
 
 namespace UnitTests;
 
@@ -27,11 +27,11 @@ public class CategoryRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _categories = new List<CategoryPOCO>
-        {
+        _categories =
+            [
             new CategoryPOCO { Id = 1, Name = "Category 1" },
             new CategoryPOCO { Id = 2, Name = "Category 2" }
-        };
+            ];
 
         _mockContext.Category.AddRange(_categories);
         _mockContext.SaveChanges();

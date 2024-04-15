@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using InGreedIoApi.Data.Mapper;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +11,7 @@ namespace InGreedIoApi.Controllers
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
+
         public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;

@@ -1,11 +1,10 @@
 using AutoMapper;
-using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data;
+using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.Data.Repository;
+using InGreedIoApi.DTO;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
-using InGreedIoApi.Data.Mapper;
-using InGreedIoApi.DTO;
-using System.Numerics;
 
 namespace UnitTests;
 
@@ -31,21 +30,21 @@ public class PreferenceRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _ingredients = new List<IngredientPOCO>
-        {
+        _ingredients =
+        [
             new IngredientPOCO { Id = 1, Name = "Ingredient 1", IconUrl = "Icon 1" },
             new IngredientPOCO { Id = 2, Name = "Ingredient 2", IconUrl = "Icon 2" }
-        };
-        _users = new List<ApiUserPOCO>
-        {
+        ];
+        _users =
+        [
             new ApiUserPOCO { Id = "User1", Email = "User1@a.a" }
-        };
+        ];
 
-        _preferences = new List<PreferencePOCO>
-        {
+        _preferences =
+        [
             new PreferencePOCO { Id = 1, Name = "Preference 1", IsActive = true, Wanted = _ingredients, UserId = "User1", User = _users[0] },
             new PreferencePOCO { Id = 2, Name = "Preference 2", IsActive = true, Wanted = new List<IngredientPOCO>(), UserId = "User1", User = _users[0] }
-        };
+        ];
 
         _mockContext.Preferences.AddRange(_preferences);
         _mockContext.Ingredients.AddRange(_ingredients);

@@ -1,10 +1,9 @@
-
 using AutoMapper;
-using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data;
+using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.Data.Repository;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
-using InGreedIoApi.Data.Mapper;
 
 namespace UnitTests;
 
@@ -28,11 +27,11 @@ public class IngredientRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _ingredients = new List<IngredientPOCO>
-        {
+        _ingredients =
+        [
             new IngredientPOCO { Id = 1, Name = "Ingredient 1", IconUrl = "Icon 1" },
-            new IngredientPOCO { Id = 2, Name = "Ingredient 2", IconUrl = "Icon 2"  }
-        };
+            new IngredientPOCO { Id = 2, Name = "Ingredient 2", IconUrl = "Icon 2" }
+        ];
 
         _mockContext.Ingredients.AddRange(_ingredients);
         _mockContext.SaveChanges();

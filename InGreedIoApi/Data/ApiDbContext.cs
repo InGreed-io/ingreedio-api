@@ -1,8 +1,7 @@
+using InGreedIoApi.Data.Configuration;
+using InGreedIoApi.POCO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using InGreedIoApi.Model;
-using InGreedIoApi.POCO;
-using InGreedIoApi.Data.Configuration;
 
 namespace InGreedIoApi.Data;
 

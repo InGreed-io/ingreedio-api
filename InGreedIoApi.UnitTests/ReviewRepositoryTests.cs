@@ -1,14 +1,13 @@
 using AutoMapper;
-using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data;
+using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.Data.Repository;
+using InGreedIoApi.DTO;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
-using Moq;
-using InGreedIoApi.Data.Mapper;
-using InGreedIoApi.DTO;
-using System.ComponentModel;
 
 namespace UnitTests;
+
 public class ReviewRepositoryTests
 {
     private readonly ApiDbContext _mockContext;
@@ -29,11 +28,11 @@ public class ReviewRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _reviews = new List<ReviewPOCO>
-        {
+        _reviews =
+        [
             new ReviewPOCO { Id = 1, Text = "Review 1", UserID = "User1", Rating = 5 },
             new ReviewPOCO { Id = 2, Text = "Review 2", UserID = "User2", Rating = 4 }
-        };
+        ];
 
         _mockContext.Reviews.AddRange(_reviews);
         _mockContext.SaveChanges();
