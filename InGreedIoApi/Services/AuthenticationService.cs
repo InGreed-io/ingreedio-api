@@ -1,13 +1,12 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using InGreedIoApi.Configurations;
 using InGreedIoApi.Model;
 using InGreedIoApi.Model.Requests;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
-
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace InGreedIoApi.Services;
 
@@ -25,11 +24,11 @@ public class AuthenticationService : IAuthenticationService
     public async Task<AuthResult> Register(UserRegistrationRequest registrationRequest)
     {
         var userExist = await _userManager.FindByEmailAsync(registrationRequest.Email);
-        if (userExist != null) 
+        if (userExist != null)
             return new AuthResult
             {
                 Result = false,
-                Errors = [ "Email already exist" ]
+                Errors = ["Email already exist"]
             };
 
         var newUser = new ApiUser
@@ -41,10 +40,10 @@ public class AuthenticationService : IAuthenticationService
 
         var isCreated = await _userManager.CreateAsync(newUser, registrationRequest.Password);
 
-        if (!isCreated.Succeeded) 
+        if (!isCreated.Succeeded)
             return new AuthResult
             {
-                Errors = [ "Server error" ],
+                Errors = ["Server error"],
                 Result = false
             };
 
@@ -64,7 +63,7 @@ public class AuthenticationService : IAuthenticationService
         {
             return new AuthResult
             {
-                Errors = [ "There is no user with this email" ],
+                Errors = ["There is no user with this email"],
                 Result = false
             };
         }
@@ -75,7 +74,7 @@ public class AuthenticationService : IAuthenticationService
         {
             return new AuthResult
             {
-                Errors = [ "Password and email dont match" ],
+                Errors = ["Password and email dont match"],
                 Result = false
             };
         }
@@ -97,11 +96,11 @@ public class AuthenticationService : IAuthenticationService
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
             Subject = new ClaimsIdentity([
-                new Claim("Id",user.Id),
+                new Claim("Id", user.Id),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat,DateTime.Now.ToUniversalTime().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToUniversalTime().ToString())
             ]),
 
             Expires = DateTime.Now.AddMonths(1),
@@ -111,5 +110,4 @@ public class AuthenticationService : IAuthenticationService
         var token = jwtTokenHandler.CreateToken(tokenDescriptor);
         return jwtTokenHandler.WriteToken(token);
     }
-
 }

@@ -1,5 +1,4 @@
-﻿using InGreedIoApi.Model;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace InGreedIoApi.POCO
 {

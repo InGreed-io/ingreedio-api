@@ -1,17 +1,17 @@
-using System.Text;
 using InGreedIoApi.Configurations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using InGreedIoApi.Data;
-using InGreedIoApi.Model;
-using InGreedIoApi.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using InGreedIoApi.Data.Configuration;
-using InGreedIoApi.POCO;
-using Serilog;
 using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data.Repository.Interface;
+using InGreedIoApi.Model;
+using InGreedIoApi.POCO;
+using InGreedIoApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,14 +1,13 @@
 using AutoMapper;
-using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data;
+using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.Data.Repository;
+using InGreedIoApi.DTO;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
-using Moq;
-using InGreedIoApi.Data.Mapper;
-using InGreedIoApi.DTO;
-using System.ComponentModel;
 
 namespace UnitTests;
+
 public class ReviewRepositoryTests
 {
     private readonly ApiDbContext _mockContext;
