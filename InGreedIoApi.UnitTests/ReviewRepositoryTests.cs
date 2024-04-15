@@ -29,11 +29,11 @@ public class ReviewRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _reviews = new List<ReviewPOCO>
-        {
+        _reviews =
+        [
             new ReviewPOCO { Id = 1, Text = "Review 1", UserID = "User1", Rating = 5 },
             new ReviewPOCO { Id = 2, Text = "Review 2", UserID = "User2", Rating = 4 }
-        };
+        ];
 
         _mockContext.Reviews.AddRange(_reviews);
         _mockContext.SaveChanges();

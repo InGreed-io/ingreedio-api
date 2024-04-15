@@ -25,16 +25,13 @@ public class AuthenticationService : IAuthenticationService
     public async Task<AuthResult> Register(UserRegistrationRequest registrationRequest)
     {
         var userExist = await _userManager.FindByEmailAsync(registrationRequest.Email);
-        if (userExist != null) return new AuthResult()
+        if (userExist != null) return new AuthResult
         {
             Result = false,
-            Errors = new List<string>()
-            {
-                "Email already exist"
-            }
+            Errors = [ "Email already exist" ]
         };
 
-        var newUser = new ApiUser()
+        var newUser = new ApiUser
         {
             Email = registrationRequest.Email,
             UserName = registrationRequest.Email,
@@ -43,17 +40,14 @@ public class AuthenticationService : IAuthenticationService
 
         var isCreated = await _userManager.CreateAsync(newUser, registrationRequest.Password);
 
-        if (!isCreated.Succeeded) return new AuthResult()
+        if (!isCreated.Succeeded) return new AuthResult
         {
-            Errors = new List<string>()
-            {
-                "Server error"
-            },
+            Errors = [ "Server error" ],
             Result = false
         };
 
         var token = GenerateJwtToken(newUser);
-        return new AuthResult()
+        return new AuthResult
         {
             Result = true,
             Token = token
@@ -66,12 +60,9 @@ public class AuthenticationService : IAuthenticationService
 
         if (existingUser == null)
         {
-            return new AuthResult()
+            return new AuthResult
             {
-                Errors = new List<string>()
-                {
-                    "there is no user with this email"
-                },
+                Errors = [ "There is no user with this email" ],
                 Result = false
             };
         }
@@ -80,19 +71,16 @@ public class AuthenticationService : IAuthenticationService
 
         if (!isCorrect)
         {
-            return new AuthResult()
+            return new AuthResult
             {
-                Errors = new List<string>()
-                {
-                    "password and email dont match"
-                },
+                Errors = [ "Password and email dont match" ],
                 Result = false
             };
         }
 
         var jwtToken = GenerateJwtToken(existingUser);
 
-        return new AuthResult()
+        return new AuthResult
         {
             Token = jwtToken,
             Result = true
@@ -106,14 +94,13 @@ public class AuthenticationService : IAuthenticationService
 
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
-            Subject = new ClaimsIdentity(new[]
-            {
+            Subject = new ClaimsIdentity([
                 new Claim("Id",user.Id),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat,DateTime.Now.ToUniversalTime().ToString())
-            }),
+            ]),
 
             Expires = DateTime.Now.AddMonths(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
