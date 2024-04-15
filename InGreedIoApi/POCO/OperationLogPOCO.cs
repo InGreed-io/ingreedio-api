@@ -1,6 +1,4 @@
-﻿using InGreedIoApi.Model;
-
-namespace InGreedIoApi.POCO
+﻿namespace InGreedIoApi.POCO
 {
     public class OperationLogPOCO
     {

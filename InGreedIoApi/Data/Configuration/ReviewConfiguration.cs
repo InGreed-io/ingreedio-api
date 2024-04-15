@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
-using InGreedIoApi.POCO;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace InGreedIoApi.Data.Configuration
 {

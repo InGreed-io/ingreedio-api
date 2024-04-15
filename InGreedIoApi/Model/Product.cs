@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace InGreedIoApi.Model
+﻿namespace InGreedIoApi.Model
 {
     public class Product
     {

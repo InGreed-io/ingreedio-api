@@ -1,6 +1,4 @@
-﻿using InGreedIoApi.POCO;
-
-namespace InGreedIoApi.Model
+﻿namespace InGreedIoApi.Model
 {
     public class Preference
     {

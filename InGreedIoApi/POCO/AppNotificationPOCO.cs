@@ -1,5 +1,4 @@
 ﻿using InGreedIoApi.Model.Enum;
-using InGreedIoApi.Model;
 
 namespace InGreedIoApi.POCO
 {

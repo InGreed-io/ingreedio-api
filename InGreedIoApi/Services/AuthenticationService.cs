@@ -1,13 +1,12 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using InGreedIoApi.Configurations;
 using InGreedIoApi.Model;
 using InGreedIoApi.Model.Requests;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
-
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace InGreedIoApi.Services;
 
@@ -122,5 +121,4 @@ public class AuthenticationService : IAuthenticationService
         var token = jwtTokenHandler.CreateToken(tokenDescriptor);
         return jwtTokenHandler.WriteToken(token);
     }
-
 }

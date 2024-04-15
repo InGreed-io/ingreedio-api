@@ -1,9 +1,9 @@
 using AutoMapper;
-using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data;
+using InGreedIoApi.Data.Mapper;
+using InGreedIoApi.Data.Repository;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
-using InGreedIoApi.Data.Mapper;
 
 namespace UnitTests;
 
