@@ -30,7 +30,8 @@ public class AuthenticationController : ControllerBase
         });
 
         var result = await _authenticationService.Register(requestDto);
-        if (result.Result == false) return BadRequest(result);
+        if (!result.Result)
+            return BadRequest(result);
 
         return Ok(result);
     }
@@ -49,7 +50,8 @@ public class AuthenticationController : ControllerBase
         });
 
         var loginResult = await _authenticationService.Login(loginRequest);
-        if (loginResult.Result == false) return BadRequest(loginResult);
+        if (!loginResult.Result)
+            return BadRequest(loginResult);
 
         return Ok(loginResult);
     }
