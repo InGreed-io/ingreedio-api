@@ -2,6 +2,7 @@ using InGreedIoApi.Model;
 using InGreedIoApi.Model.Requests;
 using InGreedIoApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace InGreedIoApi.Controllers;
 
@@ -28,7 +29,7 @@ public class AuthenticationController : ControllerBase
             });
 
         var result = await _authenticationService.Register(requestDto);
-        if (result.Result == false)
+        if (result.Result)
             return BadRequest(result);
 
         return Ok(result);
