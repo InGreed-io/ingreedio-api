@@ -75,7 +75,7 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddIdentity<ApiUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApiUserPOCO, IdentityRole>(options =>
     {
     }).AddEntityFrameworkStores<ApiDbContext>()
     .AddDefaultTokenProviders();
