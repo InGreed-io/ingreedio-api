@@ -18,6 +18,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddCors(options => 
+{
+    options.AddDefaultPolicy(policyBuilder => 
+    {
+        var frontendAppUrl = builder.Configuration
+            .GetValue<string>("FrontendAppUrl");
+
+        if (string.IsNullOrEmpty(frontendAppUrl)) return;
+
+        policyBuilder.WithOrigins(frontendAppUrl)
+            .AllowCredentials()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddControllers();
 
 Log.Logger = new LoggerConfiguration()
@@ -107,6 +123,8 @@ using (var scope = app.Services.CreateScope())
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
