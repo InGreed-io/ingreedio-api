@@ -2,6 +2,7 @@
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace InGreedIoApi.Controllers
 {
@@ -19,8 +20,13 @@ namespace InGreedIoApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetIngredients([FromBody] GetIngredientsQuery query)
+        public async Task<IActionResult> GetIngredients([FromQuery] GetIngredientsQuery query)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var ingredients = await _ingredientRepository.FindAll(query.Query, query.Page, query.Limit);
             return Ok(_mapper.Map<List<IngredientDTO>>(ingredients));
         }
