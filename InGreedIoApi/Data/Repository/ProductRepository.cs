@@ -1,11 +1,10 @@
 using AutoMapper;
-using InGreedIoApi.Data;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
+using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
-
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -66,5 +65,35 @@ public class ProductRepository : IProductRepository
         wanted = wanted.Concat(wantedFromPreference).ToList();
         unwanted = preference.Unwanted.Select(i => i.Id).ToList();
 
+    }
+
+    public async Task<IEnumerable<Review>> GetReviews(int productId, int page, int limit) 
+    {
+        var reviewsPoco = await _context.Reviews
+            .Where(review => review.ProductId == productId)
+            .OrderByDescending(review => review.Rating)
+            .ThenBy(review => review.ReportsCount)
+            .Skip(page * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        return _mapper.Map<List<Review>>(reviewsPoco);
+    }
+
+    public async Task<Review> AddReview(int productId, string userId, string content, float rating)
+    {
+        var newReviewPoco = new ReviewPOCO 
+        {
+            Text = content, 
+            Rating = rating,
+            ReportsCount = 0, 
+            ProductId = productId, 
+            UserID = userId
+        };
+
+        await _context.Reviews.AddAsync(newReviewPoco);
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<Review>(newReviewPoco);
     }
 }

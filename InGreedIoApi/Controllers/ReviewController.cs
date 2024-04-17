@@ -19,6 +19,11 @@ namespace InGreedIoApi.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("{reviewId}")]
+        public Task<ActionResult<ReviewDTO>> GetSingle(int reviewId) {
+            throw new NotImplementedException();
+        }
+
         [Authorize(Roles = "Moderator")]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] string userId)
