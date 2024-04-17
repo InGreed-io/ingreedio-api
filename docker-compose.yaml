@@ -9,6 +9,7 @@ services:
       - ConnectionStrings__DefaultConnection=User ID=postgres;Password=postgres;Server=db;Port=5432;Database=ingreedio-db;Pooling=true;
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_ENVIRONMENT=Production
+      - FrontendAppUrl=http://localhost:8081
     volumes:
           - ./AppLogs:/app/logs
 

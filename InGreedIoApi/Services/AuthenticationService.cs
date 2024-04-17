@@ -1,6 +1,7 @@
 using InGreedIoApi.Configurations;
 using InGreedIoApi.Model;
 using InGreedIoApi.Model.Requests;
+using InGreedIoApi.POCO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -12,10 +13,10 @@ namespace InGreedIoApi.Services;
 
 public class AuthenticationService : IAuthenticationService
 {
-    private readonly UserManager<ApiUser> _userManager;
+    private readonly UserManager<ApiUserPOCO> _userManager;
     private readonly JwtConfig _jwtConfig;
 
-    public AuthenticationService(UserManager<ApiUser> userManager, IOptions<JwtConfig> jwtConfig)
+    public AuthenticationService(UserManager<ApiUserPOCO> userManager, IOptions<JwtConfig> jwtConfig)
     {
         _userManager = userManager;
         _jwtConfig = jwtConfig.Value;
@@ -31,7 +32,7 @@ public class AuthenticationService : IAuthenticationService
                 Errors = ["Email already exist"]
             };
 
-        var newUser = new ApiUser
+        var newUser = new ApiUserPOCO
         {
             Email = registrationRequest.Email,
             UserName = registrationRequest.Email,
