@@ -2,7 +2,6 @@
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using Microsoft.AspNetCore.Mvc;
-using Serilog;
 
 namespace InGreedIoApi.Controllers
 {
