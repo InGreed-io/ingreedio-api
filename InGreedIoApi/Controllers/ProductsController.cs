@@ -26,4 +26,14 @@ public class ProductsController : ControllerBase
         var products = await _productRepository.GetAll(productQueryDto);
         return Ok(products);
     }
+
+    [HttpGet("{productId}/reviews")]
+    public async Task<IActionResult> GetProductReviews(int productId, int page = 0, int limit = 10) {
+        return Ok("Product reviews");
+    }
+
+    [HttpPost("{productId}/reviews")]
+    public async Task<IActionResult> AddProductReview([FromBody] ReviewUpdateDTO reviewDto) {
+        return Ok("Product review added.");
+    }
 }
