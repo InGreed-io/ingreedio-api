@@ -3,6 +3,7 @@ using InGreedIoApi.Data;
 using InGreedIoApi.Data.Configuration;
 using InGreedIoApi.Data.Repository;
 using InGreedIoApi.Data.Repository.Interface;
+using InGreedIoApi.Data.Seed;
 using InGreedIoApi.Model;
 using InGreedIoApi.POCO;
 using InGreedIoApi.Services;
@@ -18,9 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var conn = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddCors(options => 
+builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policyBuilder => 
+    options.AddDefaultPolicy(policyBuilder =>
     {
         var frontendAppUrl = builder.Configuration
             .GetValue<string>("FrontendAppUrl");
@@ -49,6 +50,9 @@ builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
 builder.Services.AddTransient<IPreferenceRepository, PreferenceRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<ISeeder<CategoryPOCO>, CategorySeeder>();
+builder.Services.AddSingleton<ISeeder<ProductPOCO>, ProductSeeder>();
+builder.Services.AddScoped<IUserSeeder, ApiUserSeeder>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
@@ -118,6 +122,8 @@ using (var scope = app.Services.CreateScope())
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
     }
+    var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();
+    seeder.SeedAsync().Wait();
 }
 
 // Configure the HTTP request pipeline.

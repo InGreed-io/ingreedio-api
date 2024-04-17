@@ -1,4 +1,5 @@
-﻿using InGreedIoApi.POCO;
+﻿using InGreedIoApi.Data.Seed;
+using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,7 +34,8 @@ namespace InGreedIoApi.Data.Configuration
 
             builder.HasOne(p => p.Producer)
                    .WithMany(r => r.ProduceProducts)
-                   .HasForeignKey(p => p.ProducerId);
+                   .HasForeignKey(p => p.ProducerId)
+                   .IsRequired(false);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using InGreedIoApi.POCO;
+﻿using InGreedIoApi.Data.Seed;
+using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,7 +13,7 @@ namespace InGreedIoApi.Data.Configuration
             builder.Property(c => c.Name).IsRequired().HasMaxLength(100);
 
             builder.HasMany(p => p.Products)
-                .WithOne(r => r.Category);
+            .WithOne(r => r.Category);
         }
     }
 }

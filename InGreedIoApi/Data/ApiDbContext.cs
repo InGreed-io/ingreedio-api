@@ -1,4 +1,5 @@
 using InGreedIoApi.Data.Configuration;
+using InGreedIoApi.Data.Seed;
 using InGreedIoApi.POCO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,21 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         modelBuilder.ApplyConfiguration(_operationTypeConfiguration);
         modelBuilder.ApplyConfiguration(_appNotificationConfiguration);
         modelBuilder.ApplyConfiguration(_preferenceConfiguration);
+        // Seed data
+        SeedCategory(modelBuilder);
+        SeedProducts(modelBuilder);
+    }
+
+    private void SeedCategory(ModelBuilder modelBuilder)
+    {
+        var products = new CategorySeeder().Seed;
+        modelBuilder.Entity<CategoryPOCO>().HasData(products);
+    }
+
+    private void SeedProducts(ModelBuilder modelBuilder)
+    {
+        var products = new ProductSeeder().Seed;
+        modelBuilder.Entity<ProductPOCO>().HasData(products);
     }
 
     public virtual DbSet<ProductPOCO> Products { get; set; }
