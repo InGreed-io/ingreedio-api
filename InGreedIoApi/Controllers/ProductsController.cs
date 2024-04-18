@@ -21,7 +21,7 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
     {
-        if (ModelState.IsValid) return BadRequest("Invalid ModelState");
+        if (!ModelState.IsValid) return BadRequest("Invalid ModelState");
 
         var products = await _productRepository.GetAll(productQueryDto);
         return Ok(products);

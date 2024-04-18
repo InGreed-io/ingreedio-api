@@ -17,7 +17,7 @@ namespace InGreedIoApi.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -162,6 +162,23 @@ namespace InGreedIoApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Food"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Cosmetics"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Drink"
+                        });
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.CompanyInfoPOCO", b =>
@@ -355,7 +372,6 @@ namespace InGreedIoApi.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("ProducerId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -365,6 +381,32 @@ namespace InGreedIoApi.Migrations
                     b.HasIndex("ProducerId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Description = "Low-fat milk straight from the cow.",
+                            IconUrl = "",
+                            Name = "Cow Milk"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            Description = "Dairy-free, unsweetened almond milk made from real almonds.",
+                            IconUrl = "",
+                            Name = "Almond Milk"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Description = "Dairy-free, unsweetened oat milk made from oat.",
+                            IconUrl = "",
+                            Name = "Oat Milk"
+                        });
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.ReviewPOCO", b =>
@@ -606,17 +648,6 @@ namespace InGreedIoApi.Migrations
                         .HasForeignKey("PreferencePOCOId1");
                 });
 
-            modelBuilder.Entity("InGreedIoApi.POCO.PreferencePOCO", b =>
-                {
-                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "User")
-                        .WithMany("Preferences")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("InGreedIoApi.POCO.OperationLogPOCO", b =>
                 {
                     b.HasOne("InGreedIoApi.POCO.OperationTypePOCO", "OperationType")
@@ -636,6 +667,17 @@ namespace InGreedIoApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("InGreedIoApi.POCO.PreferencePOCO", b =>
+                {
+                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "User")
+                        .WithMany("Preferences")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("InGreedIoApi.POCO.ProductPOCO", b =>
                 {
                     b.HasOne("InGreedIoApi.POCO.CategoryPOCO", "Category")
@@ -646,9 +688,7 @@ namespace InGreedIoApi.Migrations
 
                     b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "Producer")
                         .WithMany("ProduceProducts")
-                        .HasForeignKey("ProducerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProducerId");
 
                     b.Navigation("Category");
 
