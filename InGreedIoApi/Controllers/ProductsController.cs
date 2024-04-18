@@ -40,8 +40,10 @@ public class ProductsController : ControllerBase
     [HttpPost("{productId}/reviews")]
     public async Task<IActionResult> AddProductReview(int productId, [FromBody] ReviewUpdateDTO reviewDto) {
         var authenticatedUser = await _userManager.GetUserAsync(User);
-        if (authenticatedUser == null) 
-            return Unauthorized();
+        if (authenticatedUser == null) return Unauthorized();
+
+        if (reviewDto.Rating < 1 || reviewDto.Rating > 5)
+            return BadRequest("The rating should be from [1;5]");
 
         var newReview = await _productRepository.AddReview(
             productId, authenticatedUser.Id, reviewDto.Content, reviewDto.Rating
