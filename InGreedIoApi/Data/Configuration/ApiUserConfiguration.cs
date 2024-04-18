@@ -1,4 +1,5 @@
-﻿using InGreedIoApi.POCO;
+﻿using InGreedIoApi.Data.Seed;
+using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

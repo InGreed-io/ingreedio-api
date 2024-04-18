@@ -9,11 +9,11 @@
         public int? FeaturingId { get; set; }
         public int CategoryId { get; set; }
         public CategoryPOCO Category { get; set; }
-        public ICollection<IngredientPOCO> Ingredients { get; set; }
-        public ICollection<ReviewPOCO> Reviews { get; set; }
+        public ICollection<IngredientPOCO>? Ingredients { get; set; }
+        public ICollection<ReviewPOCO>? Reviews { get; set; }
         public FeaturingPOCO? Featuring { get; set; }
-        public string ProducerId { get; set; }
-        public ApiUserPOCO Producer { get; set; }
-        public ICollection<ApiUserPOCO> FavouriteBy { get; set; }
+        public string? ProducerId { get; set; }
+        public ApiUserPOCO? Producer { get; set; }
+        public ICollection<ApiUserPOCO>? FavouriteBy { get; set; }
     }
 }
