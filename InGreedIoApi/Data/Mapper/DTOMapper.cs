@@ -9,7 +9,13 @@ namespace InGreedIoApi.Data.Mapper
         public DTOMapper()
         {
             // From models to DTO
-            CreateMap<Review, ReviewDTO>();
+            CreateMap<Review, ReviewDTO>().ConstructUsing(src => new ReviewDTO(
+                src.Id, 
+                src.User.UserName ?? "???", 
+                src.Text, 
+                src.Rating, 
+                src.UserID
+            ));
             CreateMap<Ingredient, IngredientDTO>();
             CreateMap<Category, CategoryDTO>();
             CreateMap<ApiUser, ApiUserDTO>()

@@ -72,6 +72,7 @@ public class ProductRepository : IProductRepository
     public async Task<IEnumerable<Review>> GetReviews(int productId, int page, int limit) 
     {
         var reviewsPoco = await _context.Reviews
+            .Include(review => review.User)
             .Where(review => review.ProductId == productId)
             .OrderByDescending(review => review.Rating)
             .ThenBy(review => review.ReportsCount)
@@ -95,6 +96,8 @@ public class ProductRepository : IProductRepository
 
         await _context.Reviews.AddAsync(newReviewPoco);
         await _context.SaveChangesAsync();
+
+        await _context.Entry(newReviewPoco).Reference(review => review.User).LoadAsync();
 
         return _mapper.Map<Review>(newReviewPoco);
     }

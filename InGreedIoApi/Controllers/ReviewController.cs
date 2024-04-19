@@ -20,8 +20,8 @@ namespace InGreedIoApi.Controllers
         }
 
         [HttpGet("{reviewId}")]
-        public Task<ActionResult<ReviewDTO>> GetSingle(int reviewId) {
-            throw new NotImplementedException();
+        public ActionResult<ReviewDTO> GetSingle(int reviewId) {
+            return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
 
         [Authorize(Roles = "Moderator")]

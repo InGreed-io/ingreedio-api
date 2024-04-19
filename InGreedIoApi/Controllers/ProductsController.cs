@@ -4,6 +4,8 @@ using InGreedIoApi.POCO;
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace InGreedIoApi.Controllers;
 
@@ -37,20 +39,21 @@ public class ProductsController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<ReviewDTO>>(reviews));
     }
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost("{productId}/reviews")]
     public async Task<IActionResult> AddProductReview(int productId, [FromBody] ReviewUpdateDTO reviewDto) {
-        var authenticatedUser = await _userManager.GetUserAsync(User);
-        if (authenticatedUser == null) return Unauthorized();
+        var userId = User.FindFirst("Id")?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
         if (reviewDto.Rating < 1 || reviewDto.Rating > 5)
             return BadRequest("The rating should be from [1;5]");
 
         var newReview = await _productRepository.AddReview(
-            productId, authenticatedUser.Id, reviewDto.Content, reviewDto.Rating
+            productId, userId, reviewDto.Content, reviewDto.Rating
         );
         return CreatedAtAction(
-            nameof(ReviewController), 
-            nameof(ReviewController.GetSingle), 
+            "GetSingle", 
+            "Review", 
             new { reviewId = newReview.Id }, 
             _mapper.Map<ReviewDTO>(newReview)
         );
