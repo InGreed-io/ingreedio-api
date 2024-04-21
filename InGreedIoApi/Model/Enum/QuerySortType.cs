@@ -5,5 +5,6 @@ public enum QuerySortType
     Featured,
     Rating,
     RatingCount,
-    BestMatch
+    BestMatch,
+    Names
 }

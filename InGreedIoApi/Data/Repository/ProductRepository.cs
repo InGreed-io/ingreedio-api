@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
+using System.Linq;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -28,46 +29,16 @@ public class ProductRepository : IProductRepository
         if (productQueryDto.categoryId.HasValue)
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
 
-        var wanted = productQueryDto.ingredients;
-        var unwanted = new List<int>();
-
-        if (productQueryDto.preferenceId.HasValue)
-            UpdateWantedAndUnwantedFromPreference(productQueryDto.preferenceId, wanted, unwanted);
-
-        if (productQueryDto.ingredients != null)
-        {
-            // filter products that doesnt have any unwanted ingredient and has all wanted igredients
-            queryable = queryable.Where(p => p.Ingredients.Any(i => unwanted.Contains(i.Id)) == false);
-            queryable = queryable.Where(p => p.Ingredients.All(i => wanted.Contains(i.Id)) == true);
-        }
+        UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
 
         //sort elements by enum
-        queryable = productQueryDto.SortBy switch
-        {
-            QuerySortType.Featured => queryable.OrderBy(p => p.Featuring != null),
-            QuerySortType.Rating => queryable.OrderBy(p => p.Reviews.Sum(r => r.Rating)),
-            QuerySortType.RatingCount => queryable.OrderBy(p => p.Reviews.Count),
-            QuerySortType.BestMatch => queryable,
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        SortProductQueryDto(productQueryDto, ref queryable);
 
         var productsPoco = queryable.AsEnumerable();
         var products = _mapper.Map<List<Product>>(productsPoco);
         var productsDTO = _mapper.Map<List<ProductDTO>>(products);
 
         return productsDTO;
-    }
-
-    private void UpdateWantedAndUnwantedFromPreference(int? preferenceId, ICollection<int> wanted, ICollection<int> unwanted)
-    {
-        //Get preference
-        var preferencePoco = _context.Preferences.Single(pref => pref.Id == preferenceId);
-        var preference = _mapper.Map<Preference>(preferencePoco);
-
-        //Get wanted and unwanted
-        ICollection<int> wantedFromPreference = preference.Wanted.Select(i => i.Id).ToList();
-        wanted = wanted.Concat(wantedFromPreference).ToList();
-        unwanted = preference.Unwanted.Select(i => i.Id).ToList();
     }
 
     public async Task<IEnumerable<Review>> GetReviews(int productId, int page, int limit)
@@ -117,5 +88,43 @@ public class ProductRepository : IProductRepository
         await _context.Entry(newReviewPoco).Reference(review => review.User).LoadAsync();
 
         return _mapper.Map<Review>(newReviewPoco);
+    }
+
+    private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
+    {
+        var wanted = productQueryDto.ingredients;
+        var unwanted = new List<int>();
+
+        if (productQueryDto.preferenceId.HasValue)
+        {
+            //Get preference
+            var preferencePoco = _context.Preferences.Single(pref => pref.Id == productQueryDto.preferenceId);
+            var preference = _mapper.Map<Preference>(preferencePoco);
+
+            //Get wanted and unwanted
+            ICollection<int> wantedFromPreference = preference.Wanted.Select(i => i.Id).ToList();
+            wanted = wanted.Concat(wantedFromPreference).ToList();
+            unwanted = preference.Unwanted.Select(i => i.Id).ToList();
+        }
+
+        // filter products that doesnt have any unwanted ingredient and has all wanted igredients
+        queryable = queryable.Where(p => !p.Ingredients.Any(i => unwanted.Contains(i.Id)));
+        queryable = queryable.Where(p => p.Ingredients.All(i => wanted.Contains(i.Id)));
+    }
+
+    private void SortProductQueryDto(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
+    {
+        if (productQueryDto.SortBy.HasValue)
+        {
+            queryable = productQueryDto.SortBy switch
+            {
+                QuerySortType.Featured => queryable.OrderBy(p => p.Featuring != null),
+                QuerySortType.Rating => queryable.OrderBy(p => p.Reviews.Average(r => r.Rating)),
+                QuerySortType.RatingCount => queryable.OrderBy(p => p.Reviews.Count),
+                QuerySortType.BestMatch => queryable,
+                QuerySortType.Names => queryable.OrderBy(p => p.Name),
+                _ => throw new ArgumentOutOfRangeException("sorty is not defined properly")
+            };
+        }
     }
 }
