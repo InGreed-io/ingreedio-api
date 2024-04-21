@@ -1,4 +1,5 @@
 using AutoMapper;
+using InGreedIoApi.Services;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,14 @@ namespace InGreedIoApi.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
+    private readonly IPaginationService _paginationService;
     private readonly IMapper _mapper;
 
-    public ProductsController(IProductRepository productRepository, IMapper mapper)
+    public ProductsController(IProductRepository productRepository, IMapper mapper,
+        IPaginationService paginationService)
     {
         _productRepository = productRepository;
+        _paginationService = paginationService;
         _mapper = mapper;
     }
 
@@ -28,7 +32,10 @@ public class ProductsController : ControllerBase
         if (!ModelState.IsValid) return BadRequest("Invalid ModelState");
 
         var products = await _productRepository.GetAll(productQueryDto);
-        return Ok(products);
+
+        var paginatedResult = await _paginationService.Paginate<ProductDTO>(
+            products, productQueryDto.limit, productQueryDto.page);
+        return Ok(paginatedResult);
     }
 
     [HttpGet("{productId}/reviews")]
@@ -42,11 +49,11 @@ public class ProductsController : ControllerBase
     [HttpPost("{productId}/reviews")]
     public async Task<IActionResult> AddProductReview(int productId, [FromBody] ReviewUpdateDTO reviewDto)
     {
-        var userId = User.FindFirst("Id")?.Value;
-        if (string.IsNullOrEmpty(userId)) return Unauthorized();
-
         if (reviewDto.Rating < 1 || reviewDto.Rating > 5)
             throw new InGreedIoException("Rating should be from interval [1;5].");
+
+        var userId = User.FindFirst("Id")?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
         var newReview = await _productRepository.AddReview(
             productId, userId, reviewDto.Content, reviewDto.Rating

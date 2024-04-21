@@ -28,6 +28,7 @@ namespace InGreedIoApi.Data.Mapper
                     opt => opt.MapFrom(src => src.Wanted))
                 .ForMember(dest => dest.Unwanted,
                     opt => opt.MapFrom(src => src.Unwanted));
+            CreateMap<Product, ProductDTO>();
         }
     }
 }

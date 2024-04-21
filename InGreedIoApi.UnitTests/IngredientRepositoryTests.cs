@@ -30,7 +30,8 @@ public class IngredientRepositoryTests
         _ingredients =
         [
             new IngredientPOCO { Id = 1, Name = "Ingredient 1", IconUrl = "Icon 1" },
-            new IngredientPOCO { Id = 2, Name = "Ingredient 2", IconUrl = "Icon 2" }
+            new IngredientPOCO { Id = 2, Name = "Ingredient 2", IconUrl = "Icon 2" },
+            new IngredientPOCO { Id = 3, Name = "Something else", IconUrl = "Icon 3" }
         ];
 
         _mockContext.Ingredients.AddRange(_ingredients);
@@ -44,13 +45,12 @@ public class IngredientRepositoryTests
         // Arrange
         var repository = new IngredientRepository(_mockMapper, _mockContext);
         var query = "Ingred";
-        int page = 0, limit = 1;
         // Act
-        var ingredients = await repository.FindAll(query, page, limit);
+        var ingredients = await repository.FindAll(query);
 
         // Assert
         Assert.NotNull(ingredients);
-        Assert.Equal(limit, ingredients.Count());
+        Assert.Equal(2, ingredients.Count());
         Assert.Equal("Ingredient 1", ingredients.First().Name);
     }
 }

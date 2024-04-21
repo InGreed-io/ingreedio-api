@@ -53,6 +53,7 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         // Seed data
         SeedCategory(modelBuilder);
         SeedProducts(modelBuilder);
+        SeedIngredients(modelBuilder);
     }
 
     private void SeedCategory(ModelBuilder modelBuilder)
@@ -65,6 +66,12 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
     {
         var products = new ProductSeeder().Seed;
         modelBuilder.Entity<ProductPOCO>().HasData(products);
+    }
+
+    private void SeedIngredients(ModelBuilder modelBuilder)
+    {
+        var ingredients = new IngredientSeeder().Seed;
+        modelBuilder.Entity<IngredientPOCO>().HasData(ingredients);
     }
 
     public virtual DbSet<ProductPOCO> Products { get; set; }
