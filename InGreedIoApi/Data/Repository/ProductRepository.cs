@@ -51,8 +51,7 @@ public class ProductRepository : IProductRepository
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        //Pagination
-        queryable = queryable.Skip(productQueryDto.page * productQueryDto.limit).Take(productQueryDto.limit);
+        var matchingProductsCount = queryable.Count();
 
         var productsPoco = queryable.AsEnumerable();
         return _mapper.Map<List<Product>>(productsPoco);
