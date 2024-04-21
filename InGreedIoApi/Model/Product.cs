@@ -24,23 +24,23 @@
 
         public bool Featured
         {
-          get { return Featuring != null && Featuring.ExpireDate > DateTime.Now; }
+            get { return Featuring != null && Featuring.ExpireDate > DateTime.Now; }
         }
 
         public int RatingsCount
         {
-          get { return Reviews.Count; }
+            get { return Reviews.Count; }
         }
 
         public float Rating
         {
-          get
-          {
-            if(RatingsCount == 0)
-              return 0.0F;
+            get
+            {
+                if (RatingsCount == 0)
+                    return 0.0F;
 
-            return Reviews.Sum(r => r.Rating) / Reviews.Count;
-          }
+                return Reviews.Sum(r => r.Rating) / Reviews.Count;
+            }
         }
     }
 }
