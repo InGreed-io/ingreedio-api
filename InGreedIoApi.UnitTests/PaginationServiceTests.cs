@@ -12,13 +12,12 @@ public class PaginationServiceTests
     }
 
     [Fact]
-    public async Task Paginate_ReturnsPaginatedContent()
+    public async Task Paginate_FullPage_ReturnsPaginatedContent()
     {
         // Arrange
         IEnumerable<int> paginationData = Enumerable.Range(1, 100);
         int limit = 5;
         int page = 0;
-        int expectedPageCount = (int)Math.Ceiling((double)paginationData.Count() / (double)limit);
 
         // Act
         var paginatedData = await _paginationService.Paginate<int>(paginationData, limit, page);
@@ -28,17 +27,16 @@ public class PaginationServiceTests
         Assert.Equal(5, paginatedData.Content.Count());
         Assert.Equal(Enumerable.Range(1, 5), paginatedData.Content);
         Assert.Equal(limit, paginatedData.Limit);
-        Assert.Equal(expectedPageCount, paginatedData.PageCount);
+        Assert.Equal(20, paginatedData.PageCount);
     }
 
     [Fact]
-    public async Task Paginate_ReturnsPaginatedContent_LastPage()
+    public async Task Paginate_NonFullPage_ReturnsPaginatedLastPage()
     {
         // Arrange
         IEnumerable<int> paginationData = Enumerable.Range(1, 8);
         int limit = 5;
         int page = 1;
-        int expectedPageCount = (int)Math.Ceiling((double)paginationData.Count() / (double)limit);
 
         // Act
         var paginatedData = await _paginationService.Paginate<int>(paginationData, limit, page);
@@ -48,11 +46,11 @@ public class PaginationServiceTests
         Assert.Equal(3, paginatedData.Content.Count());
         Assert.Equal(Enumerable.Range(6, 3), paginatedData.Content);
         Assert.Equal(limit, paginatedData.Limit);
-        Assert.Equal(expectedPageCount, paginatedData.PageCount);
+        Assert.Equal(2, paginatedData.PageCount);
     }
 
     [Fact]
-    public async Task Paginate_ReturnsPaginatedContent_LimitIsZero()
+    public async Task Paginate_LimitIsZero_ReturnsEmptyArrayAndNoPages()
     {
         // Arrange
         IEnumerable<int> paginationData = Enumerable.Range(1, 100);
