@@ -4,6 +4,6 @@ namespace InGreedIoApi.Data.Repository.Interface
 {
     public interface IIngredientRepository
     {
-        Task<IEnumerable<Ingredient>> FindAll(string query, int page, int limit);
+        Task<IEnumerable<Ingredient>> FindAll(string query);
     }
 }

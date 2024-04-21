@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +36,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+  .AddJsonOptions(opts =>
+    {
+        var enumConverter = new JsonStringEnumConverter();
+        opts.JsonSerializerOptions.Converters.Add(enumConverter);
+    });
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -50,8 +56,10 @@ builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
 builder.Services.AddTransient<IPreferenceRepository, PreferenceRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IPaginationService, PaginationService>();
 builder.Services.AddSingleton<ISeeder<CategoryPOCO>, CategorySeeder>();
 builder.Services.AddSingleton<ISeeder<ProductPOCO>, ProductSeeder>();
+builder.Services.AddSingleton<ISeeder<IngredientPOCO>, IngredientSeeder>();
 builder.Services.AddScoped<IUserSeeder, ApiUserSeeder>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();

@@ -15,9 +15,15 @@ namespace InGreedIoApi.Data.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Ingredient>> FindAll(string query, int page, int limit)
+        public async Task<IEnumerable<Ingredient>> FindAll(string? query)
         {
-            var ingredientsPOCO = _context.Ingredients.Where(x => x.Name.ToLower().Contains(query.ToLower())).Skip(page * limit).Take(limit);
+            var ingredientsPOCO = _context.Ingredients.AsQueryable();
+
+            if (query != null)
+            {
+                ingredientsPOCO = ingredientsPOCO.Where(x => x.Name.ToLower().Contains(query.ToLower()));
+            }
+
             return ingredientsPOCO.Select(x => _mapper.Map<Ingredient>(x));
         }
     }
