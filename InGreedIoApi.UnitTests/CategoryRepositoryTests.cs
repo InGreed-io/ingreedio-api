@@ -30,7 +30,7 @@ public class CategoryRepositoryTests
         _categories =
             [
             new CategoryPOCO { Id = 1, Name = "Category 1" },
-            new CategoryPOCO { Id = 2, Name = "Category 2" }
+                new CategoryPOCO { Id = 2, Name = "Category 2" }
             ];
 
         _mockContext.Category.AddRange(_categories);

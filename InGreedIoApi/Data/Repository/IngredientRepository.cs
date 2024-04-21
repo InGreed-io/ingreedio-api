@@ -19,8 +19,9 @@ namespace InGreedIoApi.Data.Repository
         {
             var ingredientsPOCO = _context.Ingredients.AsQueryable();
 
-            if(query != null) {
-              ingredientsPOCO = ingredientsPOCO.Where(x => x.Name.ToLower().Contains(query.ToLower()));
+            if (query != null)
+            {
+                ingredientsPOCO = ingredientsPOCO.Where(x => x.Name.ToLower().Contains(query.ToLower()));
             }
 
             return ingredientsPOCO.Select(x => _mapper.Map<Ingredient>(x));
