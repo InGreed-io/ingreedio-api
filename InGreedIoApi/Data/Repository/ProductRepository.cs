@@ -1,5 +1,4 @@
 using AutoMapper;
-using InGreedIoApi.Data;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +19,7 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Product>> GetAll(ProductQueryDTO productQueryDto)
+    public async Task<IEnumerable<ProductDTO>> GetAll(ProductQueryDTO productQueryDto)
     {
         var queryable = _context.Products.AsQueryable();
         queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
@@ -52,7 +51,10 @@ public class ProductRepository : IProductRepository
         };
 
         var productsPoco = queryable.AsEnumerable();
-        return _mapper.Map<List<Product>>(productsPoco);
+        var products = _mapper.Map<List<Product>>(productsPoco);
+        var productsDTO = _mapper.Map<List<ProductDTO>>(products);
+
+        return productsDTO;
     }
 
     private void UpdateWantedAndUnwantedFromPreference(int? preferenceId, ICollection<int> wanted, ICollection<int> unwanted)
