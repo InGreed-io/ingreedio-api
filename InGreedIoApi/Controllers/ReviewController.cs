@@ -19,6 +19,13 @@ namespace InGreedIoApi.Controllers
             _mapper = mapper;
         }
 
+        // Dummy action for CreatedAtAction().
+        [HttpGet("{reviewId}")]
+        public ActionResult<ReviewDTO> GetSingle(int reviewId) 
+        {
+            return StatusCode(StatusCodes.Status405MethodNotAllowed);
+        }
+
         [Authorize(Roles = "Moderator")]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] string userId)

@@ -1,10 +1,11 @@
 using AutoMapper;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
+using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
-using Serilog;
+using InGreedIoApi.Model.Exceptions;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -67,5 +68,54 @@ public class ProductRepository : IProductRepository
         ICollection<int> wantedFromPreference = preference.Wanted.Select(i => i.Id).ToList();
         wanted = wanted.Concat(wantedFromPreference).ToList();
         unwanted = preference.Unwanted.Select(i => i.Id).ToList();
+    }
+
+    public async Task<IEnumerable<Review>> GetReviews(int productId, int page, int limit)
+    {
+        var reviewsPoco = await _context.Reviews
+            .Include(review => review.User)
+            .Where(review => review.ProductId == productId)
+            .OrderBy(review => review.ReportsCount)
+            .Skip(page * limit)
+            .Take(limit)
+            .ToListAsync();
+
+        return _mapper.Map<List<Review>>(reviewsPoco);
+    }
+
+    public async Task<Review> AddReview(int productId, string userId, string content, float rating)
+    {
+        var newReviewPoco = new ReviewPOCO
+        {
+            Text = content,
+            Rating = rating,
+            ReportsCount = 0,
+            ProductId = productId,
+            UserID = userId
+        };
+
+        await _context.Reviews.AddAsync(newReviewPoco);
+        try { await _context.SaveChangesAsync(); }
+        catch (DbUpdateException)
+        {
+            if (!await _context.Products.AnyAsync(p => p.Id == productId))
+                throw new InGreedIoException(
+                    $"Could not find product with id: {productId}.",
+                    StatusCodes.Status404NotFound
+                );
+            if (!await _context.Users.AnyAsync(u => u.Id == userId))
+                throw new InGreedIoException(
+                    $"Could not find user with id: {userId}.",
+                    StatusCodes.Status404NotFound
+                );
+            throw new InGreedIoException(
+                $"Unknown error.",
+                StatusCodes.Status400BadRequest
+            );
+        }
+
+        await _context.Entry(newReviewPoco).Reference(review => review.User).LoadAsync();
+
+        return _mapper.Map<Review>(newReviewPoco);
     }
 }
