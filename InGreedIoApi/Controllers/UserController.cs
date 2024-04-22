@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
+using InGreedIoApi.POCO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InGreedIoApi.Controllers
@@ -11,24 +14,37 @@ namespace InGreedIoApi.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-
-        public UserController(IUserRepository userRepository, IMapper mapper)
+        private readonly UserManager<ApiUserPOCO> _userManager;
+        public UserController(IUserRepository userRepository, IMapper mapper, UserManager<ApiUserPOCO> userManager)
         {
             _userRepository = userRepository;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Details([FromQuery] string userId)
+        public async Task<IActionResult> Details()
         {
-            var user = await _userRepository.GetUserById(userId);
+            var userHttp = await _userManager.GetUserAsync(User);
+            if(userHttp == null)
+            {
+                return Unauthorized("The user is unauthorized");
+            }
+            var user = await _userRepository.GetUserById(userHttp.Id);
             return Ok(_mapper.Map<ApiUserDTO>(user));
         }
 
+        [Authorize]
         [HttpGet("preferences")]
-        public async Task<IActionResult> GetPreferences([FromQuery] string userId)
+        public async Task<IActionResult> GetPreferences()
         {
-            var preferences = await _userRepository.GetPreferences(userId);
+            var userHttp = await _userManager.GetUserAsync(User);
+            if (userHttp == null)
+            {
+                return Unauthorized("The user is unauthorized");
+            }
+            var preferences = await _userRepository.GetPreferences(userHttp.Id);
             return Ok(_mapper.Map<IEnumerable<PreferenceDTO>>(preferences));
         }
     }
