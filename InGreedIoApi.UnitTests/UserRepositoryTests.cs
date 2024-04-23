@@ -50,9 +50,10 @@ public class UserRepositoryTests
     {
         // Arrange
         var repository = new UserRepository(_mockContext, _mockMapper);
+        var userId = "User1";
 
         // Act
-        var user = await repository.GetUserById("User1");
+        var user = await repository.GetUserById(userId);
 
         // Assert
         Assert.NotNull(user);
@@ -65,9 +66,10 @@ public class UserRepositoryTests
     {
         // Arrange
         var repository = new UserRepository(_mockContext, _mockMapper);
+        var userId = "User1";
 
         // Act
-        var preferences = await repository.GetPreferences("User1");
+        var preferences = await repository.GetPreferences(userId);
 
         // Assert
         Assert.NotNull(preferences);

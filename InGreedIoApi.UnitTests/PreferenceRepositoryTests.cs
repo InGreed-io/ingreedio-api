@@ -59,9 +59,10 @@ public class PreferenceRepositoryTests
     {
         // Arrange
         var repository = new PreferenceRepository(_mockContext, _mockMapper);
+        int preferenceId = 1, ingredientId = 1;
 
         // Act
-        var isDeleted = await repository.DeleteIngredient(1, 1);
+        var isDeleted = await repository.DeleteIngredient(preferenceId, ingredientId);
 
         // Assert
         Assert.True(isDeleted);
@@ -73,9 +74,10 @@ public class PreferenceRepositoryTests
     {
         // Arrange
         var repository = new PreferenceRepository(_mockContext, _mockMapper);
+        var preferenceId = 1;
 
         // Act
-        var isDeleted = await repository.Delete(1);
+        var isDeleted = await repository.Delete(preferenceId);
 
         // Assert
         Assert.True(isDeleted);
@@ -87,9 +89,11 @@ public class PreferenceRepositoryTests
     {
         // Arrange
         var repository = new PreferenceRepository(_mockContext, _mockMapper);
+        var ingredientId = 1;
+        var preferencePoco = _preferences[0];
 
         // Act
-        var ingredient = repository.FindById(_preferences[0], 1);
+        var ingredient = repository.FindById(preferencePoco, ingredientId);
 
         // Assert
         Assert.NotNull(ingredient);
@@ -103,8 +107,10 @@ public class PreferenceRepositoryTests
         // Arrange
         var repository = new PreferenceRepository(_mockContext, _mockMapper);
         var addIngredientDTO = new AddIngredientDTO(1, true);
+        var preferenceId = 2;
+
         // Act
-        var isAdded = await repository.AddIngredient(2, addIngredientDTO);
+        var isAdded = await repository.AddIngredient(preferenceId, addIngredientDTO);
 
         // Assert
         Assert.True(isAdded);
