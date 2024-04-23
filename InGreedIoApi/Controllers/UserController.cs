@@ -14,24 +14,23 @@ namespace InGreedIoApi.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly UserManager<ApiUserPOCO> _userManager;
-        public UserController(IUserRepository userRepository, IMapper mapper, UserManager<ApiUserPOCO> userManager)
+
+        public UserController(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;
-            _userManager = userManager;
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("details")]
         public async Task<IActionResult> Details()
         {
-            var userHttp = await _userManager.GetUserAsync(User);
-            if(userHttp == null)
+            var userId = User.FindFirst("Id")?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized("The user is unauthorized");
+                return Unauthorized();
             }
-            var user = await _userRepository.GetUserById(userHttp.Id);
+            var user = await _userRepository.GetUserById(userId);
             return Ok(_mapper.Map<ApiUserDTO>(user));
         }
 
@@ -39,12 +38,12 @@ namespace InGreedIoApi.Controllers
         [HttpGet("preferences")]
         public async Task<IActionResult> GetPreferences()
         {
-            var userHttp = await _userManager.GetUserAsync(User);
-            if (userHttp == null)
+            var userId = User.FindFirst("Id")?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
-                return Unauthorized("The user is unauthorized");
+                return Unauthorized();
             }
-            var preferences = await _userRepository.GetPreferences(userHttp.Id);
+            var preferences = await _userRepository.GetPreferences(userId);
             return Ok(_mapper.Map<IEnumerable<PreferenceDTO>>(preferences));
         }
     }

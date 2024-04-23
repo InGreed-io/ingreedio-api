@@ -7,6 +7,7 @@ using InGreedIoApi.Data.Seed;
 using InGreedIoApi.POCO;
 using InGreedIoApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -102,6 +103,13 @@ builder.Services.AddAuthentication(options =>
             ValidateLifetime = true
         };
     });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 builder.Services.AddIdentity<ApiUserPOCO, IdentityRole>(options =>
     {
