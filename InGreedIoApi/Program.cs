@@ -6,6 +6,7 @@ using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Data.Seed;
 using InGreedIoApi.POCO;
 using InGreedIoApi.Services;
+using InGreedIoApi.Utils.Pagination;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -138,6 +139,8 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddPagination(builder.Configuration);
 
 var app = builder.Build();
 
