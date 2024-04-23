@@ -10,24 +10,20 @@ namespace InGreedIoApi.Data.Mapper
         {
             // From models to DTO
             CreateMap<Review, ReviewDTO>().ConstructUsing(src => new ReviewDTO(
-                src.Id, 
-                src.User.UserName ?? "???", 
-                src.Text, 
-                src.Rating, 
+                src.Id,
+                src.User.UserName ?? "???",
+                src.Text,
+                src.Rating,
                 src.UserID
             ));
             CreateMap<Ingredient, IngredientDTO>();
             CreateMap<Category, CategoryDTO>();
-            CreateMap<ApiUser, ApiUserDTO>()
-                .ForMember(dest => dest.Mail,
-                opt => opt.MapFrom(src => src.Email))
-                .ForMember(dest => dest.Id,
-                opt => opt.MapFrom(src => src.EmailConfirmed));
-            CreateMap<Preference, PreferenceDTO>()
-                .ForMember(dest => dest.Wanted,
-                    opt => opt.MapFrom(src => src.Wanted))
-                .ForMember(dest => dest.Unwanted,
-                    opt => opt.MapFrom(src => src.Unwanted));
+            CreateMap<ApiUser, ApiUserDTO>().ConstructUsing(src => new(
+                src.Id,
+                src.Email,
+                src.UserName,
+                src.EmailConfirmed));
+
             CreateMap<Product, ProductDTO>();
         }
     }

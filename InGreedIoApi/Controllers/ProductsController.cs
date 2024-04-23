@@ -45,7 +45,7 @@ public class ProductsController : ControllerBase
         return Ok(_mapper.Map<IEnumerable<ReviewDTO>>(reviews));
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize]
     [HttpPost("{productId}/reviews")]
     public async Task<IActionResult> AddProductReview(int productId, [FromBody] ReviewUpdateDTO reviewDto)
     {
