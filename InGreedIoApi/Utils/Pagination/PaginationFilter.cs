@@ -4,7 +4,11 @@ using Microsoft.Extensions.Options;
 
 namespace InGreedIoApi.Utils.Pagination
 {
-    public class PaginationFilter : IAsyncActionFilter
+    [AttributeUsage(AttributeTargets.Method)]
+    public class PaginatedAttribute : ServiceFilterAttribute<PaginationFilter>
+    { }
+
+    public class PaginationFilter : IAsyncResultFilter
     {
         private PaginationOptions _options;
 
@@ -13,11 +17,9 @@ namespace InGreedIoApi.Utils.Pagination
             _options = options.Value;
         }
 
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            await next();
-
-            if (context.Result is OkObjectResult okObjectResult && okObjectResult.Value is IPage page)
+            if (_options.MoveMetadataToHeader && context.Result is ObjectResult objectResult && objectResult.Value is IPage page) 
             {
                 context.HttpContext.Response.Headers.Add(
                     _options.PageNumberHeaderName,
@@ -32,8 +34,10 @@ namespace InGreedIoApi.Utils.Pagination
                     page.Metadata.IsLast.ToString()
                 );
 
-                context.Result = new OkObjectResult(page.Elements);
+                objectResult.Value = page.Elements;
             }
+
+            await next();
         }
     }
 }

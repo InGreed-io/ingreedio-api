@@ -4,8 +4,9 @@ namespace InGreedIoApi.Utils.Pagination
     {
         public static IServiceCollection AddPagination(this IServiceCollection services, IConfiguration config)
         {
-            return services.Configure<PaginationOptions>(config.GetSection(PaginationOptions.SectionName))
-                .AddScoped<PaginationFilter>();
+            services.Configure<PaginationOptions>(config.GetSection(PaginationOptions.SectionName));
+            services.AddScoped<PaginationFilter>();
+            return services;
         }
     }
 }

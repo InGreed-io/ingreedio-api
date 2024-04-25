@@ -1,4 +1,5 @@
 using System.Collections;
+using AutoMapper;
 
 namespace InGreedIoApi.Utils.Pagination
 {
@@ -11,6 +12,6 @@ namespace InGreedIoApi.Utils.Pagination
     public interface IPage<T> : IPage
     {
         new IEnumerable<T> Elements { get; }
-        new PageMetadata Metadata { get; }
+        IPage<TDestination> MapElementsTo<TDestination>(IMapper mapper);
     }
 }

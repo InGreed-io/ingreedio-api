@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using InGreedIoApi.Model.Exceptions;
+using InGreedIoApi.Utils.Pagination;
 
 namespace InGreedIoApi.Controllers;
 
@@ -38,11 +39,12 @@ public class ProductsController : ControllerBase
         return Ok(paginatedResult);
     }
 
+    [Paginated]
     [HttpGet("{productId}/reviews")]
-    public async Task<ActionResult<IEnumerable<ReviewDTO>>> GetProductReviews(int productId, int page = 0, int limit = 10)
+    public async Task<ActionResult<IPage<ReviewDTO>>> GetProductReviews(int productId, int page = 0, int limit = 10)
     {
         var reviews = await _productRepository.GetReviews(productId, page, limit);
-        return Ok(_mapper.Map<IEnumerable<ReviewDTO>>(reviews));
+        return Ok(reviews.MapElementsTo<ReviewDTO>(_mapper));
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

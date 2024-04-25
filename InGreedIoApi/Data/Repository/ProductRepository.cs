@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
-using System.Linq;
+using InGreedIoApi.Utils.Pagination;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -41,17 +41,15 @@ public class ProductRepository : IProductRepository
         return productsDTO;
     }
 
-    public async Task<IEnumerable<Review>> GetReviews(int productId, int page, int limit)
+    public async Task<IPage<Review>> GetReviews(int productId, int page, int limit)
     {
         var reviewsPoco = await _context.Reviews
             .Include(review => review.User)
             .Where(review => review.ProductId == productId)
             .OrderBy(review => review.ReportsCount)
-            .Skip(page * limit)
-            .Take(limit)
-            .ToListAsync();
-
-        return _mapper.Map<List<Review>>(reviewsPoco);
+            .ToPageAsync(page, limit);
+        
+        return reviewsPoco.MapElementsTo<Review>(_mapper);
     }
 
     public async Task<Review> AddReview(int productId, string userId, string content, float rating)
