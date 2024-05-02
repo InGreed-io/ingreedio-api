@@ -16,7 +16,7 @@ namespace InGreedIoApi.Utils.Pagination
                 .Take(pageSize)
                 .ToList();
 
-            var pageCount = (query.Count() + pageSize - 1) / pageSize; 
+            var pageCount = (query.Count() + pageSize - 1) / pageSize;
 
             return new Page<T>(contents, new PageMetadata(pageIndex, pageSize, pageCount));
         }
@@ -31,7 +31,7 @@ namespace InGreedIoApi.Utils.Pagination
                 .Take(pageSize)
                 .ToListAsync();
 
-            var pageCount = (await query.CountAsync() + pageSize - 1) / pageSize; 
+            var pageCount = (await query.CountAsync() + pageSize - 1) / pageSize;
 
             return new Page<T>(contents, new PageMetadata(pageIndex, pageSize, pageCount));
         }
@@ -47,7 +47,7 @@ namespace InGreedIoApi.Utils.Pagination
                 .ProjectTo<TDestination>(configuration)
                 .ToList();
 
-            var pageCount = (query.Count() + pageSize - 1) / pageSize; 
+            var pageCount = (query.Count() + pageSize - 1) / pageSize;
 
             return new Page<TDestination>(contents, new PageMetadata(pageIndex, pageSize, pageCount));
         }
@@ -63,7 +63,7 @@ namespace InGreedIoApi.Utils.Pagination
                 .ProjectTo<TDestination>(configuration)
                 .ToListAsync();
 
-            var pageCount = (await query.CountAsync() + pageSize - 1) / pageSize; 
+            var pageCount = (await query.CountAsync() + pageSize - 1) / pageSize;
 
             return new Page<TDestination>(contents, new PageMetadata(pageIndex, pageSize, pageCount));
         }

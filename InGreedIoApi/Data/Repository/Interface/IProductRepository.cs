@@ -10,5 +10,5 @@ public interface IProductRepository
 
     public Task<Review> AddReview(int productId, string userId, string content, float rating);
 
-    public Task<IEnumerable<ProductDTO>> GetAll(ProductQueryDTO productQueryDto);
+    public Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto);
 }

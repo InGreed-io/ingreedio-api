@@ -57,7 +57,6 @@ builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
 builder.Services.AddTransient<IPreferenceRepository, PreferenceRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IPaginationService, PaginationService>();
 builder.Services.AddSingleton<ISeeder<CategoryPOCO>, CategorySeeder>();
 builder.Services.AddSingleton<ISeeder<ProductPOCO>, ProductSeeder>();
 builder.Services.AddSingleton<ISeeder<IngredientPOCO>, IngredientSeeder>();

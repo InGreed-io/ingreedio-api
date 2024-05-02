@@ -12,13 +12,13 @@ namespace InGreedIoApi.Utils.Pagination
         IEnumerable IPage.Contents => contents;
     }
 
-    public static class Page 
+    public static class Page
     {
         public static IPage<TDestination> Convert<TSource, TDestination>(IPage<TSource> source, IMapper mapper)
         {
             return new Page<TDestination>
             (
-                mapper.Map<IEnumerable<TDestination>>(source.Contents), 
+                mapper.Map<IEnumerable<TDestination>>(source.Contents),
                 source.Metadata
             );
         }

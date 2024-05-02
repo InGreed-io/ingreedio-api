@@ -1,5 +1,4 @@
 using AutoMapper;
-using InGreedIoApi.Services;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
-using InGreedIoApi.Model;
 
 namespace InGreedIoApi.Controllers;
 
@@ -17,27 +15,20 @@ namespace InGreedIoApi.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
-    private readonly IPaginationService _paginationService;
     private readonly IMapper _mapper;
 
-    public ProductsController(IProductRepository productRepository, IMapper mapper,
-        IPaginationService paginationService)
+    public ProductsController(IProductRepository productRepository, IMapper mapper)
     {
         _productRepository = productRepository;
-        _paginationService = paginationService;
         _mapper = mapper;
     }
 
+    [Paginated]
     [HttpGet]
-    public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
+    public async Task<ActionResult<IPage<ProductDTO>>> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
     {
-        if (!ModelState.IsValid) return BadRequest("Invalid ModelState");
-
         var products = await _productRepository.GetAll(productQueryDto);
-
-        var paginatedResult = await _paginationService.Paginate<ProductDTO>(
-            products, productQueryDto.limit, productQueryDto.page);
-        return Ok(paginatedResult);
+        return Ok(products);
     }
 
     [Paginated]

@@ -21,7 +21,7 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<ProductDTO>> GetAll(ProductQueryDTO productQueryDto)
+    public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto)
     {
         var queryable = _context.Products.AsQueryable();
         queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
@@ -34,11 +34,9 @@ public class ProductRepository : IProductRepository
         //sort elements by enum
         SortProductQueryDto(productQueryDto, ref queryable);
 
-        var productsPoco = queryable.AsEnumerable();
-        var products = _mapper.Map<List<Product>>(productsPoco);
-        var productsDTO = _mapper.Map<List<ProductDTO>>(products);
-
-        return productsDTO;
+        return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
+            productQueryDto.page, productQueryDto.limit, _mapper.ConfigurationProvider
+        );
     }
 
     public async Task<IPage<ReviewDTO>> GetReviews(int productId, int pageIndex, int pageSize)

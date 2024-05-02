@@ -2,6 +2,7 @@ using AutoMapper;
 using InGreedIoApi.Data;
 using InGreedIoApi.Data.Mapper;
 using InGreedIoApi.Data.Repository;
+using InGreedIoApi.DTO;
 using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,7 @@ public class IngredientRepositoryTests
 
         var configuration = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<POCOMapper>();
+            cfg.AddProfile<ListMapper>();
         });
         _mockMapper = configuration.CreateMapper();
 
@@ -44,13 +45,13 @@ public class IngredientRepositoryTests
     {
         // Arrange
         var repository = new IngredientRepository(_mockMapper, _mockContext);
-        var query = "Ingred";
+        var query = new GetIngredientsQuery("Ingred", 0, 10);
         // Act
         var ingredients = await repository.FindAll(query);
 
         // Assert
-        Assert.NotNull(ingredients);
-        Assert.Equal(2, ingredients.Count());
-        Assert.Equal("Ingredient 1", ingredients.First().Name);
+        Assert.NotNull(ingredients.Contents);
+        Assert.Equal(2, ingredients.Contents.Count());
+        Assert.Equal("Ingredient 1", ingredients.Contents.First().Name);
     }
 }
