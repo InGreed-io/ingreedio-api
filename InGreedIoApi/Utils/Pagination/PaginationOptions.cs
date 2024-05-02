@@ -5,8 +5,8 @@ namespace InGreedIoApi.Utils.Pagination
         public const string SectionName = "Pagination";
 
         public bool MoveMetadataToHeader { get; set; } = false;
-        public string PageNumberHeaderName { get; set; } = "PageNumber";
+        public string PageIndexHeaderName { get; set; } = "PageIndex";
         public string PageSizeHeaderName { get; set; } = "PageSize";
-        public string IsLastHeaderName { get; set; } = "IsLast";
+        public string PageCountHeaderName { get; set; } = "PageCount";
     }
 }

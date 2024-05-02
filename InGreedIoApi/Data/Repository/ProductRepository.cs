@@ -41,15 +41,13 @@ public class ProductRepository : IProductRepository
         return productsDTO;
     }
 
-    public async Task<IPage<Review>> GetReviews(int productId, int page, int limit)
+    public async Task<IPage<ReviewDTO>> GetReviews(int productId, int pageIndex, int pageSize)
     {
-        var reviewsPoco = await _context.Reviews
+        return await _context.Reviews
             .Include(review => review.User)
             .Where(review => review.ProductId == productId)
             .OrderBy(review => review.ReportsCount)
-            .ToPageAsync(page, limit);
-        
-        return reviewsPoco.MapElementsTo<Review>(_mapper);
+            .ProjectToPageAsync<ReviewPOCO, ReviewDTO>(pageIndex, pageSize, _mapper.ConfigurationProvider);
     }
 
     public async Task<Review> AddReview(int productId, string userId, string content, float rating)

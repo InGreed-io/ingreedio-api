@@ -1,61 +1,71 @@
 using AutoMapper.QueryableExtensions;
+using InGreedIoApi.Model.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace InGreedIoApi.Utils.Pagination
 {
     public static class PaginationExtensions
     {
-        public static Page<T> ToPage<T>(this IQueryable<T> queryable, int pageNumber, int pageSize)
+        public static Page<T> ToPage<T>(this IQueryable<T> query, int pageIndex, int pageSize)
         {
-            var elements = queryable
-                .Skip(pageNumber * pageSize)
-                .Take(pageSize + 1)
+            if (pageIndex < 0) throw new InGreedIoException("PageIndex cannot be negative.");
+            if (pageSize <= 0) throw new InGreedIoException("PageSize must be positive.");
+
+            var contents = query
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
                 .ToList();
 
-            return CreatePage(elements, pageNumber, pageSize);
+            var pageCount = (query.Count() + pageSize - 1) / pageSize; 
+
+            return new Page<T>(contents, new PageMetadata(pageIndex, pageSize, pageCount));
         }
 
-        public static async Task<Page<T>> ToPageAsync<T>(this IQueryable<T> queryable, int pageNumber, int pageSize)
+        public static async Task<Page<T>> ToPageAsync<T>(this IQueryable<T> query, int pageIndex, int pageSize)
         {
-            var elements = await queryable
-                .Skip(pageNumber * pageSize)
-                .Take(pageSize + 1)
+            if (pageIndex < 0) throw new InGreedIoException("PageIndex cannot be negative.");
+            if (pageSize <= 0) throw new InGreedIoException("PageSize must be positive.");
+
+            var contents = await query
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return CreatePage(elements, pageNumber, pageSize);
+            var pageCount = (await query.CountAsync() + pageSize - 1) / pageSize; 
+
+            return new Page<T>(contents, new PageMetadata(pageIndex, pageSize, pageCount));
         }
 
-        public static Page<DstT> ProjectToPage<SrcT, DstT>(this IQueryable<SrcT> queryable, int pageNumber, int pageSize, AutoMapper.IConfigurationProvider configuration)
+        public static Page<TDestination> ProjectToPage<TSource, TDestination>(this IQueryable<TSource> query, int pageIndex, int pageSize, AutoMapper.IConfigurationProvider configuration)
         {
-            var elements = queryable
-                .Skip(pageNumber * pageSize)
-                .Take(pageSize + 1)
-                .ProjectTo<DstT>(configuration)
+            if (pageIndex < 0) throw new InGreedIoException("PageIndex cannot be negative.");
+            if (pageSize <= 0) throw new InGreedIoException("PageSize must be positive.");
+
+            var contents = query
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ProjectTo<TDestination>(configuration)
                 .ToList();
 
-            return CreatePage(elements, pageNumber, pageSize);
+            var pageCount = (query.Count() + pageSize - 1) / pageSize; 
+
+            return new Page<TDestination>(contents, new PageMetadata(pageIndex, pageSize, pageCount));
         }
 
-        public static async Task<Page<DstT>> ProjectToPageAsync<SrcT, DstT>(this IQueryable<SrcT> queryable, int pageNumber, int pageSize, AutoMapper.IConfigurationProvider configuration)
+        public static async Task<Page<TDestination>> ProjectToPageAsync<TSource, TDestination>(this IQueryable<TSource> query, int pageIndex, int pageSize, AutoMapper.IConfigurationProvider configuration)
         {
-            var elements = await queryable
-                .Skip(pageNumber * pageSize)
-                .Take(pageSize + 1)
-                .ProjectTo<DstT>(configuration)
+            if (pageIndex < 0) throw new InGreedIoException("PageIndex cannot be negative.");
+            if (pageSize <= 0) throw new InGreedIoException("PageSize must be positive.");
+
+            var contents = await query
+                .Skip(pageIndex * pageSize)
+                .Take(pageSize)
+                .ProjectTo<TDestination>(configuration)
                 .ToListAsync();
 
-            return CreatePage(elements, pageNumber, pageSize);
-        }
+            var pageCount = (await query.CountAsync() + pageSize - 1) / pageSize; 
 
-        private static Page<T> CreatePage<T>(IList<T> elements, int pageNumber, int pageSize)
-        {
-            if (elements.Count == pageSize + 1)
-            {
-                elements.RemoveAt(pageSize);
-                return new Page<T>(elements, pageNumber, pageSize, false);
-            }
-
-            return new Page<T>(elements, pageNumber, pageSize, true);
+            return new Page<TDestination>(contents, new PageMetadata(pageIndex, pageSize, pageCount));
         }
     }
 }

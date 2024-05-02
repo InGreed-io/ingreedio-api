@@ -21,20 +21,20 @@ namespace InGreedIoApi.Utils.Pagination
         {
             if (_options.MoveMetadataToHeader && context.Result is ObjectResult objectResult && objectResult.Value is IPage page) 
             {
-                context.HttpContext.Response.Headers.Add(
-                    _options.PageNumberHeaderName,
-                    page.Metadata.PageNumber.ToString()
+                context.HttpContext.Response.Headers.Append(
+                    _options.PageIndexHeaderName,
+                    page.Metadata.PageIndex.ToString()
                 );
-                context.HttpContext.Response.Headers.Add(
+                context.HttpContext.Response.Headers.Append(
                     _options.PageSizeHeaderName,
                     page.Metadata.PageSize.ToString()
                 );
-                context.HttpContext.Response.Headers.Add(
-                    _options.IsLastHeaderName,
-                    page.Metadata.IsLast.ToString()
+                context.HttpContext.Response.Headers.Append(
+                    _options.PageCountHeaderName,
+                    page.Metadata.PageCount.ToString()
                 );
 
-                objectResult.Value = page.Elements;
+                objectResult.Value = page.Contents;
             }
 
             await next();

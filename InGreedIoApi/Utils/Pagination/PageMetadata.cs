@@ -2,8 +2,8 @@ namespace InGreedIoApi.Utils.Pagination
 {
     public record PageMetadata
     (
-        int PageNumber,
+        int PageIndex,
         int PageSize,
-        bool IsLast
+        int PageCount
     );
 }
