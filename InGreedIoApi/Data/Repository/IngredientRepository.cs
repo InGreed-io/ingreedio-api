@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using InGreedIoApi.Data.Repository.Interface;
-using InGreedIoApi.Model;
+using InGreedIoApi.DTO;
+using InGreedIoApi.POCO;
+using InGreedIoApi.Utils.Pagination;
 
 namespace InGreedIoApi.Data.Repository
 {
@@ -15,16 +17,20 @@ namespace InGreedIoApi.Data.Repository
             _context = context;
         }
 
-        public async Task<IEnumerable<Ingredient>> FindAll(string? query)
+        public async Task<IPage<IngredientDTO>> FindAll(GetIngredientsQuery getIngredientsQuery)
         {
-            var ingredientsPOCO = _context.Ingredients.AsQueryable();
+            var ingredientsQuery = _context.Ingredients.AsQueryable();
 
-            if (query != null)
+            if (!string.IsNullOrEmpty(getIngredientsQuery.Query))
             {
-                ingredientsPOCO = ingredientsPOCO.Where(x => x.Name.ToLower().Contains(query.ToLower()));
+                ingredientsQuery = ingredientsQuery.Where(
+                    x => x.Name.ToLower().Contains(getIngredientsQuery.Query.ToLower())
+                );
             }
 
-            return ingredientsPOCO.Select(x => _mapper.Map<Ingredient>(x));
+            return await ingredientsQuery.ProjectToPageAsync<IngredientPOCO, IngredientDTO>(
+                getIngredientsQuery.Page, getIngredientsQuery.Limit, _mapper.ConfigurationProvider
+            );
         }
     }
 }

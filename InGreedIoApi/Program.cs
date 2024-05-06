@@ -6,6 +6,7 @@ using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Data.Seed;
 using InGreedIoApi.POCO;
 using InGreedIoApi.Services;
+using InGreedIoApi.Utils.Pagination;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -57,7 +58,6 @@ builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<IReviewRepository, ReviewRepository>();
 builder.Services.AddTransient<IPreferenceRepository, PreferenceRepository>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IPaginationService, PaginationService>();
 builder.Services.AddSingleton<ISeeder<CategoryPOCO>, CategorySeeder>();
 builder.Services.AddSingleton<ISeeder<ProductPOCO>, ProductSeeder>();
 builder.Services.AddSingleton<ISeeder<IngredientPOCO>, IngredientSeeder>();
@@ -146,6 +146,8 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddPagination(builder.Configuration);
 
 var app = builder.Build();
 

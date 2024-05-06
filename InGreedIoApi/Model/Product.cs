@@ -22,25 +22,6 @@
         public ICollection<Review> Reviews { get; set; }
         public Featuring? Featuring { get; set; }
 
-        public bool Featured
-        {
-            get { return Featuring != null && Featuring.ExpireDate > DateTime.Now; }
-        }
-
-        public int RatingsCount
-        {
-            get { return Reviews.Count; }
-        }
-
-        public float Rating
-        {
-            get
-            {
-                if (RatingsCount == 0)
-                    return 0.0F;
-
-                return Reviews.Sum(r => r.Rating) / Reviews.Count;
-            }
-        }
+        public float Rating => Reviews.Average(review => review.Rating);
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
-using System.Linq;
+using InGreedIoApi.Utils.Pagination;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -21,7 +21,7 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<ProductDTO>> GetAll(ProductQueryDTO productQueryDto)
+    public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto)
     {
         var queryable = _context.Products.AsQueryable();
         queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
@@ -34,24 +34,18 @@ public class ProductRepository : IProductRepository
         //sort elements by enum
         SortProductQueryDto(productQueryDto, ref queryable);
 
-        var productsPoco = queryable.AsEnumerable();
-        var products = _mapper.Map<List<Product>>(productsPoco);
-        var productsDTO = _mapper.Map<List<ProductDTO>>(products);
-
-        return productsDTO;
+        return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
+            productQueryDto.page, productQueryDto.limit, _mapper.ConfigurationProvider
+        );
     }
 
-    public async Task<IEnumerable<Review>> GetReviews(int productId, int page, int limit)
+    public async Task<IPage<ReviewDTO>> GetReviews(int productId, int pageIndex, int pageSize)
     {
-        var reviewsPoco = await _context.Reviews
+        return await _context.Reviews
             .Include(review => review.User)
             .Where(review => review.ProductId == productId)
             .OrderBy(review => review.ReportsCount)
-            .Skip(page * limit)
-            .Take(limit)
-            .ToListAsync();
-
-        return _mapper.Map<List<Review>>(reviewsPoco);
+            .ProjectToPageAsync<ReviewPOCO, ReviewDTO>(pageIndex, pageSize, _mapper.ConfigurationProvider);
     }
 
     public async Task<Review> AddReview(int productId, string userId, string content, float rating)

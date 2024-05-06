@@ -1,9 +1,10 @@
-﻿using InGreedIoApi.Model;
+﻿using InGreedIoApi.DTO;
+using InGreedIoApi.Utils.Pagination;
 
 namespace InGreedIoApi.Data.Repository.Interface
 {
     public interface IIngredientRepository
     {
-        Task<IEnumerable<Ingredient>> FindAll(string query);
+        Task<IPage<IngredientDTO>> FindAll(GetIngredientsQuery getIngredientsQuery);
     }
 }
