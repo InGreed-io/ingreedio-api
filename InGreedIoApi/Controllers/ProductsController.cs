@@ -25,7 +25,7 @@ public class ProductsController : ControllerBase
 
     [Paginated]
     [HttpGet]
-    public async Task<ActionResult<IPage<ProductDTO>>> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
+    public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
     {
         var products = await _productRepository.GetAll(productQueryDto);
         return Ok(products);
@@ -33,7 +33,7 @@ public class ProductsController : ControllerBase
 
     [Paginated]
     [HttpGet("{productId}/reviews")]
-    public async Task<ActionResult<IPage<ReviewDTO>>> GetProductReviews(int productId, int pageIndex = 0, int pageSize = 10)
+    public async Task<IActionResult> GetProductReviews(int productId, int pageIndex = 0, int pageSize = 10)
     {
         var reviews = await _productRepository.GetReviews(productId, pageIndex, pageSize);
         return Ok(reviews);

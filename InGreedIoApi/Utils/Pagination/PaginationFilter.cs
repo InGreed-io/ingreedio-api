@@ -19,22 +19,33 @@ namespace InGreedIoApi.Utils.Pagination
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            if (_options.MoveMetadataToHeader && context.Result is ObjectResult objectResult && objectResult.Value is IPage page)
+            if (context.Result is ObjectResult objectResult && objectResult.Value is IPage page)
             {
-                context.HttpContext.Response.Headers.Append(
-                    _options.PageIndexHeaderName,
-                    page.Metadata.PageIndex.ToString()
-                );
-                context.HttpContext.Response.Headers.Append(
-                    _options.PageSizeHeaderName,
-                    page.Metadata.PageSize.ToString()
-                );
-                context.HttpContext.Response.Headers.Append(
-                    _options.PageCountHeaderName,
-                    page.Metadata.PageCount.ToString()
-                );
+                if (_options.MoveMetadataToHeader) 
+                {
+                    context.HttpContext.Response.Headers.Append(
+                        _options.PageIndexHeaderName,
+                        page.Metadata.PageIndex.ToString()
+                    );
+                    context.HttpContext.Response.Headers.Append(
+                        _options.PageSizeHeaderName,
+                        page.Metadata.PageSize.ToString()
+                    );
+                    context.HttpContext.Response.Headers.Append(
+                        _options.PageCountHeaderName,
+                        page.Metadata.PageCount.ToString()
+                    );
 
-                objectResult.Value = page.Contents;
+                    objectResult.Value = page.Contents;
+                }
+                else
+                {
+                    objectResult.Value = new 
+                    { 
+                        Contents = page.Contents, 
+                        Metadata = page.Metadata 
+                    };
+                }
             }
 
             await next();

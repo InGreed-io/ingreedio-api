@@ -15,7 +15,8 @@ namespace InGreedIoApi.Data.Mapper
                         0 : src.Reviews.Sum(review => review.Rating) /
                             (src.Reviews.Count() == 0 ? 1 : src.Reviews.Count()),
                     src.Reviews == null ? 0 : src.Reviews.Count(),
-                    src.Featuring != null, null
+                    src.Featuring != null && src.Featuring.ExpireDate > DateTime.Now, 
+                    null
                 ));
             CreateProjection<IngredientPOCO, IngredientDTO>()
                 .ConstructUsing(src => new IngredientDTO(src.Id, src.Name));

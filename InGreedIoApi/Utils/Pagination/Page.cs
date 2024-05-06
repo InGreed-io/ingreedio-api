@@ -10,6 +10,9 @@ namespace InGreedIoApi.Utils.Pagination
         public IEnumerable<T> Contents => contents;
 
         IEnumerable IPage.Contents => contents;
+
+        public object PreventAutomaticSerialization => 
+            throw new InvalidOperationException("Use [Paginated] attribute on action method!");
     }
 
     public static class Page

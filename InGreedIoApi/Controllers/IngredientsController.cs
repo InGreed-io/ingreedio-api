@@ -23,7 +23,7 @@ namespace InGreedIoApi.Controllers
 
         [Paginated]
         [HttpGet]
-        public async Task<ActionResult<IPage<IngredientDTO>>> GetIngredients([FromQuery] GetIngredientsQuery getIngredientsQuery)
+        public async Task<IActionResult> GetIngredients([FromQuery] GetIngredientsQuery getIngredientsQuery)
         {
             var ingredients = await _ingredientRepository.FindAll(getIngredientsQuery);
             return Ok(ingredients);
