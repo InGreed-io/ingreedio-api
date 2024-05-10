@@ -24,7 +24,15 @@ namespace InGreedIoApi.Data.Mapper
                 src.UserName,
                 src.EmailConfirmed));
 
-            CreateMap<Product, ProductDTO>();
+            CreateMap<Product, ProductDTO>()
+                .ConstructUsing((product, context) => new ProductDTO(
+                    product.Id,
+                    product.Name,
+                    product.IconUrl,
+                    product.Rating,
+                    product.Reviews.Count(),
+                    product.Featuring != null
+                ));
         }
     }
 }
