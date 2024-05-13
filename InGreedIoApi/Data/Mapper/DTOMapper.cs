@@ -33,6 +33,19 @@ namespace InGreedIoApi.Data.Mapper
                     product.Reviews.Count(),
                     product.Featuring != null
                 ));
+
+            CreateMap<Product, ProductDetailsDTO>()
+                .ConstructUsing((product, context) => new ProductDetailsDTO(
+                    product.Id,
+                    product.Name,
+                    product.IconUrl,
+                    product.Rating,
+                    product.Reviews.Count(),
+                    product.Featuring != null,
+                    product.Producer?.Company?.Name,
+                    product.Description,
+                    false
+                ));
         }
     }
 }

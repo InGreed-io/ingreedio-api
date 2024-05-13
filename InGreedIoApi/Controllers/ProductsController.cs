@@ -40,7 +40,10 @@ public class ProductsController : ControllerBase
             return NotFound("the product id is incorrect");
         }
 
-        var productDto = _mapper.Map<ProductDTO>(product);
+        var productDto = _mapper.Map<ProductDetailsDTO>(product);
+        var userId = User.FindFirst("Id")?.Value;
+        productDto.Favourite = !string.IsNullOrEmpty(userId);
+
         return Ok(productDto);
     }
 
