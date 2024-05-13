@@ -22,6 +22,6 @@
         public ICollection<Review> Reviews { get; set; }
         public Featuring? Featuring { get; set; }
 
-        public float Rating => Reviews.Average(review => review.Rating);
+        public float Rating => Reviews?.Count > 0 ? Reviews.Average(review => review.Rating) : 0;
     }
 }

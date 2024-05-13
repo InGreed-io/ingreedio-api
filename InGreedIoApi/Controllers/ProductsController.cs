@@ -31,6 +31,22 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
+    [HttpGet("{productId}")]
+    public async Task<IActionResult> GetProduct(int productId)
+    {
+        var product = await _productRepository.GetProduct(productId);
+        if (product == null)
+        {
+            return NotFound("the product id is incorrect");
+        }
+
+        var productDto = _mapper.Map<ProductDetailsDTO>(product);
+        var userId = User.FindFirst("Id")?.Value;
+        productDto.Favourite = !string.IsNullOrEmpty(userId);
+
+        return Ok(productDto);
+    }
+
     [Paginated]
     [HttpGet("{productId}/reviews")]
     public async Task<IActionResult> GetProductReviews(int productId, int pageIndex = 0, int pageSize = 10)
