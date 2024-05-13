@@ -44,6 +44,7 @@ namespace InGreedIoApi.Data.Mapper
                     product.Featuring != null,
                     product.Producer?.Company?.Name,
                     product.Description,
+                    product.Ingredients.Select(x => x.Name).ToList(),
                     false
                 ));
         }

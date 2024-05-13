@@ -10,9 +10,10 @@
         public bool Featured { get; set; }
         private string CompanyName { get; set; }
         public string Description { get; set; }
+        public IEnumerable<string> Ingredients { get; set; }
         public bool? Favourite { get; set; } = null;
 
-        public ProductDetailsDTO(int id, string name, string iconUrl, float rating, int ratingsCount, bool featured, string companyName, string description, bool? favourite)
+        public ProductDetailsDTO(int id, string name, string iconUrl, float rating, int ratingsCount, bool featured, string companyName, string description, IEnumerable<string> ingredients, bool? favourite)
         {
             Id = id;
             Name = name;
@@ -22,6 +23,7 @@
             Featured = featured;
             CompanyName = companyName;
             Description = description;
+            Ingredients = ingredients;
             Favourite = favourite;
         }
     }
