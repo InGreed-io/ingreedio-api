@@ -15,4 +15,6 @@ public interface IProductRepository
     public Task<Product> GetProduct(int productId);
 
     public Task<bool> Create(CreateProductDTO createProductDto, string Id);
+
+    public Task<bool> Delete(int productId);
 }
