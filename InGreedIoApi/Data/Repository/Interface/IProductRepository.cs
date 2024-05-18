@@ -13,4 +13,6 @@ public interface IProductRepository
     public Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto);
 
     public Task<Product> GetProduct(int productId);
+
+    public Task<bool> Create(CreateProductDTO createProductDto, string Id);
 }

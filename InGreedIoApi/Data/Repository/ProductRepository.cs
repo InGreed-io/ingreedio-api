@@ -91,6 +91,31 @@ public class ProductRepository : IProductRepository
         return _mapper.Map<Review>(newReviewPoco);
     }
 
+    public async Task<bool> Create(CreateProductDTO createProductDto, string Id)
+    {
+        var productPOCO = new ProductPOCO()
+        {
+            CategoryId = createProductDto.CategoryId,
+            ProducerId = Id,
+            Description = createProductDto.Description,
+            Name = createProductDto.Name,
+            Category = _context.Category.Single(x => x.Id == createProductDto.CategoryId),
+            Producer = _context.ApiUsers.Single(x => x.Id == Id),
+            IconUrl = "brak",
+            Ingredients = _context.Ingredients.Where(x => createProductDto.Ingredients.Contains(x.Id)).ToList()
+        };
+        await _context.Products.AddAsync(productPOCO);
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+        return true;
+    }
+
     private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
     {
         var wanted = productQueryDto.ingredients;

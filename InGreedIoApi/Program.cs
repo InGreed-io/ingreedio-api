@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -43,6 +44,7 @@ builder.Services.AddControllers()
     {
         var enumConverter = new JsonStringEnumConverter();
         opts.JsonSerializerOptions.Converters.Add(enumConverter);
+        opts.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
 Log.Logger = new LoggerConfiguration()
