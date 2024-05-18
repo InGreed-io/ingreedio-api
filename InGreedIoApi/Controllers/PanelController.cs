@@ -3,6 +3,7 @@ using InGreedIoApi.DTO;
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using InGreedIoApi.Model;
 
 namespace InGreedIoApi.Controllers;
 
@@ -17,7 +18,7 @@ public class PanelController : ControllerBase
         _productRepository = productRepository;
     }
 
-    [Authorize]
+    [Authorize(Roles = "Producer,Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductDTO createProductDto)
     {
