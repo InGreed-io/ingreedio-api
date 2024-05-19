@@ -21,7 +21,7 @@ namespace InGreedIoApi.Controllers
 
         // Dummy action for CreatedAtAction().
         [HttpGet("{reviewId}")]
-        public ActionResult<ReviewDTO> GetSingle(int reviewId) 
+        public ActionResult<ReviewDTO> GetSingle(int reviewId)
         {
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
@@ -73,6 +73,13 @@ namespace InGreedIoApi.Controllers
                 return NotFound("There is no such reviewId");
             }
             return Ok("The review was updated");
+        }
+
+        [HttpGet("/product/{productId}")]
+        public async Task<IActionResult> GetForProduct(int productId)
+        {
+            var reviews = await _reviewRepository.GetForProduct(productId);
+            return Ok(_mapper.Map<ReviewDTO>(reviews));
         }
     }
 }

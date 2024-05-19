@@ -12,5 +12,7 @@ namespace InGreedIoApi.Data.Repository.Interface
         Task<Review?> Rate(int reviewId, float reviewRating);
 
         Task<Review?> Update(int reviewId, ReviewUpdateDTO reviewUpdateDto);
+
+        Task<IEnumerable<Review>> GetForProduct(int productId);
     }
 }

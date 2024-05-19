@@ -68,5 +68,17 @@ namespace InGreedIoApi.Data.Repository
 
             return _mapper.Map<Review>(reviewPOCO);
         }
+
+        public async Task<IEnumerable<Review>> GetForProduct(int productId)
+        {
+            var reviewsPOCO = await _context.Reviews.Where(x => x.ProductId == productId).ToListAsync();
+
+            if (reviewsPOCO == null)
+            {
+                return null;
+            }
+
+            return reviewsPOCO.Select(x => _mapper.Map<Review>(x));
+        }
     }
 }
