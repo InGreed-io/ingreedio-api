@@ -116,6 +116,16 @@ public class ProductRepository : IProductRepository
         return true;
     }
 
+    public async Task<bool> Delete(int productId)
+    {
+        var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
+        if (product == null)
+            return false;
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
     {
         var wanted = productQueryDto.ingredients;

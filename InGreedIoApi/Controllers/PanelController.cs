@@ -26,4 +26,13 @@ public class PanelController : ControllerBase
             return Ok("the product has been created");
         return BadRequest("the product has not been added");
     }
+
+    [Authorize(Roles = "Producer,Admin")]
+    [HttpDelete("{productId}")]
+    public async Task<IActionResult> Delete(int productId)
+    {
+        if (await _productRepository.Delete(productId))
+            return Ok("the product has been deleted");
+        return BadRequest("the product has not been deleted");
+    }
 }
