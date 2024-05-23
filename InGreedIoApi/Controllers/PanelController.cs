@@ -4,6 +4,7 @@ using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using InGreedIoApi.Model;
+using System.Threading.Tasks;
 
 namespace InGreedIoApi.Controllers;
 
@@ -25,6 +26,15 @@ public class PanelController : ControllerBase
         if (await _productRepository.Create(createProductDto, User.FindFirst("Id")?.Value))
             return Ok("the product has been created");
         return BadRequest("the product has not been added");
+    }
+
+    [Authorize(Roles = "Producer,Admin")]
+    [HttpPatch("{productId}")]
+    public async Task<IActionResult> Update(int productId, [FromBody] UpdateProductDTO updateProductDTO)
+    {
+        if (await _productRepository.Update(updateProductDTO, productId))
+            return Ok("the product has been updated");
+        return BadRequest("the product has not been updated");
     }
 
     [Authorize(Roles = "Producer,Admin")]

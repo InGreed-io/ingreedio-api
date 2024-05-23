@@ -7,6 +7,7 @@ using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
+using System.Threading.Tasks;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -113,6 +114,20 @@ public class ProductRepository : IProductRepository
         {
             return false;
         }
+        return true;
+    }
+
+    public async Task<bool> Update(UpdateProductDTO updateProductDTO, int productId)
+    {
+        var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
+        if (product == null)
+            return false;
+        product.Description = updateProductDTO.Description;
+        product.Name = updateProductDTO.Name;
+        var ingredients = await _context.Ingredients.Where(x => updateProductDTO.Ingredients.Contains(x.Id)).ToListAsync();
+        product.Ingredients = ingredients;
+        _context.Update(product);
+        await _context.SaveChangesAsync();
         return true;
     }
 
