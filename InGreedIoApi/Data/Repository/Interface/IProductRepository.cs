@@ -1,6 +1,7 @@
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
 using InGreedIoApi.Utils.Pagination;
+using System.Threading.Tasks;
 
 namespace InGreedIoApi.Data.Repository.Interface;
 
@@ -17,4 +18,5 @@ public interface IProductRepository
     public Task<bool> Create(CreateProductDTO createProductDto, string Id);
 
     public Task<bool> Update(UpdateProductDTO updateProductDTO, int productId);
+    public Task<bool> Delete(int productId);
 }
