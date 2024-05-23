@@ -35,18 +35,23 @@ namespace InGreedIoApi.Data.Mapper
                 ));
 
             CreateMap<Product, ProductDetailsDTO>()
-                .ConstructUsing((product, context) => new ProductDetailsDTO(
-                    product.Id,
-                    product.Name,
-                    product.IconUrl,
-                    product.Rating,
-                    product.Reviews.Count(),
-                    product.Featuring != null,
-                    product.Producer?.Company?.Name,
-                    product.Description,
-                    product.Ingredients.Select(x => x.Name).ToList(),
-                    false
-                ));
+                .ConstructUsing((product, context) =>
+                {
+                    var ingredientNames = product.Ingredients.Select(ing => ing.Name).ToList();
+                    return new ProductDetailsDTO(
+                        product.Id,
+                        product.Name,
+                        product.IconUrl,
+                        product.Rating,
+                        product.Reviews.Count(),
+                        product.Featuring != null,
+                        product.Producer?.Company?.Name ?? "Unknown",
+                        product.Description,
+                        ingredientNames,
+                        false
+                    );
+                })
+                .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(ing => ing.Name)));
         }
     }
 }

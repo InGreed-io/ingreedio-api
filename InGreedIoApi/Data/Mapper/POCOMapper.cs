@@ -14,7 +14,11 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<FeaturingPOCO, Featuring>();
             CreateMap<IngredientPOCO, Ingredient>();
             CreateMap<ReviewPOCO, Review>();
-            CreateMap<ProductPOCO, Product>();
+            CreateMap<ProductPOCO, Product>()
+            .ForMember(dest => dest.Ingredients, opt => opt.MapFrom(src => src.Ingredients))
+            .ForMember(dest => dest.Reviews, opt => opt.MapFrom(src => src.Reviews))
+            .ForMember(dest => dest.Producer, opt => opt.MapFrom(src => src.Producer));
+
             CreateMap<ApiUserPOCO, ApiUser>();
             CreateMap<PreferencePOCO, Preference>();
             CreateMap<AppNotificationPOCO, AppNotification>();
