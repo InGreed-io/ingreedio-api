@@ -2,6 +2,7 @@
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
+using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 
 namespace InGreedIoApi.Data.Repository
@@ -79,6 +80,28 @@ namespace InGreedIoApi.Data.Repository
             }
 
             return reviewsPOCO.Select(x => _mapper.Map<Review>(x));
+        }
+
+        public async Task<bool> Create(CreateReviewDTO createReviewDto)
+        {
+            var newReview = new ReviewPOCO
+            {
+                Text = createReviewDto.Text,
+                Rating = createReviewDto.Rating,
+                ReportsCount = 0,
+                UserID = createReviewDto.UserID,
+                ProductId = createReviewDto.ProductId,
+            };
+            try
+            {
+                await _context.Reviews.AddAsync(newReview);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

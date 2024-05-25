@@ -14,5 +14,7 @@ namespace InGreedIoApi.Data.Repository.Interface
         Task<Review?> Update(int reviewId, ReviewUpdateDTO reviewUpdateDto);
 
         Task<IEnumerable<Review>> GetForProduct(int productId);
+
+        Task<bool> Create(CreateReviewDTO createReviewDto);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace InGreedIoApi.DTO
+﻿using InGreedIoApi.Model;
+
+namespace InGreedIoApi.DTO
 {
     public class ProductDetailsDTO
     {
@@ -11,6 +13,7 @@
         public string CompanyName { get; set; }
         public string Description { get; set; }
         public List<string> Ingredients { get; set; }
+        public ICollection<ProductRevewiDTO> Reviews { get; set; } = [];
         public bool? Favourite { get; set; } = null;
 
         public ProductDetailsDTO(int id, string name, string iconUrl, float rating, int ratingsCount, bool featured, string companyName, string description, List<string> ingredients, bool? favourite)

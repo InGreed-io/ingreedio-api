@@ -2,6 +2,7 @@
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InGreedIoApi.Controllers
@@ -80,6 +81,16 @@ namespace InGreedIoApi.Controllers
         {
             var reviews = await _reviewRepository.GetForProduct(productId);
             return Ok(_mapper.Map<ReviewDTO>(reviews));
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateReviewDTO createReviewDto)
+        {
+            var userId = User.FindFirst("Id")?.Value;
+            createReviewDto.UserID = userId;
+            var isSuccess = await _reviewRepository.Create(createReviewDto);
+            return isSuccess ? Ok("the review has been added") : BadRequest("The review has not been added");
         }
     }
 }
