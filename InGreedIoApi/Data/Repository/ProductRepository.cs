@@ -8,6 +8,7 @@ using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -25,15 +26,19 @@ public class ProductRepository : IProductRepository
     public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto)
     {
         var queryable = _context.Products.AsQueryable();
+        Log.Information($"tutaj - -------------- {queryable.Count()}");
         queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
+        Log.Information($"tutaj - -------------- {queryable.Count()}");
 
         if (productQueryDto.categoryId.HasValue)
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
+        Log.Information($"tutaj - -------------- {queryable.Count()}");
 
         UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
-
+        Log.Information($"tutaj - -------------- {queryable.Count()}");
         //sort elements by enum
         SortProductQueryDto(productQueryDto, ref queryable);
+        Log.Information($"tutaj - -------------- {queryable.Count()}");
 
         return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
             productQueryDto.page, productQueryDto.limit, _mapper.ConfigurationProvider
@@ -42,7 +47,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> GetProduct(int productId)
     {
-        var product = await _context.Products.Include(x => x.Reviews).Include(x => x.Featuring).Include(x => x.Ingredients).Include(x => x.Producer).ThenInclude(x => x.Company).SingleAsync(x => x.Id == productId);
+        var product = await _context.Products.Include(x => x.Reviews).Include(x => x.Featuring).Include(x => x.Ingredients).Include(x => x.Producer).ThenInclude(x => x.Company).FirstOrDefaultAsync(x => x.Id == productId);
 
         return _mapper.Map<Product>(product);
     }
@@ -159,8 +164,14 @@ public class ProductRepository : IProductRepository
         }
 
         // filter products that doesnt have any unwanted ingredient and has all wanted igredients
-        queryable = queryable.Where(p => !p.Ingredients.Any(i => unwanted.Contains(i.Id)));
-        queryable = queryable.Where(p => p.Ingredients.All(i => wanted.Contains(i.Id)));
+        if (wanted is not null && wanted.Count > 0)
+        {
+            queryable = queryable.Where(p => p.Ingredients.All(i => wanted.Contains(i.Id)));
+        }
+        if (unwanted.Count > 0)
+        {
+            queryable = queryable.Where(p => !p.Ingredients.Any(i => unwanted.Contains(i.Id)));
+        }
     }
 
     private void SortProductQueryDto(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
