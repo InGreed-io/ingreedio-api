@@ -8,7 +8,6 @@ using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
 using System.Threading.Tasks;
-using Serilog;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -26,19 +25,14 @@ public class ProductRepository : IProductRepository
     public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto)
     {
         var queryable = _context.Products.AsQueryable();
-        Log.Information($"tutaj - -------------- {queryable.Count()}");
         queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
-        Log.Information($"tutaj - -------------- {queryable.Count()}");
 
         if (productQueryDto.categoryId.HasValue)
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
-        Log.Information($"tutaj - -------------- {queryable.Count()}");
 
         UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
-        Log.Information($"tutaj - -------------- {queryable.Count()}");
         //sort elements by enum
         SortProductQueryDto(productQueryDto, ref queryable);
-        Log.Information($"tutaj - -------------- {queryable.Count()}");
 
         return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
             productQueryDto.page, productQueryDto.limit, _mapper.ConfigurationProvider
