@@ -5,6 +5,6 @@
         public int Id { get; set; }
         public string Name { get; set; }
         public string IconUrl { get; set; }
-        public ICollection<ProductPOCO> Products { get; set; }
+        public ICollection<ProductPOCO> Products { get; set; } = new List<ProductPOCO>();
     }
 }

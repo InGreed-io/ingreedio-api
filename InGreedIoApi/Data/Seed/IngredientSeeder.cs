@@ -83,7 +83,55 @@ namespace InGreedIoApi.Data.Seed
                     Id = 13,
                     Name = "Bee Pollen",
                     IconUrl = "https://images-na.ssl-images-amazon.com/images/I/61uvnYeNn5L._SL1000_.jpg",
-                }
+                },
+                new IngredientPOCO
+                {
+                    Id = 14,
+                    Name = "Oat",
+                    IconUrl = "",
+                },
+                new IngredientPOCO
+                {
+                    Id = 15,
+                    Name = "Almond",
+                    IconUrl = "",
+                },
+                new IngredientPOCO
+                {
+                    Id = 16,
+                    Name = "Strawberry",
+                    IconUrl = "",
+                },
+                new IngredientPOCO
+                {
+                    Id = 17,
+                    Name = "Cashew",
+                    IconUrl = "",
+                },
+                new IngredientPOCO
+                {
+                    Id = 18,
+                    Name = "Coconut",
+                    IconUrl = "",
+                },
+                new IngredientPOCO
+                {
+                    Id = 19,
+                    Name = "Soy",
+                    IconUrl = "",
+                },
+                new IngredientPOCO
+                {
+                    Id = 20,
+                    Name = "Vanilla",
+                    IconUrl = "",
+                },
+                new IngredientPOCO
+                {
+                    Id = 21,
+                    Name = "Rice",
+                    IconUrl = "",
+                },
             ];
     }
 }

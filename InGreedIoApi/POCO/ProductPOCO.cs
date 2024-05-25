@@ -9,7 +9,7 @@
         public int? FeaturingId { get; set; }
         public int CategoryId { get; set; }
         public CategoryPOCO Category { get; set; }
-        public ICollection<IngredientPOCO>? Ingredients { get; set; }
+        public ICollection<IngredientPOCO>? Ingredients { get; set; } = new List<IngredientPOCO>();
         public ICollection<ReviewPOCO>? Reviews { get; set; }
         public FeaturingPOCO? Featuring { get; set; }
         public string? ProducerId { get; set; }
