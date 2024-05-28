@@ -72,7 +72,7 @@ namespace InGreedIoApi.Data.Repository
 
         public async Task<IEnumerable<Review>> GetForProduct(int productId)
         {
-            var reviewsPOCO = await _context.Reviews.Where(x => x.ProductId == productId).ToListAsync();
+            var reviewsPOCO = await _context.Reviews.Where(x => x.ProductId == productId).OrderByDescending(x => x.Id).ToListAsync();
 
             if (reviewsPOCO == null)
             {
