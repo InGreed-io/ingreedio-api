@@ -76,11 +76,12 @@ namespace InGreedIoApi.Controllers
             return Ok("The review was updated");
         }
 
-        [HttpGet("/product/{productId}")]
+        [HttpGet("product/{productId}")]
         public async Task<IActionResult> GetForProduct(int productId)
         {
-            var reviews = await _reviewRepository.GetForProduct(productId);
-            return Ok(_mapper.Map<ReviewDTO>(reviews));
+            var reviewsPOCO = await _reviewRepository.GetForProduct(productId);
+            var reviewsDTO = _mapper.Map<IEnumerable<ReviewDTO>>(reviewsPOCO);
+            return Ok(reviewsDTO);
         }
 
         [Authorize]

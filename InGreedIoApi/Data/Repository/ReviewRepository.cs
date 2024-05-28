@@ -76,7 +76,7 @@ namespace InGreedIoApi.Data.Repository
 
             if (reviewsPOCO == null)
             {
-                return null;
+                return [];
             }
 
             return reviewsPOCO.Select(x => _mapper.Map<Review>(x));

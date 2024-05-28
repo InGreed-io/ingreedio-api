@@ -42,7 +42,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> GetProduct(int productId)
     {
-        var product = await _context.Products.Include(x => x.Reviews).ThenInclude(x => x.User).Include(x => x.Featuring).Include(x => x.Reviews).Include(x => x.Ingredients).Include(x => x.Producer).ThenInclude(x => x.Company).SingleAsync(x => x.Id == productId);
+        var product = await _context.Products.Include(x => x.Featuring).Include(x => x.Reviews).Include(x => x.Ingredients).Include(x => x.Producer).ThenInclude(x => x.Company).SingleAsync(x => x.Id == productId);
 
         return _mapper.Map<Product>(product);
     }

@@ -51,14 +51,7 @@ namespace InGreedIoApi.Data.Mapper
                         false
                     );
                 })
-                .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(ing => ing.Name)))
-                .ForMember(dto => dto.Reviews, opt => opt.MapFrom(src => src.Reviews.Select(x => new ProductRevewiDTO()
-                {
-                    Id = x.Id,
-                    Text = x.Text,
-                    Rating = x.Rating,
-                    UserName = x.User != null ? x.User.UserName : "Unknown"
-                })));
+                .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(ing => ing.Name)));
         }
     }
 }
