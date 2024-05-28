@@ -45,4 +45,15 @@ public class PanelController : ControllerBase
             return Ok("the product has been deleted");
         return BadRequest("the product has not been deleted");
     }
+
+    [Authorize(Roles = "Producer,Admin,Moderator")]
+    [HttpGet("products/{productId}")]
+    public async Task<IActionResult> Details(int productId)
+    {
+        var userId = User.FindFirst("Id")?.Value;
+        var product = await _productRepository.GetProductPermission(productId, userId);
+        if (product == null)
+            return BadRequest("the product has not been found");
+        return Ok(product);
+    }
 }

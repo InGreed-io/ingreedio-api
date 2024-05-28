@@ -46,6 +46,14 @@ public class ProductRepository : IProductRepository
         return _mapper.Map<Product>(product);
     }
 
+    public async Task<Product?> GetProductPermission(int productId, string userId)
+    {
+        var product = await GetProduct(productId);
+        if (product == null || product.Producer.Id != userId)
+            return null;
+        return product;
+    }
+
     public async Task<IPage<ReviewDTO>> GetReviews(int productId, int pageIndex, int pageSize)
     {
         return await _context.Reviews

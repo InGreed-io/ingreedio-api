@@ -15,8 +15,11 @@ public interface IProductRepository
 
     public Task<Product> GetProduct(int productId);
 
+    public Task<Product?> GetProductPermission(int productId, string userId);
+
     public Task<bool> Create(CreateProductDTO createProductDto, string Id);
 
     public Task<bool> Update(UpdateProductDTO updateProductDTO, int productId);
+
     public Task<bool> Delete(int productId);
 }
