@@ -44,7 +44,6 @@ builder.Services.AddControllers()
     {
         var enumConverter = new JsonStringEnumConverter();
         opts.JsonSerializerOptions.Converters.Add(enumConverter);
-        opts.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
 Log.Logger = new LoggerConfiguration()

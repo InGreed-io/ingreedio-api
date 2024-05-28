@@ -52,8 +52,31 @@ public class ApiDbContext : IdentityDbContext<ApiUserPOCO>
         modelBuilder.ApplyConfiguration(_preferenceConfiguration);
         // Seed data
         SeedCategory(modelBuilder);
-        SeedProducts(modelBuilder);
         SeedIngredients(modelBuilder);
+        SeedProducts(modelBuilder);
+        AssociateProductsAndIngredients(modelBuilder);
+    }
+
+    private void AssociateProductsAndIngredients(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ProductPOCO>()
+            .HasMany(p => p.Ingredients)
+            .WithMany(i => i.Products)
+            .UsingEntity(j => j.HasData(
+                 new { ProductsId = 1, IngredientsId = 3 },  // Cow Milk with Cocoa
+                    new { ProductsId = 2, IngredientsId = 15 }, // Almond Milk with Almond
+                    new { ProductsId = 3, IngredientsId = 14 }, // Oat Milk with Oat and Turmeric
+                    new { ProductsId = 3, IngredientsId = 4 },
+                    new { ProductsId = 6, IngredientsId = 19 },
+                    new { ProductsId = 6, IngredientsId = 6 }, // Soy Milk with Soy and Spirulina
+                    new { ProductsId = 5, IngredientsId = 18 }, // Coconut Milk with Coconut
+                    new { ProductsId = 7, IngredientsId = 17 }, // Cashew Milk with Cashew
+                    new { ProductsId = 8, IngredientsId = 21 }, // Rice Milk with Rice
+                    new { ProductsId = 10, IngredientsId = 3 }, // Chocolate Milk with Cocoa
+                    new { ProductsId = 11, IngredientsId = 16 },
+                    new { ProductsId = 11, IngredientsId = 1 }, // Strawberry Milk with Strawberry and Cinnamon
+                    new { ProductsId = 12, IngredientsId = 20 }  // Vanilla Flavored Milk with Vanilla
+                ));
     }
 
     private void SeedCategory(ModelBuilder modelBuilder)
