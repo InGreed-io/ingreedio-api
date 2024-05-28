@@ -1,4 +1,6 @@
-﻿namespace InGreedIoApi.DTO
+﻿using InGreedIoApi.Model;
+
+namespace InGreedIoApi.DTO
 {
     public class ProductDetailsDTO
     {
