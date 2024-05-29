@@ -162,6 +162,28 @@ public class ProductRepository : IProductRepository
         return true;
     }
 
+    public async Task<bool> RemoveFromFavourites(int productId, string userId)
+    {
+        var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
+        if (product == null) return false;
+
+        var user = await _context.ApiUsers.SingleOrDefaultAsync(x => x.Id == userId);
+        if (user == null) return false;
+
+        if (!product.FavouriteBy.Contains(user) && !user.FavouriteProducts.Contains(product)) return false;
+
+        product.FavouriteBy.Remove(user);
+        user.FavouriteProducts.Remove(product);
+
+        _context.Update(product);
+        _context.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+
     private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
     {
         var wanted = productQueryDto.ingredients;
