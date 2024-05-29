@@ -43,7 +43,7 @@ namespace InGreedIoApi.Controllers
             {
                 return NotFound("There is no such reviewId");
             }
-            return Ok("The review was reported");
+            return Ok(_mapper.Map<ReviewDTO>(review));
         }
 
         [HttpPatch("{reviewId}/rate")]
@@ -58,7 +58,7 @@ namespace InGreedIoApi.Controllers
             {
                 return NotFound("There is no such reviewId");
             }
-            return Ok("The review was rated");
+            return Ok(_mapper.Map<ReviewDTO>(review));
         }
 
         [HttpPut("{reviewId}")]
@@ -73,7 +73,7 @@ namespace InGreedIoApi.Controllers
             {
                 return NotFound("There is no such reviewId");
             }
-            return Ok("The review was updated");
+            return Ok(_mapper.Map<ReviewDTO>(review));
         }
 
         [HttpGet("product/{productId}")]
@@ -89,9 +89,18 @@ namespace InGreedIoApi.Controllers
         public async Task<IActionResult> Create([FromBody] CreateReviewDTO createReviewDto)
         {
             var userId = User.FindFirst("Id")?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
             createReviewDto.UserID = userId;
-            var isSuccess = await _reviewRepository.Create(createReviewDto);
-            return isSuccess ? Ok("the review has been added") : BadRequest("The review has not been added");
+            var review = await _reviewRepository.Create(createReviewDto);
+            if (review == null)
+            {
+                return BadRequest("The review has not been added");
+            }
+            return CreatedAtAction(
+                nameof(GetSingle), 
+                new { reviewId = review.Id }, 
+                _mapper.Map<ReviewDTO>(review)
+            );
         }
     }
 }
