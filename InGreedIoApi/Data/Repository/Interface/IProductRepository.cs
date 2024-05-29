@@ -19,4 +19,6 @@ public interface IProductRepository
 
     public Task<bool> Update(UpdateProductDTO updateProductDTO, int productId);
     public Task<bool> Delete(int productId);
+
+    public Task<bool> AddToFavourites(int productId, string userId);
 }
