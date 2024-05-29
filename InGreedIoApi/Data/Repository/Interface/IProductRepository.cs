@@ -18,7 +18,10 @@ public interface IProductRepository
     public Task<bool> Create(CreateProductDTO createProductDto, string Id);
 
     public Task<bool> Update(UpdateProductDTO updateProductDTO, int productId);
+
     public Task<bool> Delete(int productId);
 
     public Task<bool> AddToFavourites(int productId, string userId);
+
+    public Task<bool> RemoveFromFavourites(int productId, string userId);
 }
