@@ -80,8 +80,6 @@ public class ProductsController : ControllerBase
     [HttpPost("{productId}/favourite")]
     public async Task<IActionResult> AddProductToFavourites(int productId)
     {
-        //product should be addded to someone favourite list
-        //product user_favourite_list add current user
         var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
@@ -95,8 +93,6 @@ public class ProductsController : ControllerBase
     [HttpDelete("{productId}/favourite")]
     public async Task<IActionResult> RemoveProductToFavourites(int productId)
     {
-        //product should be addded to someone favourite list
-        //product user_favourite_list add current user
         var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
