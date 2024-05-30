@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using InGreedIoApi.DTO;
+﻿using InGreedIoApi.DTO;
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using InGreedIoApi.Model;
-using System.Threading.Tasks;
 
 namespace InGreedIoApi.Controllers;
 
@@ -19,6 +16,7 @@ public class PanelController : ControllerBase
         _productRepository = productRepository;
     }
 
+    [Authorize]
     [Authorize(Roles = "Producer,Admin")]
     [HttpPost]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductDTO createProductDto)
@@ -28,6 +26,7 @@ public class PanelController : ControllerBase
         return BadRequest("the product has not been added");
     }
 
+    [Authorize]
     [Authorize(Roles = "Producer,Admin")]
     [HttpPatch("{productId}")]
     public async Task<IActionResult> Update(int productId, [FromBody] UpdateProductDTO updateProductDTO)
@@ -37,6 +36,7 @@ public class PanelController : ControllerBase
         return BadRequest("the product has not been updated");
     }
 
+    [Authorize]
     [Authorize(Roles = "Producer,Admin")]
     [HttpDelete("{productId}")]
     public async Task<IActionResult> Delete(int productId)

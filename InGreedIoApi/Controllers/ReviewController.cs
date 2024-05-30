@@ -27,6 +27,7 @@ namespace InGreedIoApi.Controllers
             return StatusCode(StatusCodes.Status405MethodNotAllowed);
         }
 
+        [Authorize]
         [Authorize(Roles = "Moderator")]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] string userId)
