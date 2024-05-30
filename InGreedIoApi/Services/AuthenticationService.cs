@@ -48,7 +48,7 @@ public class AuthenticationService : IAuthenticationService
                 Result = false
             };
 
-        var token = GenerateJwtToken(newUser);
+        var token = await GenerateJwtToken(newUser);
         return new AuthResult
         {
             Result = true,
@@ -80,7 +80,7 @@ public class AuthenticationService : IAuthenticationService
             };
         }
 
-        var jwtToken = GenerateJwtToken(existingUser);
+        var jwtToken = await GenerateJwtToken(existingUser);
 
         return new AuthResult
         {
@@ -89,7 +89,7 @@ public class AuthenticationService : IAuthenticationService
         };
     }
 
-    private string GenerateJwtToken(IdentityUser user)
+    private async Task<string> GenerateJwtToken(ApiUserPOCO user)
     {
         var jwtTokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_jwtConfig.Secret);
@@ -107,6 +107,9 @@ public class AuthenticationService : IAuthenticationService
             Expires = DateTime.Now.AddMonths(1),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
         };
+
+        var roles = await _userManager.GetRolesAsync(user);
+        tokenDescriptor.Subject.AddClaims(roles.Select(roleName => new Claim(ClaimTypes.Role, roleName)));
 
         var token = jwtTokenHandler.CreateToken(tokenDescriptor);
         return jwtTokenHandler.WriteToken(token);
