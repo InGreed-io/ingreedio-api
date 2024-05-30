@@ -2,6 +2,10 @@
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using InGreedIoApi.Model;
+using System.Threading.Tasks;
+using Serilog;
+using AutoMapper;
 
 namespace InGreedIoApi.Controllers;
 
@@ -10,10 +14,12 @@ namespace InGreedIoApi.Controllers;
 public class PanelController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
+    private readonly IMapper _mapper;
 
-    public PanelController(IProductRepository productRepository)
+    public PanelController(IProductRepository productRepository, IMapper mapper)
     {
         _productRepository = productRepository;
+        _mapper = mapper;
     }
 
     [Authorize]
@@ -44,5 +50,22 @@ public class PanelController : ControllerBase
         if (await _productRepository.Delete(productId))
             return Ok("the product has been deleted");
         return BadRequest("the product has not been deleted");
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Producer,Admin,Moderator")]
+    [HttpGet("products/{productId}")]
+    public async Task<IActionResult> Details(int productId)
+    {
+        var userId = User.FindFirst("Id")?.Value;
+
+        if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+        {
+            userId = "Admin";
+        }
+        var product = await _productRepository.GetProductPermission(productId, userId);
+        if (product == null)
+            return BadRequest("the product has not been found");
+        return Ok(_mapper.Map<ProductDetailsDTO>(product));
     }
 }
