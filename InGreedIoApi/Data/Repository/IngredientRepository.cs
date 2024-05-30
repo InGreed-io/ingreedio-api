@@ -28,9 +28,10 @@ namespace InGreedIoApi.Data.Repository
                 );
             }
 
-            return await ingredientsQuery.ProjectToPageAsync<IngredientPOCO, IngredientDTO>(
-                getIngredientsQuery.Page, getIngredientsQuery.Limit, _mapper.ConfigurationProvider
-            );
+            return await ingredientsQuery.OrderBy(ingredient => ingredient.Id)
+                .ProjectToPageAsync<IngredientPOCO, IngredientDTO>(
+                    getIngredientsQuery.Page, getIngredientsQuery.Limit, _mapper.ConfigurationProvider
+                );
         }
     }
 }
