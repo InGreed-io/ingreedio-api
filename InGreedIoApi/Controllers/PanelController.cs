@@ -6,6 +6,7 @@ using InGreedIoApi.Model;
 using System.Threading.Tasks;
 using Serilog;
 using AutoMapper;
+using InGreedIoApi.Utils.Pagination;
 
 namespace InGreedIoApi.Controllers;
 
@@ -67,5 +68,21 @@ public class PanelController : ControllerBase
         if (product == null)
             return BadRequest("the product has not been found");
         return Ok(_mapper.Map<ProductDetailsDTO>(product));
+    }
+
+    [Paginated]
+    [Authorize]
+    [Authorize(Roles = "Producer,Admin,Moderator")]
+    [HttpGet("products")]
+    public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
+    {
+        var userId = User.FindFirst("Id")?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var products = User.IsInRole("Producer")
+            ? await _productRepository.GetAll(productQueryDto, userId)
+            : await _productRepository.GetAll(productQueryDto);
+
+        return Ok(products);
     }
 }
