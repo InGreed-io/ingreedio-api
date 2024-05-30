@@ -2,6 +2,9 @@
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using InGreedIoApi.Model;
+using System.Threading.Tasks;
+using Serilog;
 
 namespace InGreedIoApi.Controllers;
 
@@ -10,10 +13,12 @@ namespace InGreedIoApi.Controllers;
 public class PanelController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
+    private readonly IMapper _mapper;
 
-    public PanelController(IProductRepository productRepository)
+    public PanelController(IProductRepository productRepository, IMapper mapper)
     {
         _productRepository = productRepository;
+        _mapper = mapper;
     }
 
     [Authorize]
@@ -51,9 +56,13 @@ public class PanelController : ControllerBase
     public async Task<IActionResult> Details(int productId)
     {
         var userId = User.FindFirst("Id")?.Value;
+        var role = User.FindAll("Role")?.ToList();
+        Log.Information($"tutaj -- {role.Count}");
+        foreach (var item in role)
+            Log.Information($"tutaj -- {item}");
         var product = await _productRepository.GetProductPermission(productId, userId);
         if (product == null)
             return BadRequest("the product has not been found");
-        return Ok(product);
+        return Ok(_mapper.Map<ProductDetailsDTO>(product));
     }
 }
