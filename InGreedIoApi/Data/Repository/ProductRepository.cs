@@ -7,7 +7,6 @@ using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
-using System.Threading.Tasks;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -41,23 +40,14 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> GetProduct(int productId)
     {
-        var product = await _context.Products.Include(x => x.Featuring).Include(x => x.Ingredients).Include(x => x.Producer).ThenInclude(x => x.Company).FirstOrDefaultAsync(x => x.Id == productId);
+        var product = await _context.Products
+            .Include(x => x.Featuring)
+            .Include(x => x.Ingredients)
+            .Include(x => x.Producer)
+            .ThenInclude(x => x.Company)
+            .FirstOrDefaultAsync(x => x.Id == productId);
 
         return _mapper.Map<Product>(product);
-    }
-
-    public async Task<Product?> GetProductPermission(int productId, string userId)
-    {
-        var product = await GetProduct(productId);
-        if ((userId != "Admin" && userId != "Moderator") || product == null)
-        {
-            if (product == null || product.Producer == null || product.Producer.Id != userId)
-                return null;
-            else
-                return product;
-        }
-
-        return product;
     }
 
     public async Task<IPage<ReviewDTO>> GetReviews(int productId, int pageIndex, int pageSize)
@@ -66,6 +56,7 @@ public class ProductRepository : IProductRepository
             .Include(review => review.User)
             .Where(review => review.ProductId == productId)
             .OrderBy(review => review.ReportsCount)
+            .ThenByDescending(review => review.Id)
             .ProjectToPageAsync<ReviewPOCO, ReviewDTO>(pageIndex, pageSize, _mapper.ConfigurationProvider);
     }
 
@@ -105,53 +96,71 @@ public class ProductRepository : IProductRepository
         return _mapper.Map<Review>(newReviewPoco);
     }
 
-    public async Task<bool> Create(CreateProductDTO createProductDto, string Id)
+    public async Task<Product> Create(CreateProductDTO createProductDto, string producerId)
     {
         var productPOCO = new ProductPOCO()
         {
             CategoryId = createProductDto.CategoryId,
-            ProducerId = Id,
+            ProducerId = producerId,
             Description = createProductDto.Description,
             Name = createProductDto.Name,
-            Category = _context.Category.Single(x => x.Id == createProductDto.CategoryId),
-            Producer = _context.ApiUsers.Single(x => x.Id == Id),
             IconUrl = "brak",
             Ingredients = _context.Ingredients.Where(x => createProductDto.Ingredients.Contains(x.Id)).ToList()
         };
         await _context.Products.AddAsync(productPOCO);
-        try
+        try { await _context.SaveChangesAsync(); }
+        catch (DbUpdateException)
         {
-            await _context.SaveChangesAsync();
+            if (!await _context.Category.AnyAsync(c => c.Id == createProductDto.CategoryId))
+                throw new InGreedIoException(
+                    $"Could not find category with id: {createProductDto.CategoryId}.",
+                    StatusCodes.Status404NotFound
+                );
+            if (!await _context.Users.AnyAsync(u => u.Id == producerId))
+                throw new InGreedIoException(
+                    $"Could not find user with id: {producerId}.",
+                    StatusCodes.Status404NotFound
+                );
+            throw new InGreedIoException(
+                $"Unknown error.",
+                StatusCodes.Status400BadRequest
+            );
         }
-        catch (Exception)
-        {
-            return false;
-        }
-        return true;
+        return _mapper.Map<Product>(productPOCO);
     }
 
-    public async Task<bool> Update(UpdateProductDTO updateProductDTO, int productId)
+    public async Task<Product> Update(UpdateProductDTO updateProductDTO, int productId, string? producerId = null)
     {
-        var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
-        if (product == null)
-            return false;
+        var product = await _context.Products
+            .Include(product => product.Ingredients)
+            .SingleOrDefaultAsync(x => x.Id == productId);
+
+        if (product == null) 
+            throw new InGreedIoException("Could not find product.", StatusCodes.Status404NotFound);
+        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId) 
+            throw new InGreedIoException("Could not access product.", StatusCodes.Status403Forbidden);
+
         product.Description = updateProductDTO.Description;
         product.Name = updateProductDTO.Name;
         var ingredients = await _context.Ingredients.Where(x => updateProductDTO.Ingredients.Contains(x.Id)).ToListAsync();
         product.Ingredients = ingredients;
-        _context.Update(product);
+
         await _context.SaveChangesAsync();
-        return true;
+
+        return _mapper.Map<Product>(product);
     }
 
-    public async Task<bool> Delete(int productId)
+    public async Task Delete(int productId, string? producerId = null)
     {
         var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
-        if (product == null)
-            return false;
+
+        if (product == null) 
+            throw new InGreedIoException("Could not find product.", StatusCodes.Status404NotFound);
+        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId) 
+            throw new InGreedIoException("Could not access product.", StatusCodes.Status403Forbidden);
+
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
-        return true;
     }
 
     private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
