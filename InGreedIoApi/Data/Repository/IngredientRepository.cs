@@ -28,6 +28,18 @@ namespace InGreedIoApi.Data.Repository
                 );
             }
 
+            if (getIngredientsQuery.Include != null) {
+                ingredientsQuery = ingredientsQuery.Where(
+                    x => getIngredientsQuery.Include.Contains(x.Id)
+                );
+            }
+
+            if (getIngredientsQuery.Exclude != null) {
+                ingredientsQuery = ingredientsQuery.Where(
+                    x => !getIngredientsQuery.Exclude.Contains(x.Id)
+                );
+            }
+
             return await ingredientsQuery.ProjectToPageAsync<IngredientPOCO, IngredientDTO>(
                 getIngredientsQuery.pageIndex, getIngredientsQuery.pageSize, _mapper.ConfigurationProvider
             );
