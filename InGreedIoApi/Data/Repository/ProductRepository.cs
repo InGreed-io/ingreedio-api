@@ -49,8 +49,14 @@ public class ProductRepository : IProductRepository
     public async Task<Product?> GetProductPermission(int productId, string userId)
     {
         var product = await GetProduct(productId);
-        if (product == null || product.Producer.Id != userId)
-            return null;
+        if ((userId != "Admin" && userId != "Moderator") || product == null)
+        {
+            if (product == null || product.Producer == null || product.Producer.Id != userId)
+                return null;
+            else
+                return product;
+        }
+
         return product;
     }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using InGreedIoApi.Model;
 using System.Threading.Tasks;
 using Serilog;
+using AutoMapper;
 
 namespace InGreedIoApi.Controllers;
 
@@ -51,15 +52,17 @@ public class PanelController : ControllerBase
         return BadRequest("the product has not been deleted");
     }
 
+    [Authorize]
     [Authorize(Roles = "Producer,Admin,Moderator")]
     [HttpGet("products/{productId}")]
     public async Task<IActionResult> Details(int productId)
     {
         var userId = User.FindFirst("Id")?.Value;
-        var role = User.FindAll("Role")?.ToList();
-        Log.Information($"tutaj -- {role.Count}");
-        foreach (var item in role)
-            Log.Information($"tutaj -- {item}");
+
+        if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+        {
+            userId = "Admin";
+        }
         var product = await _productRepository.GetProductPermission(productId, userId);
         if (product == null)
             return BadRequest("the product has not been found");
