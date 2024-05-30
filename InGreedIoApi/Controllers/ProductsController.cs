@@ -3,7 +3,6 @@ using InGreedIoApi.DTO;
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
 

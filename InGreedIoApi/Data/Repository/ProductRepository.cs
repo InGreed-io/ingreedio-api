@@ -7,7 +7,6 @@ using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
-using System.Threading.Tasks;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -35,7 +34,7 @@ public class ProductRepository : IProductRepository
         SortProductQueryDto(productQueryDto, ref queryable);
 
         return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
-            productQueryDto.page, productQueryDto.limit, _mapper.ConfigurationProvider
+            productQueryDto.pageIndex, productQueryDto.pageSize, _mapper.ConfigurationProvider
         );
     }
 
