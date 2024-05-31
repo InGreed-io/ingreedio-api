@@ -99,6 +99,6 @@ public class ProductsController : ControllerBase
         var addedToFavourites = await _productRepository.RemoveFromFavourites(productId, userId);
         if (addedToFavourites == false) return NotFound("There is no such productId");
 
-        return Ok("Added to Favourites");
+        return Ok("Removed from Favourites");
     }
 }

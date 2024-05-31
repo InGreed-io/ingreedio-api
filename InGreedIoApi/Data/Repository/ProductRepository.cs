@@ -142,12 +142,20 @@ public class ProductRepository : IProductRepository
 
     public async Task<bool> AddToFavourites(int productId, string userId)
     {
-        var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
+        var product = await _context.Products
+            .Include(p => p.FavouriteBy)
+            .SingleOrDefaultAsync(x => x.Id == productId);
         if (product == null) return false;
 
-        var user = await _context.ApiUsers.SingleOrDefaultAsync(x => x.Id == userId);
+        var user = await _context.ApiUsers
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId);
+        
         if (user == null) return false;
 
+        //if (user.FavouriteProducts == null) user.FavouriteProducts = new List<ProductPOCO>();
+        //if (product.FavouriteBy == null) product.FavouriteBy = new List<ApiUserPOCO>();
+        
         if (product.FavouriteBy.Contains(user)) return false;
         if (user.FavouriteProducts.Contains(product)) return false;
 
@@ -157,17 +165,28 @@ public class ProductRepository : IProductRepository
         _context.Update(product);
         _context.Update(user);
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
 
         return true;
     }
 
     public async Task<bool> RemoveFromFavourites(int productId, string userId)
     {
-        var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
+        var product = await _context.Products
+            .Include(p => p.FavouriteBy)
+            .SingleOrDefaultAsync(x => x.Id == productId);
         if (product == null) return false;
 
-        var user = await _context.ApiUsers.SingleOrDefaultAsync(x => x.Id == userId);
+        var user = await _context.ApiUsers
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId);
         if (user == null) return false;
 
         if (!product.FavouriteBy.Contains(user) && !user.FavouriteProducts.Contains(product)) return false;
