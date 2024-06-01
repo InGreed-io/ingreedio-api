@@ -67,7 +67,7 @@ namespace InGreedIoApi.Data.Repository
                 return null;
             }
 
-            reviewPOCO.Text = reviewUpdateDto.Content;
+            reviewPOCO.Text = reviewUpdateDto.Text;
             reviewPOCO.Rating = reviewUpdateDto.Rating;
             await _context.SaveChangesAsync();
 

@@ -65,7 +65,7 @@ public class ProductsController : ControllerBase
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
         var newReview = await _productRepository.AddReview(
-            productId, userId, reviewDto.Content, reviewDto.Rating
+            productId, userId, reviewDto.Text, reviewDto.Rating
         );
         return CreatedAtAction(
             "GetSingle",
