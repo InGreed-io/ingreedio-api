@@ -21,9 +21,13 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto)
+    public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto, string? producerId = null)
     {
         var queryable = _context.Products.AsQueryable();
+
+        if (!string.IsNullOrEmpty(producerId))
+            queryable = queryable.Where(p => p.ProducerId == producerId);
+
         queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
 
         if (productQueryDto.categoryId.HasValue)

@@ -3,6 +3,7 @@ using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using InGreedIoApi.Utils.Pagination;
 using InGreedIoApi.Model.Exceptions;
 
 namespace InGreedIoApi.Controllers;
@@ -89,5 +90,21 @@ public class PanelController : ControllerBase
             return StatusCode(StatusCodes.Status403Forbidden);
 
         return Ok(_mapper.Map<ProductDetailsDTO>(product));
+    }
+
+    [Paginated]
+    [Authorize]
+    [Authorize(Roles = "Producer,Admin,Moderator")]
+    [HttpGet("products")]
+    public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
+    {
+        var userId = User.FindFirst("Id")?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var products = User.IsInRole("Producer")
+            ? await _productRepository.GetAll(productQueryDto, userId)
+            : await _productRepository.GetAll(productQueryDto);
+
+        return Ok(products);
     }
 }
