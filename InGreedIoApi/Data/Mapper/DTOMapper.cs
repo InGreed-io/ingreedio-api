@@ -18,6 +18,7 @@ namespace InGreedIoApi.Data.Mapper
             ));
             CreateMap<Ingredient, IngredientDTO>();
             CreateMap<Category, CategoryDTO>();
+            CreateMap<Preference, PreferenceDTO>();
             CreateMap<ApiUser, ApiUserDTO>().ConstructUsing(src => new(
                 src.Id,
                 src.Email,

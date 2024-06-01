@@ -46,5 +46,18 @@ namespace InGreedIoApi.Controllers
             var preferences = await _userRepository.GetPreferences(userId);
             return Ok(_mapper.Map<IEnumerable<PreferenceDTO>>(preferences));
         }
+
+        [Authorize]
+        [HttpPost("preferences")]
+        public async Task<IActionResult> CreatePreference([FromBody] CreatePreferenceDTO args)
+        {
+            var userId = User.FindFirst("Id")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            var preference = await _userRepository.CreatePreference(userId, args);
+            return Ok(_mapper.Map<PreferenceDTO>(preference));
+        }
     }
 }

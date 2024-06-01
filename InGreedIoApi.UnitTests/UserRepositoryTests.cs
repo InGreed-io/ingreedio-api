@@ -3,6 +3,7 @@ using InGreedIoApi.Data;
 using InGreedIoApi.Data.Mapper;
 using InGreedIoApi.Data.Repository;
 using InGreedIoApi.POCO;
+using InGreedIoApi.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace UnitTests;
@@ -28,16 +29,16 @@ public class UserRepositoryTests
         });
         _mockMapper = configuration.CreateMapper();
 
-        _preferences =
-        [
+        _preferences = new List<PreferencePOCO>
+        {
             new PreferencePOCO { Id = 1, Name = "Preference 1", UserId = "User1" }
-        ];
+        };
 
-        _users =
-        [
+        _users = new List<ApiUserPOCO>
+        {
             new ApiUserPOCO { Id = "User1", Email = "User1@a.a", IsBlocked = false, Preferences = _preferences },
             new ApiUserPOCO { Id = "User2", Email = "User2@a.a", IsBlocked = false }
-        ];
+        };
 
         _mockContext.ApiUsers.AddRange(_users);
         _mockContext.Preferences.AddRange(_preferences);
@@ -76,4 +77,37 @@ public class UserRepositoryTests
         Assert.Single(preferences);
         Assert.Equal("Preference 1", preferences.First().Name);
     }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task CreatePreference_ReturnsNewPreferenceForExistingUser()
+    {
+        // Arrange
+        var repository = new UserRepository(_mockContext, _mockMapper);
+        var userId = "User2";
+        var createPreferenceDto = new CreatePreferenceDTO("New Preference");
+
+        // Act
+        var newPreference = await repository.CreatePreference(userId, createPreferenceDto);
+
+        // Assert
+        Assert.NotNull(newPreference);
+        Assert.Equal("New Preference", newPreference.Name);
+        Assert.Equal(userId, newPreference.UserId);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task CreatePreference_ThrowsExceptionForNonExistentUser()
+    {
+        // Arrange
+        var repository = new UserRepository(_mockContext, _mockMapper);
+        var userId = "NonExistentUser";
+        var createPreferenceDto = new CreatePreferenceDTO("New Preference");
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => repository.CreatePreference(userId, createPreferenceDto));
+        Assert.Equal("User not found", exception.Message);
+    }
 }
+
