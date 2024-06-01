@@ -102,7 +102,7 @@ public class ReviewRepositoryTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(updateDto.Content, result.Text);
+        Assert.Equal(updateDto.Text, result.Text);
         Assert.Equal(updateDto.Rating, result.Rating);
     }
 
