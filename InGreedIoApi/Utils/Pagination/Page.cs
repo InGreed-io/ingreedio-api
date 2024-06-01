@@ -11,7 +11,7 @@ namespace InGreedIoApi.Utils.Pagination
 
         IEnumerable IPage.Contents => contents;
 
-        public object PreventAutomaticSerialization => 
+        public object PreventAutomaticSerialization =>
             throw new InvalidOperationException("Use [Paginated] attribute on action method!");
     }
 
