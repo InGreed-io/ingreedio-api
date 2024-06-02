@@ -29,7 +29,7 @@ public class ProductRepository : IProductRepository
             queryable = queryable.Where(p => p.ProducerId == producerId);
 
         if (!string.IsNullOrEmpty(productQueryDto.query))
-          queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
+            queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
 
         if (productQueryDto.categoryId.HasValue)
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
@@ -141,9 +141,9 @@ public class ProductRepository : IProductRepository
             .Include(product => product.Ingredients)
             .SingleOrDefaultAsync(x => x.Id == productId);
 
-        if (product == null) 
+        if (product == null)
             throw new InGreedIoException("Could not find product.", StatusCodes.Status404NotFound);
-        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId) 
+        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId)
             throw new InGreedIoException("Could not access product.", StatusCodes.Status403Forbidden);
 
         product.Description = updateProductDTO.Description;
@@ -160,9 +160,9 @@ public class ProductRepository : IProductRepository
     {
         var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
 
-        if (product == null) 
+        if (product == null)
             throw new InGreedIoException("Could not find product.", StatusCodes.Status404NotFound);
-        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId) 
+        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId)
             throw new InGreedIoException("Could not access product.", StatusCodes.Status403Forbidden);
 
         _context.Products.Remove(product);
