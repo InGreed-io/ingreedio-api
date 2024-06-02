@@ -27,7 +27,7 @@ public class PanelController : ControllerBase
     [HttpPost("products")]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductDTO createProductDto)
     {
-        var userId = User.FindFirst("Id")?.Value; 
+        var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
         var product = await _productRepository.Create(createProductDto, userId);
@@ -48,7 +48,7 @@ public class PanelController : ControllerBase
         var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-        var product = User.IsInRole("Producer") 
+        var product = User.IsInRole("Producer")
             ? await _productRepository.Update(updateProductDTO, productId, userId)
             : await _productRepository.Update(updateProductDTO, productId);
 
@@ -63,11 +63,11 @@ public class PanelController : ControllerBase
         var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-        if (User.IsInRole("Producer")) 
+        if (User.IsInRole("Producer"))
         {
             await _productRepository.Delete(productId, userId);
         }
-        else 
+        else
         {
             await _productRepository.Delete(productId);
         }

@@ -81,11 +81,13 @@ public class AuthenticationService : IAuthenticationService
         }
 
         var jwtToken = await GenerateJwtToken(existingUser);
+        var roles = await _userManager.GetRolesAsync(existingUser);
 
         return new AuthResult
         {
             Token = jwtToken,
-            Result = true
+            Result = true,
+            Roles = roles,
         };
     }
 
