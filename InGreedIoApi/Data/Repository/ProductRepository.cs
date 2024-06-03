@@ -8,6 +8,7 @@ using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -150,12 +151,12 @@ public class ProductRepository : IProductRepository
         var user = await _context.ApiUsers
             .Include(u => u.FavouriteProducts)
             .SingleOrDefaultAsync(x => x.Id == userId);
-        
+
         if (user == null) return false;
 
         //if (user.FavouriteProducts == null) user.FavouriteProducts = new List<ProductPOCO>();
         //if (product.FavouriteBy == null) product.FavouriteBy = new List<ApiUserPOCO>();
-        
+
         if (product.FavouriteBy.Contains(user)) return false;
         if (user.FavouriteProducts.Contains(product)) return false;
 
@@ -245,5 +246,15 @@ public class ProductRepository : IProductRepository
                 _ => throw new ArgumentOutOfRangeException("sorty is not defined properly")
             };
         }
+    }
+
+    public async Task<IEnumerable<bool>> CheckFavourites(IEnumerable<int> productIds, string userId)
+    {
+        var user = await _context.Users
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId) ??
+            throw new InGreedIoException("User not found", StatusCodes.Status404NotFound);
+
+        return productIds.Select(p => user.FavouriteProducts.Any(product => product.Id == p));
     }
 }

@@ -27,15 +27,15 @@ namespace InGreedIoApi.Data.Mapper
                 src.EmailConfirmed));
 
             CreateMap<Product, ProductDTO>()
-                .ConstructUsing((product, context) => new ProductDTO(
-                    product.Id,
-                    product.Name,
-                    product.IconUrl,
-                    product.Rating,
-                    product.Reviews.Count(),
-                    product.Featuring != null
-                ))
-                .ForMember(dto => dto.Favourite, opt => opt.MapFrom<IsFavoritedResolver>());
+                .ConstructUsing((product, context) => new ProductDTO()
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    IconUrl = product.IconUrl,
+                    Rating = product.Rating,
+                    RatingsCount = product.Reviews.Count(),
+                    Featured = product.Featuring != null
+                });
 
             CreateMap<Product, ProductDetailsDTO>()
                 .ConstructUsing((product, context) =>
@@ -55,38 +55,6 @@ namespace InGreedIoApi.Data.Mapper
                     );
                 })
                 .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(ing => ing.Name)));
-        }
-    }
-
-
-    public class IsFavoritedResolver : IValueResolver<Product, ProductDTO, bool?>
-    {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ApiDbContext _context;
-
-        public IsFavoritedResolver(IHttpContextAccessor httpContextAccessor, ApiDbContext context)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            _context = context;
-        }
-
-        public bool? Resolve(Product source, ProductDTO destination, bool? destMember, ResolutionContext context)
-        {
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            if (httpContext == null || httpContext.User == null)
-            {
-                return false;
-            }
-
-            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return false;
-
-            var user = _context.ApiUsers
-                                .Include(u => u.FavouriteProducts)
-                                .SingleOrDefault(u => u.Id == userId);
-
-            return user?.FavouriteProducts.Any(p => p.Id == source.Id) ?? false;
         }
     }
 }

@@ -24,4 +24,6 @@ public interface IProductRepository
     public Task<bool> AddToFavourites(int productId, string userId);
 
     public Task<bool> RemoveFromFavourites(int productId, string userId);
+
+    public Task<IEnumerable<bool>> CheckFavourites(IEnumerable<int> productIds, string userId);
 }
