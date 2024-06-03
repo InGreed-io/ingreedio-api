@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace InGreedIoApi.Data.Mapper
 {
@@ -32,7 +34,8 @@ namespace InGreedIoApi.Data.Mapper
                     product.Rating,
                     product.Reviews.Count(),
                     product.Featuring != null
-                ));
+                ))
+                .ForMember(dto => dto.Favourite, opt => opt.MapFrom<IsFavoritedResolver>());
 
             CreateMap<Product, ProductDetailsDTO>()
                 .ConstructUsing((product, context) =>
@@ -52,6 +55,38 @@ namespace InGreedIoApi.Data.Mapper
                     );
                 })
                 .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(ing => ing.Name)));
+        }
+    }
+
+
+    public class IsFavoritedResolver : IValueResolver<Product, ProductDTO, bool?>
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ApiDbContext _context;
+
+        public IsFavoritedResolver(IHttpContextAccessor httpContextAccessor, ApiDbContext context)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            _context = context;
+        }
+
+        public bool? Resolve(Product source, ProductDTO destination, bool? destMember, ResolutionContext context)
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            if (httpContext == null || httpContext.User == null)
+            {
+                return false;
+            }
+
+            var userId = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return false;
+
+            var user = _context.ApiUsers
+                                .Include(u => u.FavouriteProducts)
+                                .SingleOrDefault(u => u.Id == userId);
+
+            return user?.FavouriteProducts.Any(p => p.Id == source.Id) ?? false;
         }
     }
 }
