@@ -67,7 +67,7 @@ public class IngredientRepositoryTests
 
         // Assert
         Assert.NotNull(ingredients.Contents);
-        Assert.Equal(1, ingredients.Contents.Count());
+        Assert.Single(ingredients.Contents);
         Assert.Equal(1, ingredients.Contents.First().Id);
         Assert.Equal("Ingredient 1", ingredients.Contents.First().Name);
     }
@@ -84,7 +84,7 @@ public class IngredientRepositoryTests
 
         // Assert
         Assert.NotNull(ingredients.Contents);
-        Assert.Equal(1, ingredients.Contents.Count());
+        Assert.Single(ingredients.Contents);
         Assert.Equal(2, ingredients.Contents.First().Id);
         Assert.Equal("Ingredient 2", ingredients.Contents.First().Name);
     }
