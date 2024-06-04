@@ -182,9 +182,6 @@ public class ProductRepository : IProductRepository
 
         if (user == null) return false;
 
-        //if (user.FavouriteProducts == null) user.FavouriteProducts = new List<ProductPOCO>();
-        //if (product.FavouriteBy == null) product.FavouriteBy = new List<ApiUserPOCO>();
-
         if (product.FavouriteBy.Contains(user)) return false;
         if (user.FavouriteProducts.Contains(product)) return false;
 
