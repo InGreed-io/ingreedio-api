@@ -103,7 +103,7 @@ public class ProductsController : ControllerBase
         var addedToFavourites = await _productRepository.AddToFavourites(productId, userId);
         if (addedToFavourites == false) return NotFound("There is no such productId");
 
-        return Ok();
+        return NoContent();
     }
 
     [Authorize]

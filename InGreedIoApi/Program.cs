@@ -65,6 +65,7 @@ builder.Services.AddSingleton<ISeeder<IngredientPOCO>, IngredientSeeder>();
 builder.Services.AddScoped<IUserSeeder, ApiUserSeeder>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
