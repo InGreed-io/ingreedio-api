@@ -6,6 +6,7 @@ using InGreedIoApi.Model;
 using System.Threading.Tasks;
 using Serilog;
 using AutoMapper;
+using InGreedIoApi.Utils.Pagination;
 
 namespace InGreedIoApi.Controllers;
 
@@ -14,11 +15,13 @@ namespace InGreedIoApi.Controllers;
 public class PanelController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
 
-    public PanelController(IProductRepository productRepository, IMapper mapper)
+    public PanelController(IProductRepository productRepository, IUserRepository userRepository, IMapper mapper)
     {
         _productRepository = productRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
     }
 
@@ -67,5 +70,15 @@ public class PanelController : ControllerBase
         if (product == null)
             return BadRequest("the product has not been found");
         return Ok(_mapper.Map<ProductDetailsDTO>(product));
+    }
+
+    [Paginated]
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers(string? emailQuery, int pageIndex = 0, int pageSize = 10) 
+    {
+        var users = await _userRepository.GetUsers(emailQuery, pageIndex, pageSize);
+        return Ok(users);
     }
 }

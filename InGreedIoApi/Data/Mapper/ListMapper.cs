@@ -24,6 +24,8 @@ namespace InGreedIoApi.Data.Mapper
                 .ConstructUsing(src => new ReviewDTO(
                     src.Id, src.User.UserName!, src.Text, src.Rating, src.UserID
                 ));
+            CreateProjection<ApiUserPOCO, ApiUserListItemDTO>()
+                .ConstructUsing(src => new ApiUserListItemDTO(src.Id, src.Email, src.IsBlocked));
         }
     }
 }
