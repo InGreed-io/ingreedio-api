@@ -49,7 +49,7 @@ public class UserRepositoryTests
     public async Task GetUserById_ReturnsCorrectUsers_ReturnUserWithProperId()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper);
+        var repository = new UserRepository(_mockContext, _mockMapper, null);
         var userId = "User1";
 
         // Act
@@ -65,7 +65,7 @@ public class UserRepositoryTests
     public async Task GetPreferences_ReturnsCorrectPreferencesOfUser_ReturnPreferencesForUserId()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper);
+        var repository = new UserRepository(_mockContext, _mockMapper, null);
         var userId = "User1";
 
         // Act
