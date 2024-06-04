@@ -30,7 +30,8 @@ namespace InGreedIoApi.Data.Repository
             return _mapper.Map<ApiUser>(user);
         }
 
-        public async Task<IPage<ApiUserListItemDTO>> GetUsers(string? emailQuery, int pageIndex, int pageSize) {
+        public async Task<IPage<ApiUserListItemDTO>> GetUsers(string? emailQuery, int pageIndex, int pageSize) 
+        {
             var query = _context.Users.AsQueryable();
 
             if (!string.IsNullOrEmpty(emailQuery)) 
