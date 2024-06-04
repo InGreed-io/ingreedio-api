@@ -27,15 +27,16 @@ namespace InGreedIoApi.Data.Mapper
                 src.EmailConfirmed));
 
             CreateMap<Product, ProductDTO>()
-                .ConstructUsing((product, context) => new ProductDTO()
-                {
-                    Id = product.Id,
-                    Name = product.Name,
-                    IconUrl = product.IconUrl,
-                    Rating = product.Rating,
-                    RatingsCount = product.Reviews.Count(),
-                    Featured = product.Featuring != null
-                });
+                .ConstructUsing((product, context) => new ProductDTO(
+
+                    product.Id,
+                    product.Name,
+                    product.IconUrl,
+                    product.Rating,
+                    product.Reviews.Count(),
+                    product.Featuring != null,
+                    false
+                ));
 
             CreateMap<Product, ProductDetailsDTO>()
                 .ConstructUsing((product, context) =>

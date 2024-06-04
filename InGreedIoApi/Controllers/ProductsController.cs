@@ -30,15 +30,17 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
     {
         var products = await _productRepository.GetAll(productQueryDto);
-
         var userId = User.FindFirst("Id")?.Value;
-        var favourites = await _productRepository.CheckFavourites(products.Contents.Select(p => p.Id), userId);
 
-        foreach (var (product, isFavourite) in products.Contents.Zip(favourites))
+        if (!string.IsNullOrEmpty(userId))
         {
-            product.Favourite = isFavourite;
-        }
+            var favourites = await _productRepository.CheckFavourites(products.Contents.Select(p => p.Id), userId);
 
+            foreach (var (product, isFavourite) in products.Contents.Zip(favourites))
+            {
+                product.Favourite = isFavourite;
+            }
+        }
         return Ok(products);
     }
     [Authorize]
@@ -55,10 +57,11 @@ public class ProductsController : ControllerBase
         var productDto = _mapper.Map<ProductDetailsDTO>(product);
 
         var userId = User.FindFirst("Id")?.Value;
-        if (string.IsNullOrEmpty(userId)) return Unauthorized();
-
-        var favourite = await _productRepository.CheckFavourites(new List<int>() { productDto.Id }, userId);
-        productDto.Favourite = favourite.First();
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var favourite = await _productRepository.CheckFavourites(new List<int>() { productDto.Id }, userId);
+            productDto.Favourite = favourite.First();
+        }
         return Ok(productDto);
     }
 
