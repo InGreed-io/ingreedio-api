@@ -3,7 +3,6 @@ using InGreedIoApi.DTO;
 using InGreedIoApi.Data.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
 
@@ -84,7 +83,7 @@ public class ProductsController : ControllerBase
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
         var newReview = await _productRepository.AddReview(
-            productId, userId, reviewDto.Content, reviewDto.Rating
+            productId, userId, reviewDto.Text, reviewDto.Rating
         );
         return CreatedAtAction(
             "GetSingle",

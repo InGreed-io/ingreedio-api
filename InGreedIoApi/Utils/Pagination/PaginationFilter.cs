@@ -21,7 +21,7 @@ namespace InGreedIoApi.Utils.Pagination
         {
             if (context.Result is ObjectResult objectResult && objectResult.Value is IPage page)
             {
-                if (_options.MoveMetadataToHeader) 
+                if (_options.MoveMetadataToHeader)
                 {
                     context.HttpContext.Response.Headers.Append(
                         _options.PageIndexHeaderName,
@@ -40,10 +40,10 @@ namespace InGreedIoApi.Utils.Pagination
                 }
                 else
                 {
-                    objectResult.Value = new 
-                    { 
-                        Contents = page.Contents, 
-                        Metadata = page.Metadata 
+                    objectResult.Value = new
+                    {
+                        Contents = page.Contents,
+                        Metadata = page.Metadata
                     };
                 }
             }

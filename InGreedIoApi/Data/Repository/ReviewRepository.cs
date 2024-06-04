@@ -36,6 +36,8 @@ namespace InGreedIoApi.Data.Repository
             reviewPOCO.ReportsCount++;
             await _context.SaveChangesAsync();
 
+            await _context.Entry(reviewPOCO).Reference(review => review.User).LoadAsync();
+
             return _mapper.Map<Review>(reviewPOCO);
         }
 
@@ -51,6 +53,8 @@ namespace InGreedIoApi.Data.Repository
             reviewPOCO.Rating = reviewRating;
             await _context.SaveChangesAsync();
 
+            await _context.Entry(reviewPOCO).Reference(review => review.User).LoadAsync();
+
             return _mapper.Map<Review>(reviewPOCO);
         }
 
@@ -63,16 +67,21 @@ namespace InGreedIoApi.Data.Repository
                 return null;
             }
 
-            reviewPOCO.Text = reviewUpdateDto.Content;
+            reviewPOCO.Text = reviewUpdateDto.Text;
             reviewPOCO.Rating = reviewUpdateDto.Rating;
             await _context.SaveChangesAsync();
+
+            await _context.Entry(reviewPOCO).Reference(review => review.User).LoadAsync();
 
             return _mapper.Map<Review>(reviewPOCO);
         }
 
         public async Task<IEnumerable<Review>> GetForProduct(int productId)
         {
-            var reviewsPOCO = await _context.Reviews.Where(x => x.ProductId == productId).OrderByDescending(x => x.Id).ToListAsync();
+            var reviewsPOCO = await _context.Reviews
+                .Include(review => review.User)
+                .Where(x => x.ProductId == productId)
+                .OrderByDescending(x => x.Id).ToListAsync();
 
             if (reviewsPOCO == null)
             {
@@ -82,7 +91,7 @@ namespace InGreedIoApi.Data.Repository
             return reviewsPOCO.Select(x => _mapper.Map<Review>(x));
         }
 
-        public async Task<bool> Create(CreateReviewDTO createReviewDto)
+        public async Task<Review?> Create(CreateReviewDTO createReviewDto)
         {
             var newReview = new ReviewPOCO
             {
@@ -96,12 +105,14 @@ namespace InGreedIoApi.Data.Repository
             {
                 await _context.Reviews.AddAsync(newReview);
                 await _context.SaveChangesAsync();
+
+                await _context.Entry(newReview).Reference(review => review.User).LoadAsync();
             }
             catch
             {
-                return false;
+                return null;
             }
-            return true;
+            return _mapper.Map<Review>(newReview);
         }
     }
 }

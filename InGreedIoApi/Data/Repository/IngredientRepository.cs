@@ -28,9 +28,24 @@ namespace InGreedIoApi.Data.Repository
                 );
             }
 
-            return await ingredientsQuery.ProjectToPageAsync<IngredientPOCO, IngredientDTO>(
-                getIngredientsQuery.Page, getIngredientsQuery.Limit, _mapper.ConfigurationProvider
-            );
+            if (getIngredientsQuery.Include != null)
+            {
+                ingredientsQuery = ingredientsQuery.Where(
+                    x => getIngredientsQuery.Include.Contains(x.Id)
+                );
+            }
+
+            if (getIngredientsQuery.Exclude != null)
+            {
+                ingredientsQuery = ingredientsQuery.Where(
+                    x => !getIngredientsQuery.Exclude.Contains(x.Id)
+                );
+            }
+
+            return await ingredientsQuery.OrderBy(ingredient => ingredient.Id)
+                .ProjectToPageAsync<IngredientPOCO, IngredientDTO>(
+                    getIngredientsQuery.pageIndex, getIngredientsQuery.pageSize, _mapper.ConfigurationProvider
+                );
         }
     }
 }

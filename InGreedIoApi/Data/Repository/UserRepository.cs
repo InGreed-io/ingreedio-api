@@ -49,7 +49,7 @@ namespace InGreedIoApi.Data.Repository
             queryable = queryable.Where(p => p.FavouriteBy.Any(u => u.Id == userId));
 
             return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
-                productQueryDto.page, productQueryDto.limit, _mapper.ConfigurationProvider
+                productQueryDto.pageIndex, productQueryDto.pageSize, _mapper.ConfigurationProvider
             );
         }
 
@@ -96,5 +96,35 @@ namespace InGreedIoApi.Data.Repository
                 };
             }
         }
+        public async Task<Preference> CreatePreference(string userId, CreatePreferenceDTO args)
+        {
+            var user = await _context.Users
+                .Include(u => u.Preferences)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var newPreference = new PreferencePOCO
+            {
+                Name = args.Name,
+                UserId = userId,
+                User = user,
+                IsActive = true,
+                Wanted = new List<IngredientPOCO>(),
+                Unwanted = new List<IngredientPOCO>(),
+            };
+
+            user.Preferences.Add(newPreference);
+
+            await _context.SaveChangesAsync();
+
+            // await _context.Entry(newPreference).Reference(p => p.User).LoadAsync();
+
+            return _mapper.Map<Preference>(newPreference);
+        }
+
     }
 }
