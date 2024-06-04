@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace InGreedIoApi.Data.Mapper
 {
@@ -27,12 +29,14 @@ namespace InGreedIoApi.Data.Mapper
 
             CreateMap<Product, ProductDTO>()
                 .ConstructUsing((product, context) => new ProductDTO(
+
                     product.Id,
                     product.Name,
                     product.IconUrl,
                     product.Rating,
                     product.Reviews.Count(),
-                    product.Featuring != null
+                    product.Featuring != null,
+                    false
                 ));
 
             CreateMap<Product, ProductDetailsDTO>()

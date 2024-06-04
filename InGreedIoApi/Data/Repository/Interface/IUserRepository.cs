@@ -1,5 +1,6 @@
-﻿using InGreedIoApi.Model;
 using InGreedIoApi.DTO;
+using InGreedIoApi.Model;
+using InGreedIoApi.Utils.Pagination;
 
 namespace InGreedIoApi.Data.Repository.Interface
 {
@@ -9,5 +10,7 @@ namespace InGreedIoApi.Data.Repository.Interface
         Task<Preference> CreatePreference(string userId, CreatePreferenceDTO args);
 
         Task<ApiUser> GetUserById(string id);
+
+        Task<IPage<ProductDTO>> GetFavourites(ProductQueryDTO productQueryDto, string userId);
     }
 }

@@ -169,6 +169,66 @@ public class ProductRepository : IProductRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> AddToFavourites(int productId, string userId)
+    {
+        var product = await _context.Products
+            .Include(p => p.FavouriteBy)
+            .SingleOrDefaultAsync(x => x.Id == productId);
+        if (product == null) return false;
+
+        var user = await _context.ApiUsers
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null) return false;
+
+        if (product.FavouriteBy.Contains(user)) return false;
+        if (user.FavouriteProducts.Contains(product)) return false;
+
+        product.FavouriteBy.Add(user);
+        user.FavouriteProducts.Add(product);
+
+        _context.Update(product);
+        _context.Update(user);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public async Task<bool> RemoveFromFavourites(int productId, string userId)
+    {
+        var product = await _context.Products
+            .Include(p => p.FavouriteBy)
+            .SingleOrDefaultAsync(x => x.Id == productId);
+        if (product == null) return false;
+
+        var user = await _context.ApiUsers
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId);
+        if (user == null) return false;
+
+        if (!product.FavouriteBy.Contains(user) && !user.FavouriteProducts.Contains(product)) return false;
+
+        product.FavouriteBy.Remove(user);
+        user.FavouriteProducts.Remove(product);
+
+        _context.Update(product);
+        _context.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+
     private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
     {
         var wanted = productQueryDto.ingredients;
@@ -215,5 +275,15 @@ public class ProductRepository : IProductRepository
         {
             queryable = queryable.OrderBy(p => p.Id);
         }
+    }
+
+    public async Task<IEnumerable<bool>> CheckFavourites(IEnumerable<int> productIds, string userId)
+    {
+        var user = await _context.Users
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId) ??
+            throw new InGreedIoException("User not found", StatusCodes.Status404NotFound);
+
+        return productIds.Select(p => user.FavouriteProducts.Any(product => product.Id == p));
     }
 }

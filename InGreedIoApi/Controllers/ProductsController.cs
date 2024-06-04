@@ -23,13 +23,27 @@ public class ProductsController : ControllerBase
     }
 
     [Paginated]
+    [Authorize]
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
     {
         var products = await _productRepository.GetAll(productQueryDto);
+        var userId = User.FindFirst("Id")?.Value;
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var favourites = await _productRepository.CheckFavourites(products.Contents.Select(p => p.Id), userId);
+
+            foreach (var (product, isFavourite) in products.Contents.Zip(favourites))
+            {
+                product.Favourite = isFavourite;
+            }
+        }
         return Ok(products);
     }
-
+    [Authorize]
+    [AllowAnonymous]
     [HttpGet("{productId}")]
     public async Task<IActionResult> GetProduct(int productId)
     {
@@ -40,9 +54,13 @@ public class ProductsController : ControllerBase
         }
 
         var productDto = _mapper.Map<ProductDetailsDTO>(product);
-        var userId = User.FindFirst("Id")?.Value;
-        productDto.Favourite = !string.IsNullOrEmpty(userId);
 
+        var userId = User.FindFirst("Id")?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var favourite = await _productRepository.CheckFavourites(new List<int>() { productDto.Id }, userId);
+            productDto.Favourite = favourite.First();
+        }
         return Ok(productDto);
     }
 
@@ -73,5 +91,31 @@ public class ProductsController : ControllerBase
             new { reviewId = newReview.Id },
             _mapper.Map<ReviewDTO>(newReview)
         );
+    }
+
+    [Authorize]
+    [HttpPost("{productId}/favourite")]
+    public async Task<IActionResult> AddProductToFavourites(int productId)
+    {
+        var userId = User.FindFirst("Id")?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var addedToFavourites = await _productRepository.AddToFavourites(productId, userId);
+        if (addedToFavourites == false) return NotFound("There is no such productId");
+
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpDelete("{productId}/favourite")]
+    public async Task<IActionResult> RemoveProductToFavourites(int productId)
+    {
+        var userId = User.FindFirst("Id")?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var addedToFavourites = await _productRepository.RemoveFromFavourites(productId, userId);
+        if (addedToFavourites == false) return NotFound("There is no such productId");
+
+        return NoContent();
     }
 }

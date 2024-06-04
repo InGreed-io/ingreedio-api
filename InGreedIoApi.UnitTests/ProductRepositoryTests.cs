@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using InGreedIoApi.Data;
 using InGreedIoApi.Data.Mapper;
 using InGreedIoApi.Data.Repository;
@@ -49,7 +49,7 @@ public class ProductRepositoryTests
     public async Task GetAll_ReturnsFilteredProducts()
     {
         // Arrange
-        var queryDto = new ProductQueryDTO(query: "a", categoryId: null, ingredients: null, preferenceId: null, SortBy: null, page: 0, limit: 10);
+        var queryDto = new ProductQueryDTO(query: "a", categoryId: null, ingredients: null, preferenceId: null, SortBy: null, pageIndex: 0, pageSize: 10);
         var repository = new ProductRepository(_mockMapper, _mockContext);
 
         // Act
@@ -106,10 +106,10 @@ public class ProductRepositoryTests
         var repository = new ProductRepository(_mockMapper, _mockContext);
 
         // Act
-        var result = await repository.Delete(productId);
+        var exception = await Record.ExceptionAsync(() => repository.Delete(productId));
 
         // Assert
-        Assert.True(result);
+        Assert.Null(exception);
         Assert.Equal(1, _mockContext.Products.Count());
     }
 }
