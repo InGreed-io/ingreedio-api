@@ -58,5 +58,36 @@ namespace InGreedIoApi.Data.Repository
 
             return preferences.Select(x => _mapper.Map<Preference>(x));
         }
+
+        public async Task<Preference> CreatePreference(string userId, CreatePreferenceDTO args)
+        {
+            var user = await _context.Users
+                .Include(u => u.Preferences)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var newPreference = new PreferencePOCO
+            {
+                Name = args.Name,
+                UserId = userId,
+                User = user,
+                IsActive = true,
+                Wanted = new List<IngredientPOCO>(),
+                Unwanted = new List<IngredientPOCO>(),
+            };
+
+            user.Preferences.Add(newPreference);
+
+            await _context.SaveChangesAsync();
+
+            // await _context.Entry(newPreference).Reference(p => p.User).LoadAsync();
+
+            return _mapper.Map<Preference>(newPreference);
+        }
+
     }
 }

@@ -98,8 +98,8 @@ namespace InGreedIoApi.Controllers
                 return BadRequest("The review has not been added");
             }
             return CreatedAtAction(
-                nameof(GetSingle), 
-                new { reviewId = review.Id }, 
+                nameof(GetSingle),
+                new { reviewId = review.Id },
                 _mapper.Map<ReviewDTO>(review)
             );
         }

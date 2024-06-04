@@ -45,7 +45,7 @@ public class IngredientRepositoryTests
     {
         // Arrange
         var repository = new IngredientRepository(_mockMapper, _mockContext);
-        var query = new GetIngredientsQuery("Ingred", 0, 10);
+        var query = new GetIngredientsQuery("Ingred", null, null, 0, 10);
         // Act
         var ingredients = await repository.FindAll(query);
 
@@ -53,5 +53,39 @@ public class IngredientRepositoryTests
         Assert.NotNull(ingredients.Contents);
         Assert.Equal(2, ingredients.Contents.Count());
         Assert.Equal("Ingredient 1", ingredients.Contents.First().Name);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task FindAll_QueryIngredIncludeId1_ReturnOnlyIngredientWithId1()
+    {
+        // Arrange
+        var repository = new IngredientRepository(_mockMapper, _mockContext);
+        var query = new GetIngredientsQuery("Ingred", [1], null, 0, 10);
+        // Act
+        var ingredients = await repository.FindAll(query);
+
+        // Assert
+        Assert.NotNull(ingredients.Contents);
+        Assert.Single(ingredients.Contents);
+        Assert.Equal(1, ingredients.Contents.First().Id);
+        Assert.Equal("Ingredient 1", ingredients.Contents.First().Name);
+    }
+
+    [Trait("Category", "Unit")]
+    [Fact]
+    public async Task FindAll_QueryIngredExcludeId1_ReturnOnlyIngredientWithId1()
+    {
+        // Arrange
+        var repository = new IngredientRepository(_mockMapper, _mockContext);
+        var query = new GetIngredientsQuery("Ingred", null, [1], 0, 10);
+        // Act
+        var ingredients = await repository.FindAll(query);
+
+        // Assert
+        Assert.NotNull(ingredients.Contents);
+        Assert.Single(ingredients.Contents);
+        Assert.Equal(2, ingredients.Contents.First().Id);
+        Assert.Equal("Ingredient 2", ingredients.Contents.First().Name);
     }
 }
