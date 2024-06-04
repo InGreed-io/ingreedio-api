@@ -4,6 +4,7 @@ using InGreedIoApi.Data.Mapper;
 using InGreedIoApi.Data.Repository;
 using InGreedIoApi.POCO;
 using InGreedIoApi.DTO;
+using InGreedIoApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace UnitTests;
@@ -12,6 +13,7 @@ public class UserRepositoryTests
 {
     private readonly ApiDbContext _mockContext;
     private readonly IMapper _mockMapper;
+    private readonly IProductService _mockProductService;
     private readonly List<ApiUserPOCO> _users;
     private readonly List<PreferencePOCO> _preferences;
 
@@ -43,6 +45,8 @@ public class UserRepositoryTests
         _mockContext.ApiUsers.AddRange(_users);
         _mockContext.Preferences.AddRange(_preferences);
         _mockContext.SaveChanges();
+
+        _mockProductService = new ProductService();
     }
 
     [Trait("Category", "Unit")]
@@ -50,7 +54,7 @@ public class UserRepositoryTests
     public async Task GetUserById_ReturnsCorrectUsers_ReturnUserWithProperId()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper);
+        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService);
         var userId = "User1";
 
         // Act
@@ -66,7 +70,7 @@ public class UserRepositoryTests
     public async Task GetPreferences_ReturnsCorrectPreferencesOfUser_ReturnPreferencesForUserId()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper);
+        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService);
         var userId = "User1";
 
         // Act
@@ -83,7 +87,7 @@ public class UserRepositoryTests
     public async Task CreatePreference_ReturnsNewPreferenceForExistingUser()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper);
+        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService);
         var userId = "User2";
         var createPreferenceDto = new CreatePreferenceDTO("New Preference");
 
@@ -101,7 +105,7 @@ public class UserRepositoryTests
     public async Task CreatePreference_ThrowsExceptionForNonExistentUser()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper);
+        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService);
         var userId = "NonExistentUser";
         var createPreferenceDto = new CreatePreferenceDTO("New Preference");
 

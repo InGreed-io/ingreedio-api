@@ -73,6 +73,11 @@ namespace InGreedIoApi.Controllers
             }
             var products = await _userRepository.GetFavourites(productQueryDto, userId);
 
+            foreach (var product in products.Contents)
+            {
+                product.Favourite = true;
+            }
+
             return Ok(products);
         }
     }

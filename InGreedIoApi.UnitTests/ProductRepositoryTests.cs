@@ -4,11 +4,8 @@ using InGreedIoApi.Data.Mapper;
 using InGreedIoApi.Data.Repository;
 using InGreedIoApi.DTO;
 using InGreedIoApi.POCO;
+using InGreedIoApi.Services;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace UnitTests;
 
@@ -16,6 +13,7 @@ public class ProductRepositoryTests
 {
     private readonly ApiDbContext _mockContext;
     private readonly IMapper _mockMapper;
+    private readonly IProductService _mockProductService;
     private readonly List<ProductPOCO> _products;
 
     public ProductRepositoryTests()
@@ -42,6 +40,8 @@ public class ProductRepositoryTests
 
         _mockContext.Products.AddRange(_products);
         _mockContext.SaveChanges();
+
+        _mockProductService = new ProductService();
     }
 
     [Trait("Category", "Unit")]
@@ -50,7 +50,7 @@ public class ProductRepositoryTests
     {
         // Arrange
         var queryDto = new ProductQueryDTO(query: "a", categoryId: null, ingredients: null, preferenceId: null, SortBy: null, pageIndex: 0, pageSize: 10);
-        var repository = new ProductRepository(_mockMapper, _mockContext);
+        var repository = new ProductRepository(_mockMapper, _mockContext, _mockProductService);
 
         // Act
         var result = await repository.GetAll(queryDto);
@@ -66,7 +66,7 @@ public class ProductRepositoryTests
     {
         // Arrange
         var productId = 1;
-        var repository = new ProductRepository(_mockMapper, _mockContext);
+        var repository = new ProductRepository(_mockMapper, _mockContext, _mockProductService);
 
         // Act
         var result = await repository.GetProduct(productId);
@@ -85,7 +85,7 @@ public class ProductRepositoryTests
         var userId = "user123";
         var content = "Great apple!";
         var rating = 5.0f;
-        var repository = new ProductRepository(_mockMapper, _mockContext);
+        var repository = new ProductRepository(_mockMapper, _mockContext, _mockProductService);
 
         // Act
         var result = await repository.AddReview(productId, userId, content, rating);
@@ -103,7 +103,7 @@ public class ProductRepositoryTests
     {
         // Arrange
         var productId = 1;
-        var repository = new ProductRepository(_mockMapper, _mockContext);
+        var repository = new ProductRepository(_mockMapper, _mockContext, _mockProductService);
 
         // Act
         var exception = await Record.ExceptionAsync(() => repository.Delete(productId));

@@ -2,7 +2,9 @@
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
+using InGreedIoApi.Model.Enum;
 using InGreedIoApi.POCO;
+using InGreedIoApi.Services;
 using InGreedIoApi.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,11 +14,13 @@ namespace InGreedIoApi.Data.Repository
     {
         private readonly ApiDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IProductService _productService;
 
-        public UserRepository(ApiDbContext context, IMapper mapper)
+        public UserRepository(ApiDbContext context, IMapper mapper, IProductService productService)
         {
             _context = context;
             _mapper = mapper;
+            _productService = productService;
         }
 
         public async Task<ApiUser> GetUserById(string id)
@@ -36,14 +40,15 @@ namespace InGreedIoApi.Data.Repository
         public async Task<IPage<ProductDTO>> GetFavourites(ProductQueryDTO productQueryDto, string userId)
         {
             var queryable = _context.Products.AsQueryable();
-            queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
+            if (!string.IsNullOrEmpty(productQueryDto.query))
+                queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
 
             if (productQueryDto.categoryId.HasValue)
                 queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
 
             UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
             //sort elements by enum
-            SortProductQueryDto(productQueryDto, ref queryable);
+            _productService.SortProductQueryDto(productQueryDto, ref queryable);
 
             //filter only favourites
             queryable = queryable.Where(p => p.FavouriteBy.Any(u => u.Id == userId));
@@ -81,21 +86,6 @@ namespace InGreedIoApi.Data.Repository
             }
         }
 
-        private void SortProductQueryDto(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
-        {
-            if (productQueryDto.SortBy.HasValue)
-            {
-                queryable = productQueryDto.SortBy switch
-                {
-                    Model.Enum.QuerySortType.Featured => queryable.OrderBy(p => p.Featuring != null),
-                    Model.Enum.QuerySortType.Rating => queryable.OrderBy(p => p.Reviews.Average(r => r.Rating)),
-                    Model.Enum.QuerySortType.RatingCount => queryable.OrderBy(p => p.Reviews.Count),
-                    Model.Enum.QuerySortType.BestMatch => queryable,
-                    Model.Enum.QuerySortType.Names => queryable.OrderBy(p => p.Name),
-                    _ => throw new ArgumentOutOfRangeException("sorty is not defined properly")
-                };
-            }
-        }
         public async Task<Preference> CreatePreference(string userId, CreatePreferenceDTO args)
         {
             var user = await _context.Users

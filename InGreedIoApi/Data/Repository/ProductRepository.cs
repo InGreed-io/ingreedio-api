@@ -5,6 +5,7 @@ using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
+using InGreedIoApi.Services;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
 
@@ -14,11 +15,13 @@ public class ProductRepository : IProductRepository
 {
     private readonly IMapper _mapper;
     private readonly ApiDbContext _context;
+    private readonly IProductService _productService;
 
-    public ProductRepository(IMapper mapper, ApiDbContext context)
+    public ProductRepository(IMapper mapper, ApiDbContext context, IProductService productService)
     {
         _mapper = mapper;
         _context = context;
+        _productService = productService;
     }
 
     public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto, string? producerId = null)
@@ -36,7 +39,7 @@ public class ProductRepository : IProductRepository
 
         UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
         //sort elements by enum
-        SortProductQueryDto(productQueryDto, ref queryable);
+        _productService.SortProductQueryDto(productQueryDto, ref queryable);
 
         return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
             productQueryDto.pageIndex, productQueryDto.pageSize, _mapper.ConfigurationProvider
@@ -254,26 +257,6 @@ public class ProductRepository : IProductRepository
         if (unwanted.Count > 0)
         {
             queryable = queryable.Where(p => !p.Ingredients.Any(i => unwanted.Contains(i.Id)));
-        }
-    }
-
-    private void SortProductQueryDto(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
-    {
-        if (productQueryDto.SortBy.HasValue)
-        {
-            queryable = productQueryDto.SortBy switch
-            {
-                QuerySortType.Featured => queryable.OrderBy(p => p.Featuring != null).ThenBy(p => p.Id),
-                QuerySortType.Rating => queryable.OrderBy(p => p.Reviews.Average(r => r.Rating) == null).ThenByDescending(p => p.Reviews.Average(r => r.Rating)).ThenBy(p => p.Id),
-                QuerySortType.RatingCount => queryable.OrderByDescending(p => p.Reviews.Count()).ThenBy(p => p.Id),
-                QuerySortType.BestMatch => queryable.OrderBy(p => p.Id),
-                QuerySortType.Names => queryable.OrderBy(p => p.Name).ThenBy(p => p.Id),
-                _ => throw new ArgumentOutOfRangeException("sorty is not defined properly")
-            };
-        }
-        else
-        {
-            queryable = queryable.OrderBy(p => p.Id);
         }
     }
 
