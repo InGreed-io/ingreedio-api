@@ -1,0 +1,285 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for ECR, ECS with autoscaling, and RDS PostgreSQL
+
+Parameters:
+  DBInstanceClass:
+    Description: The database instance type
+    Type: String
+    Default: db.t3.micro
+
+  DBAllocatedStorage:
+    Description: The size of the database (Gb)
+    Type: Number
+    Default: 20
+
+  DBUsername:
+    Description: The database username
+    Type: String
+    NoEcho: true
+
+  DBPassword:
+    Description: The database password
+    Type: String
+    NoEcho: true
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC Id
+
+  TaskExecutionRoleArn:
+    Description: ARN of an existing IAM role for ECS task execution
+    Type: String
+
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Subnet Ids
+
+Resources:
+  # ECR Repositories
+  FrontendRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: frontend
+
+  BackendRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: backend
+
+  # ECS Cluster
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: ingreedio-cluster
+
+  # Task Definition for Frontend
+  FrontendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: frontend-task
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !Ref TaskExecutionRoleArn
+      Cpu: 256
+      Memory: 512
+      ContainerDefinitions:
+        - Name: frontend
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/frontend:latest"
+          Essential: true
+          PortMappings:
+            - ContainerPort: 8081
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref FrontendLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: frontend
+
+  # Log Group for Frontend
+  FrontendLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /ecs/frontend
+  # Security Group for Frontend
+  FrontendSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: Allow HTTP traffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8081
+          ToPort: 8081
+          CidrIp: 0.0.0.0/0
+
+  # Load Balancer for Frontend
+  FrontendLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: frontend-lb
+      Subnets: !Ref SubnetIds
+      SecurityGroups: [!Ref FrontendSecurityGroup]
+      Scheme: internet-facing
+
+  # Target Group for Frontend
+  FrontendTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn: FrontendLoadBalancer
+    Properties:
+      VpcId: !Ref VpcId
+      Port: 8081
+      Protocol: HTTP
+      TargetType: ip
+
+  # Listener for Frontend Load Balancer
+  FrontendListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref FrontendLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref FrontendTargetGroup
+
+
+          # ECS Service for Frontend
+  FrontendService:
+    Type: AWS::ECS::Service
+    DependsOn: FrontendListener
+    Properties:
+      Cluster: !Ref ECSCluster
+      DesiredCount: 2
+      LaunchType: FARGATE
+      TaskDefinition: !Ref FrontendTaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !Ref SubnetIds
+          SecurityGroups: [!Ref FrontendSecurityGroup]
+      LoadBalancers:
+        - TargetGroupArn: !Ref FrontendTargetGroup
+          ContainerName: frontend
+          ContainerPort: 8081
+
+  # Task Definition for Backend
+  BackendTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: backend-task
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !Ref TaskExecutionRoleArn
+      Cpu: 256
+      Memory: 512
+      ContainerDefinitions:
+        - Name: backend
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/backend:latest"
+          Essential: true
+          PortMappings:
+            - ContainerPort: 80
+          Environment:
+            - Name: ConnectionStrings__DefaultConnection
+              Value: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/ingreedio/db/ConnectionStrings__DefaultConnection"
+            - Name: ASPNETCORE_URLS
+              Value: http://+:80
+            - Name: ASPNETCORE_ENVIRONMENT
+              Value: Production
+            - Name: FrontendAppUrl
+              Value: !Sub "http://${FrontendLoadBalancer.DNSName}:${FrontendListener.Port}"
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref BackendLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: backend
+
+  # Log Group for Backend
+  BackendLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /ecs/backend
+
+  # ECS Service for Backend
+  BackendService:
+    Type: AWS::ECS::Service
+    DependsOn: BackendTaskDefinition
+    Properties:
+      Cluster: !Ref ECSCluster
+      DesiredCount: 2
+      LaunchType: FARGATE
+      TaskDefinition: !Ref BackendTaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !Ref SubnetIds
+          SecurityGroups: [!Ref BackendSecurityGroup]
+
+  # Security Group for Backend
+  BackendSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: Allow HTTP traffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  # RDS PostgreSQL Instance
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: ingreedio
+      Engine: postgres
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: !Ref DBAllocatedStorage
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+
+  # Security Group for RDS
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: Allow access to RDS
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref BackendSecurityGroup
+
+  # Subnet Group for RDS
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnets for RDS instance
+      SubnetIds: !Ref SubnetIds
+
+  # Store DB Username in Parameter Store
+  DBUsernameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ingreedio/db/username
+      Type: String
+      Value: !Ref DBUsername
+
+  # Store DB Password in Parameter Store
+  DBPasswordParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ingreedio/db/password
+      Type: String
+      Value: !Ref DBPassword
+
+  # Parameter Store for DB Connection String
+  DBConnectionString:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /ingreedio/db/ConnectionStrings__DefaultConnection
+      Type: String
+      Value: !Sub "Server=${DBInstance.Endpoint.Address};Port=5432;Database=ingreedio;User Id=${DBUsername};Password=${DBPassword};"
+
+Outputs:
+  FrontendRepositoryUri:
+    Description: URI of the Frontend ECR Repository
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/frontend"
+
+  BackendRepositoryUri:
+    Description: URI of the Backend ECR Repository
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/backend"
+
+  FrontendLoadBalancerDNS:
+    Description: DNS Name of the Frontend Load Balancer
+    Value: !GetAtt FrontendLoadBalancer.DNSName
+
+  DBEndpoint:
+    Description: Endpoint of the RDS instance
+    Value: !GetAtt DBInstance.Endpoint.Address
+
