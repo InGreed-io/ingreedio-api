@@ -23,7 +23,7 @@ Parameters:
     NoEcho: true
 
   TaskExecutionRoleArn:
-    Description: ARN of an existing IAM role for ECS task execution
+    Description: Arn of existing IAM role for ECS task execution
     Type: String
 
 Resources:
@@ -96,11 +96,28 @@ Resources:
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       MapPublicIpOnLaunch: true
 
-  # Associate Public Subnet 1a with Public Route Table
+  # Public Subnet 1a
+  PublicSubnet1b:
+    Type: AWS::EC2::Subnet
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PublicSubnet1b
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+
   PublicSubnet1aRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PublicSubnet1a
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet1bRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1b
       RouteTableId: !Ref PublicRouteTable
 
   # Private Subnets
@@ -111,7 +128,7 @@ Resources:
         - Key: Name
           Value: PrivateSubnet1a
       VpcId: !Ref VPC
-      CidrBlock: 10.0.1.0/24
+      CidrBlock: 10.0.2.0/24
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
 
   PrivateSubnet1b:
@@ -121,7 +138,7 @@ Resources:
         - Key: Name
           Value: PrivateSubnet1b
       VpcId: !Ref VPC
-      CidrBlock: 10.0.2.0/24
+      CidrBlock: 10.0.3.0/24
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
   PrivateSubnet2a:
     Type: AWS::EC2::Subnet
@@ -130,7 +147,7 @@ Resources:
         - Key: Name
           Value: PrivateSubnet2a
       VpcId: !Ref VPC
-      CidrBlock: 10.0.3.0/24
+      CidrBlock: 10.0.4.0/24
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
 
   PrivateSubnet2b:
@@ -140,27 +157,7 @@ Resources:
         - Key: Name
           Value: PrivateSubnet2b
       VpcId: !Ref VPC
-      CidrBlock: 10.0.4.0/24
-      AvailabilityZone: !Select [ 1, !GetAZs '' ]
-
-  PrivateSubnet3a:
-    Type: AWS::EC2::Subnet
-    Properties:
-      Tags:
-        - Key: Name
-          Value: PrivateSubnet3a
-      VpcId: !Ref VPC
       CidrBlock: 10.0.5.0/24
-      AvailabilityZone: !Select [ 0, !GetAZs '' ]
-
-  PrivateSubnet3b:
-    Type: AWS::EC2::Subnet
-    Properties:
-      Tags:
-        - Key: Name
-          Value: PrivateSubnet3b
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.6.0/24
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
 
   # Route Table for private subnets
@@ -205,24 +202,6 @@ Resources:
       SubnetId: !Ref PrivateSubnet2b
       RouteTableId: !Ref PrivateRouteTable
 
-  PrivateSubnet3aRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet3a
-      RouteTableId: !Ref PrivateRouteTable
-
-  PrivateSubnet3bRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet3b
-      RouteTableId: !Ref PrivateRouteTable
-
-  # ECR Repositories
-  FrontendRepository:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryName: frontend
-
   BackendRepository:
     Type: AWS::ECR::Repository
     Properties:
@@ -234,105 +213,35 @@ Resources:
     Properties:
       ClusterName: ingreedio-cluster
 
-  # Task Definition for Frontend
-  FrontendTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
+  FrontendBucket:
+    Type: AWS::S3::Bucket
     Properties:
-      Family: frontend-task
-      NetworkMode: awsvpc
-      RequiresCompatibilities:
-        - FARGATE
-      ExecutionRoleArn: !Ref TaskExecutionRoleArn
-      Cpu: 256
-      Memory: 512
-      ContainerDefinitions:
-        - Name: frontend
-          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/frontend:latest"
-          Essential: true
-          PortMappings:
-            - ContainerPort: 8081
-          LogConfiguration:
-            LogDriver: awslogs
-            Options:
-              awslogs-group: !Ref FrontendLogGroup
-              awslogs-region: !Ref AWS::Region
-              awslogs-stream-prefix: frontend
+      BucketName: ingreedio-frontend-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: FALSE
+        BlockPublicPolicy: FALSE
+        IgnorePublicAcls: FALSE
+        RestrictPublicBuckets: FALSE
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
 
-  # Log Group for Frontend
-  FrontendLogGroup:
-    Type: AWS::Logs::LogGroup
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
     Properties:
-      LogGroupName: /ecs/frontend
-
-  # Security Group for Frontend
-  FrontendSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VPC
-      GroupDescription: Allow HTTP traffic
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 8081
-          ToPort: 8081
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-
-  # Load Balancer for Frontend
-  FrontendLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: frontend-lb
-      Subnets:
-        - !Ref PrivateSubnet1a
-        - !Ref PrivateSubnet1b
-      SecurityGroups: [!Ref FrontendSecurityGroup]
-      Scheme: internet-facing
-
-  # Target Group for Frontend
-  FrontendTargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    DependsOn: FrontendLoadBalancer
-    Properties:
-      VpcId: !Ref VPC
-      Port: 8081
-      Protocol: HTTP
-      TargetType: ip
-
-  # Listener for Frontend Load Balancer
-  FrontendListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      LoadBalancerArn: !Ref FrontendLoadBalancer
-      Port: 80
-      Protocol: HTTP
-      DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref FrontendTargetGroup
-
-  # ECS Service for Frontend
-  FrontendService:
-    Type: AWS::ECS::Service
-    DependsOn: FrontendListener
-    Properties:
-      Cluster: !Ref ECSCluster
-      DesiredCount: 2
-      LaunchType: FARGATE
-      TaskDefinition: !Ref FrontendTaskDefinition
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
-          Subnets:
-            - !Ref PrivateSubnet1a
-            - !Ref PrivateSubnet1b
-          SecurityGroups: [!Ref FrontendSecurityGroup]
-      LoadBalancers:
-        - TargetGroupArn: !Ref FrontendTargetGroup
-          ContainerName: frontend
-          ContainerPort: 8081
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadGetObject
+            Effect: Allow
+            Principal: "*"
+            Action: "s3:GetObject"
+            Resource: !Join
+                - ""
+                - - "arn:aws:s3:::"
+                  - !Ref FrontendBucket
+                  - "/*"
 
   # Task Definition for Backend
   BackendTaskDefinition:
@@ -352,14 +261,15 @@ Resources:
           PortMappings:
             - ContainerPort: 80
           Environment:
-            - Name: ConnectionStrings__DefaultConnection
-              Value: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/ingreedio/db/ConnectionStrings__DefaultConnection"
             - Name: ASPNETCORE_URLS
               Value: http://+:80
             - Name: ASPNETCORE_ENVIRONMENT
               Value: Production
             - Name: FrontendAppUrl
-              Value: !Sub "http://${FrontendLoadBalancer.DNSName}:80"
+              Value: !GetAtt FrontendBucket.WebsiteURL
+          Secrets:
+            - Name: ConnectionStrings__DefaultConnection
+              ValueFrom: !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/ingreedio/db/ConnectionStrings__DefaultConnection"
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -386,8 +296,8 @@ Resources:
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: 5432
-          ToPort: 5432
+          FromPort: 0
+          ToPort: 65535
           CidrIp: 0.0.0.0/0
 
   # Load Balancer for Backend
@@ -396,8 +306,8 @@ Resources:
     Properties:
       Name: backend-lb
       Subnets:
-        - !Ref PrivateSubnet2a
-        - !Ref PrivateSubnet2b
+        - !Ref PublicSubnet1a
+        - !Ref PublicSubnet1b
       SecurityGroups: [!Ref BackendSecurityGroup]
       Scheme: internet-facing
 
@@ -406,6 +316,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     DependsOn: BackendLoadBalancer
     Properties:
+      HealthCheckPath: /api/products
       VpcId: !Ref VPC
       Port: 80
       Protocol: HTTP
@@ -425,7 +336,11 @@ Resources:
   # ECS Service for Backend
   BackendService:
     Type: AWS::ECS::Service
-    DependsOn: BackendTaskDefinition
+    DependsOn:
+      - BackendTaskDefinition
+      - BackendListener
+      - DBInstance
+      - DBConnectionString
     Properties:
       Cluster: !Ref ECSCluster
       DesiredCount: 2
@@ -435,9 +350,13 @@ Resources:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
           Subnets:
-            - !Ref PrivateSubnet2a
-            - !Ref PrivateSubnet2b
+            - !Ref PrivateSubnet1a
+            - !Ref PrivateSubnet1b
           SecurityGroups: [!Ref BackendSecurityGroup]
+      LoadBalancers:
+        - TargetGroupArn: !Ref BackendTargetGroup
+          ContainerName: backend
+          ContainerPort: 80
 
   # RDS PostgreSQL Instance
   DBInstance:
@@ -472,8 +391,8 @@ Resources:
     Properties:
       DBSubnetGroupDescription: Subnets for RDS instance
       SubnetIds:
-        - !Ref PrivateSubnet3a
-        - !Ref PrivateSubnet3b
+        - !Ref PrivateSubnet2a
+        - !Ref PrivateSubnet2b
 
   # Store DB Username in Parameter Store
   DBUsernameParameter:
@@ -500,17 +419,9 @@ Resources:
       Value: !Sub "Server=${DBInstance.Endpoint.Address};Port=5432;Database=ingreedio;User Id=${DBUsername};Password=${DBPassword};"
 
 Outputs:
-  FrontendRepositoryUri:
-    Description: URI of the Frontend ECR Repository
-    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/frontend"
-
   BackendRepositoryUri:
     Description: URI of the Backend ECR Repository
     Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/backend"
-
-  FrontendLoadBalancerDNS:
-    Description: DNS Name of the Frontend Load Balancer
-    Value: !GetAtt FrontendLoadBalancer.DNSName
 
   BackendLoadBalancerDNS:
     Description: DNS Name of the Backend Load Balancer
