@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: CloudFormation template for ECR, ECS with autoscaling, and RDS PostgreSQL
+Description: CloudFormation template for ECR, ECS with autoscaling, and RDS PostgreSQL with VPC and Subnets
 
 Parameters:
   DBInstanceClass:
@@ -22,19 +22,201 @@ Parameters:
     Type: String
     NoEcho: true
 
-  VpcId:
-    Type: AWS::EC2::VPC::Id
-    Description: VPC Id
-
   TaskExecutionRoleArn:
     Description: ARN of an existing IAM role for ECS task execution
     Type: String
 
-  SubnetIds:
-    Type: List<AWS::EC2::Subnet::Id>
-    Description: Subnet Ids
-
 Resources:
+  # VPC
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: IngreedioVPC
+
+  # Internet Gateway
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: IngreedioInternetGateway
+
+  # Attach Internet Gateway to VPC
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  # NAT Gateway
+  NatGateway:
+    Type: AWS::EC2::NatGateway
+    DependsOn: AttachGateway
+    Properties:
+      AllocationId: !GetAtt NatEIP.AllocationId
+      SubnetId: !Ref PublicSubnet1a
+
+  # Elastic IP for NAT Gateway
+  NatEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  # Route Table for public subnets
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: PublicRouteTable
+
+  # Public Route
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  # Public Subnet 1a
+  PublicSubnet1a:
+    Type: AWS::EC2::Subnet
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PublicSubnet1a
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      MapPublicIpOnLaunch: true
+
+  # Associate Public Subnet 1a with Public Route Table
+  PublicSubnet1aRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1a
+      RouteTableId: !Ref PublicRouteTable
+
+  # Private Subnets
+  PrivateSubnet1a:
+    Type: AWS::EC2::Subnet
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet1a
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+
+  PrivateSubnet1b:
+    Type: AWS::EC2::Subnet
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet1b
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+  PrivateSubnet2a:
+    Type: AWS::EC2::Subnet
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet2a
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+
+  PrivateSubnet2b:
+    Type: AWS::EC2::Subnet
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet2b
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.4.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+
+  PrivateSubnet3a:
+    Type: AWS::EC2::Subnet
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet3a
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.5.0/24
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+
+  PrivateSubnet3b:
+    Type: AWS::EC2::Subnet
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet3b
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.6.0/24
+      AvailabilityZone: !Select [ 1, !GetAZs '' ]
+
+  # Route Table for private subnets
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable
+      VpcId: !Ref VPC
+
+  # Private Route
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway
+
+  # Associate Private Subnets with Private Route Table
+  PrivateSubnet1aRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1a
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet1bRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1b
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet2aRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2a
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet2bRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2b
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet3aRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet3a
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet3bRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet3b
+      RouteTableId: !Ref PrivateRouteTable
+
   # ECR Repositories
   FrontendRepository:
     Type: AWS::ECR::Repository
@@ -81,16 +263,22 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: /ecs/frontend
+
   # Security Group for Frontend
   FrontendSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
       GroupDescription: Allow HTTP traffic
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 8081
           ToPort: 8081
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
           CidrIp: 0.0.0.0/0
 
   # Load Balancer for Frontend
@@ -98,7 +286,9 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       Name: frontend-lb
-      Subnets: !Ref SubnetIds
+      Subnets:
+        - !Ref PrivateSubnet1a
+        - !Ref PrivateSubnet1b
       SecurityGroups: [!Ref FrontendSecurityGroup]
       Scheme: internet-facing
 
@@ -107,7 +297,7 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     DependsOn: FrontendLoadBalancer
     Properties:
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
       Port: 8081
       Protocol: HTTP
       TargetType: ip
@@ -123,8 +313,7 @@ Resources:
         - Type: forward
           TargetGroupArn: !Ref FrontendTargetGroup
 
-
-          # ECS Service for Frontend
+  # ECS Service for Frontend
   FrontendService:
     Type: AWS::ECS::Service
     DependsOn: FrontendListener
@@ -136,7 +325,9 @@ Resources:
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
-          Subnets: !Ref SubnetIds
+          Subnets:
+            - !Ref PrivateSubnet1a
+            - !Ref PrivateSubnet1b
           SecurityGroups: [!Ref FrontendSecurityGroup]
       LoadBalancers:
         - TargetGroupArn: !Ref FrontendTargetGroup
@@ -168,7 +359,7 @@ Resources:
             - Name: ASPNETCORE_ENVIRONMENT
               Value: Production
             - Name: FrontendAppUrl
-              Value: !Sub "http://${FrontendLoadBalancer.DNSName}:${FrontendListener.Port}"
+              Value: !Sub "http://${FrontendLoadBalancer.DNSName}:80"
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -182,6 +373,55 @@ Resources:
     Properties:
       LogGroupName: /ecs/backend
 
+  # Security Group for Backend
+  BackendSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VPC
+      GroupDescription: Allow HTTP traffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+
+  # Load Balancer for Backend
+  BackendLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: backend-lb
+      Subnets:
+        - !Ref PrivateSubnet2a
+        - !Ref PrivateSubnet2b
+      SecurityGroups: [!Ref BackendSecurityGroup]
+      Scheme: internet-facing
+
+  # Target Group for Backend
+  BackendTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn: BackendLoadBalancer
+    Properties:
+      VpcId: !Ref VPC
+      Port: 80
+      Protocol: HTTP
+      TargetType: ip
+
+  # Listener for Backend Load Balancer
+  BackendListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref BackendLoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref BackendTargetGroup
+
   # ECS Service for Backend
   BackendService:
     Type: AWS::ECS::Service
@@ -194,20 +434,10 @@ Resources:
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
-          Subnets: !Ref SubnetIds
+          Subnets:
+            - !Ref PrivateSubnet2a
+            - !Ref PrivateSubnet2b
           SecurityGroups: [!Ref BackendSecurityGroup]
-
-  # Security Group for Backend
-  BackendSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      VpcId: !Ref VpcId
-      GroupDescription: Allow HTTP traffic
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
 
   # RDS PostgreSQL Instance
   DBInstance:
@@ -219,6 +449,7 @@ Resources:
       MasterUserPassword: !Ref DBPassword
       DBInstanceClass: !Ref DBInstanceClass
       AllocatedStorage: !Ref DBAllocatedStorage
+      MultiAZ: true
       VPCSecurityGroups:
         - !Ref DBSecurityGroup
       DBSubnetGroupName: !Ref DBSubnetGroup
@@ -227,7 +458,7 @@ Resources:
   DBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
       GroupDescription: Allow access to RDS
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -240,7 +471,9 @@ Resources:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: Subnets for RDS instance
-      SubnetIds: !Ref SubnetIds
+      SubnetIds:
+        - !Ref PrivateSubnet3a
+        - !Ref PrivateSubnet3b
 
   # Store DB Username in Parameter Store
   DBUsernameParameter:
@@ -278,6 +511,10 @@ Outputs:
   FrontendLoadBalancerDNS:
     Description: DNS Name of the Frontend Load Balancer
     Value: !GetAtt FrontendLoadBalancer.DNSName
+
+  BackendLoadBalancerDNS:
+    Description: DNS Name of the Backend Load Balancer
+    Value: !GetAtt BackendLoadBalancer.DNSName
 
   DBEndpoint:
     Description: Endpoint of the RDS instance
