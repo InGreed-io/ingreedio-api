@@ -158,11 +158,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<ApiDbContext>();
-    if (context.Database.GetPendingMigrations().Any())
-    {
-        context.Database.EnsureDeleted();
-        context.Database.EnsureCreated();
-    }
+    context.Database.Migrate();
+
     var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();
     seeder.SeedAsync().Wait();
 }

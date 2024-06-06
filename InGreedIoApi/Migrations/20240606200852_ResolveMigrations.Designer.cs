@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InGreedIoApi.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20240325194937_SetupDB")]
-    partial class SetupDB
+    [Migration("20240606200852_ResolveMigrations")]
+    partial class ResolveMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -165,6 +165,23 @@ namespace InGreedIoApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Category");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Food"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Cosmetics"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Drink"
+                        });
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.CompanyInfoPOCO", b =>
@@ -250,6 +267,134 @@ namespace InGreedIoApi.Migrations
                     b.HasIndex("PreferencePOCOId1");
 
                     b.ToTable("Ingredients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IconUrl = "https://aptekazawiszy.pl/img/ident/cynamon-na-stole",
+                            Name = "Cinamon"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IconUrl = "https://5.imimg.com/data5/LV/XV/YR/SELLER-24094004/aloe-vera-oil.jpg",
+                            Name = "Aloe oil"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IconUrl = "https://www.shutterstock.com/image-photo/cocoa-ingredients-beans-fresh-pod-600nw-2263048751.jpg",
+                            Name = "Cocoa"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IconUrl = "https://www.organicfacts.net/wp-content/uploads/2013/05/Turmeric-1.jpg",
+                            Name = "Turmeric"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IconUrl = "https://www.verywellfit.com/thmb/UYfHq07-V-4zMNy8QSeKbEKTVwE=/3944x2958/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-1130534199-c10e27a01a1145f1a85dc88b8fa9fc87.jpg",
+                            Name = "Quinoa"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IconUrl = "https://www.healthline.com/hlcmsresource/images/topic_centers/2020-7/spirulina-powder-pinterest-1296x728-header.jpg",
+                            Name = "Spirulina"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IconUrl = "https://images-na.ssl-images-amazon.com/images/I/71zna2lq6rL._SL1500_.jpg",
+                            Name = "Hemp Seeds"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            IconUrl = "https://images-na.ssl-images-amazon.com/images/I/81-u7t4GdGL._SL1500_.jpg",
+                            Name = "Chia Seeds"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            IconUrl = "https://www.thespruceeats.com/thmb/5xIGgEKcUWRHrXTnBxZ3FYgMJK8=/4494x2531/smart/filters:no_upscale()/matcha-powder-507284181-58adba215f9b58a3c9315b80.jpg",
+                            Name = "Matcha Powder"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            IconUrl = "https://www.thespruceeats.com/thmb/dyFLswBswq4FV7qRRxdZZfxYFZs=/2733x2733/smart/filters:no_upscale()/GettyImages-529433302-5794ebe65f9b589aa94d7c95.jpg",
+                            Name = "Goji Berries"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            IconUrl = "https://cdn.shopify.com/s/files/1/0250/6972/2416/products/AdobeStock_244960664_1200x1200.jpg?v=1629458542",
+                            Name = "Maca Powder"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            IconUrl = "https://www.thespruceeats.com/thmb/1pHhnqKY8bVqlkigqXcfymy86NU=/2735x2735/smart/filters:no_upscale()/GettyImages-1195962664-121f8b08c99f44b6ba7a6f665204a2bc.jpg",
+                            Name = "Wheatgrass"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            IconUrl = "https://images-na.ssl-images-amazon.com/images/I/61uvnYeNn5L._SL1000_.jpg",
+                            Name = "Bee Pollen"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            IconUrl = "",
+                            Name = "Oat"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            IconUrl = "",
+                            Name = "Almond"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            IconUrl = "",
+                            Name = "Strawberry"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            IconUrl = "",
+                            Name = "Cashew"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            IconUrl = "",
+                            Name = "Coconut"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            IconUrl = "",
+                            Name = "Soy"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            IconUrl = "",
+                            Name = "Vanilla"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            IconUrl = "",
+                            Name = "Rice"
+                        });
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.OperationLogPOCO", b =>
@@ -318,7 +463,13 @@ namespace InGreedIoApi.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Preferences");
                 });
@@ -352,7 +503,6 @@ namespace InGreedIoApi.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("ProducerId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -362,6 +512,104 @@ namespace InGreedIoApi.Migrations
                     b.HasIndex("ProducerId");
 
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            Description = "Low-fat milk straight from the cow.",
+                            IconUrl = "https://mlekovita.com.pl/media/cache/product_view/uploads/images/i3bRQpfKXVq01voDWA7x/8616-mleko-i-love-milk-3-5-3d.jpg",
+                            Name = "Cow Milk"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            Description = "Dairy-free, unsweetened almond milk made from real almonds.",
+                            IconUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSD5j8AiAg7gBuP7NIndrWs67vpHiCm5IqbzxTHB3bFTw&s",
+                            Name = "Almond Milk"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            Description = "Dairy-free, unsweetened oat milk made from oat.",
+                            IconUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrv2lqfti5o2EIh2x5JeH88de_UirKJH_KMLeYc_xGZQ&s",
+                            Name = "Oat Milk"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 1,
+                            Description = "Milk from goats, known for its easier digestion for some.",
+                            IconUrl = "https://i5.walmartimages.com/asr/df1d6c29-246d-417e-be0c-04e380939d95_1.bf59e9a558a82e5041f1e9627cc4d8bb.png",
+                            Name = "Goat Milk"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 1,
+                            Description = "Creamy, non-dairy milk made from the grated flesh of mature coconuts.",
+                            IconUrl = "https://shop.goya.com/cdn/shop/files/goya-021647-unsweetened_coconut_milk.png?v=1701110942",
+                            Name = "Coconut Milk"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 1,
+                            Description = "Plant-based milk made from soybeans, a good source of protein.",
+                            IconUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCa5jVpo4iIUTjSqDSw8Yshk_01pyXDTXZN3LFOCXeGw&s",
+                            Name = "Soy Milk"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 1,
+                            Description = "Dairy-free milk made from cashews, known for its creamy texture.",
+                            IconUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIShBHK-kvnYi_M8MDkTImJq8VFmiixQDnTkS79lwUKQ&s",
+                            Name = "Cashew Milk"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 1,
+                            Description = "Dairy-free milk made from ground rice, often hypoallergenic.",
+                            IconUrl = "https://target.scene7.com/is/image/Target/GUEST_3c79e695-ec5e-417c-bc17-b0d1e7d38423?wid=488&hei=488&fmt=pjpeg",
+                            Name = "Rice Milk"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoryId = 1,
+                            Description = "Cow milk treated to remove lactose, suitable for those with lactose intolerance.",
+                            IconUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbbrL1hEdFlT3zanJyca_BhFUQHV_c61QH3hiPi7zveA&s",
+                            Name = "Lactose-Free Cow Milk"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CategoryId = 1,
+                            Description = "Cow milk flavored with cocoa and sugar, a popular drink for children.",
+                            IconUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTPq2ag-ADZAbWNGZrHU7UH-Y1tjn10BzSHdQUV09wpg&s",
+                            Name = "Chocolate Milk"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CategoryId = 1,
+                            Description = "Cow milk flavored with strawberry and sugar, another popular flavored milk.",
+                            IconUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVeD2cHeIOKWHkMyx45ronNBdyVmeO5ypTCsfvNK-Odw&s",
+                            Name = "Strawberry Milk"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CategoryId = 1,
+                            Description = "Cow milk flavored with vanilla extract and sugar, a classic flavored milk option.",
+                            IconUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNVYNhZg5Wyi4EoL83tRN6lyvCN9xTia1TghlhoFjHGw&s",
+                            Name = "Vanilla Flavored Milk"
+                        });
                 });
 
             modelBuilder.Entity("InGreedIoApi.POCO.ReviewPOCO", b =>
@@ -412,6 +660,73 @@ namespace InGreedIoApi.Migrations
                     b.HasIndex("ProductsId");
 
                     b.ToTable("IngredientPOCOProductPOCO");
+
+                    b.HasData(
+                        new
+                        {
+                            IngredientsId = 3,
+                            ProductsId = 1
+                        },
+                        new
+                        {
+                            IngredientsId = 15,
+                            ProductsId = 2
+                        },
+                        new
+                        {
+                            IngredientsId = 14,
+                            ProductsId = 3
+                        },
+                        new
+                        {
+                            IngredientsId = 4,
+                            ProductsId = 3
+                        },
+                        new
+                        {
+                            IngredientsId = 19,
+                            ProductsId = 6
+                        },
+                        new
+                        {
+                            IngredientsId = 6,
+                            ProductsId = 6
+                        },
+                        new
+                        {
+                            IngredientsId = 18,
+                            ProductsId = 5
+                        },
+                        new
+                        {
+                            IngredientsId = 17,
+                            ProductsId = 7
+                        },
+                        new
+                        {
+                            IngredientsId = 21,
+                            ProductsId = 8
+                        },
+                        new
+                        {
+                            IngredientsId = 3,
+                            ProductsId = 10
+                        },
+                        new
+                        {
+                            IngredientsId = 16,
+                            ProductsId = 11
+                        },
+                        new
+                        {
+                            IngredientsId = 1,
+                            ProductsId = 11
+                        },
+                        new
+                        {
+                            IngredientsId = 20,
+                            ProductsId = 12
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -622,6 +937,17 @@ namespace InGreedIoApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("InGreedIoApi.POCO.PreferencePOCO", b =>
+                {
+                    b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "User")
+                        .WithMany("Preferences")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("InGreedIoApi.POCO.ProductPOCO", b =>
                 {
                     b.HasOne("InGreedIoApi.POCO.CategoryPOCO", "Category")
@@ -632,9 +958,7 @@ namespace InGreedIoApi.Migrations
 
                     b.HasOne("InGreedIoApi.POCO.ApiUserPOCO", "Producer")
                         .WithMany("ProduceProducts")
-                        .HasForeignKey("ProducerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProducerId");
 
                     b.Navigation("Category");
 
@@ -731,6 +1055,8 @@ namespace InGreedIoApi.Migrations
                     b.Navigation("AppNotifications");
 
                     b.Navigation("Operations");
+
+                    b.Navigation("Preferences");
 
                     b.Navigation("ProduceProducts");
 
