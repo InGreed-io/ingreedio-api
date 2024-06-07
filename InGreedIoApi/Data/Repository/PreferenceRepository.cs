@@ -19,7 +19,10 @@ namespace InGreedIoApi.Data.Repository
 
         public async Task<bool> DeleteIngredient(int preferenceId, int ingredientId)
         {
-            var preference = await _context.Preferences.FirstOrDefaultAsync(x => x.Id == preferenceId);
+            var preference = await _context.Preferences
+            .Include(p => p.Wanted)
+            .Include(p => p.Unwanted)
+            .FirstOrDefaultAsync(x => x.Id == preferenceId);
 
             if (preference != null)
             {
@@ -62,7 +65,10 @@ namespace InGreedIoApi.Data.Repository
 
         public async Task<bool> Delete(int preferenceId)
         {
-            var preference = await _context.Preferences.FirstOrDefaultAsync(x => x.Id == preferenceId);
+            var preference = await _context.Preferences
+            .Include(p => p.Wanted)
+            .Include(p => p.Unwanted)
+            .FirstOrDefaultAsync(x => x.Id == preferenceId);
 
             if (preference != null)
             {
