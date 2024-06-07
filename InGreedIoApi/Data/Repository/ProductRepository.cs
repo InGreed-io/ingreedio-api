@@ -234,7 +234,7 @@ public class ProductRepository : IProductRepository
 
     private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
     {
-        var wanted = productQueryDto.ingredients;
+        var wanted = productQueryDto.ingredients ?? new List<int>();
         var unwanted = new List<int>();
 
         if (productQueryDto.preferenceId.HasValue)

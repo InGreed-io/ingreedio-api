@@ -35,7 +35,10 @@ namespace InGreedIoApi.Data.Repository
 
         public async Task<bool> AddIngredient(int preferenceId, AddIngredientDTO addIngredientDto)
         {
-            var preference = await _context.Preferences.FirstOrDefaultAsync(x => x.Id == preferenceId);
+            var preference = await _context.Preferences
+            .Include(p => p.Wanted)
+            .Include(p => p.Unwanted)
+            .FirstOrDefaultAsync(x => x.Id == preferenceId);
 
             if (preference != null)
             {
@@ -45,15 +48,13 @@ namespace InGreedIoApi.Data.Repository
                     if (addIngredientDto.IsWanted)
                     {
                         preference.Wanted.Add(ingredient);
-                        await _context.SaveChangesAsync();
-                        return true;
                     }
                     else
                     {
                         preference.Unwanted.Add(ingredient);
-                        await _context.SaveChangesAsync();
-                        return true;
                     }
+                    await _context.SaveChangesAsync();
+                    return true;
                 }
             }
             return false;
