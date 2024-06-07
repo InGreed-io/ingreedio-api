@@ -32,7 +32,11 @@ namespace InGreedIoApi.Data.Repository
 
         public async Task<IEnumerable<Preference>> GetPreferences(string id)
         {
-            var preferences = await _context.Users.Where(x => x.Id == id).SelectMany(x => x.Preferences).ToListAsync();
+            var preferences = await _context.Preferences
+            .Include(p => p.Wanted)
+            .Include(p => p.Unwanted)
+            .Where(p => p.UserId == id)
+            .ToListAsync();
 
             return preferences.Select(x => _mapper.Map<Preference>(x));
         }
