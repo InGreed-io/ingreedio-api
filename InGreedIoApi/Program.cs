@@ -17,6 +17,8 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.S3;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,6 +69,10 @@ builder.Services.AddScoped<IUserSeeder, ApiUserSeeder>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
+
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddTransient<IUploadService, S3UploadService>();
+
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CategoryPOCO>, CategoryConfiguration>();
@@ -84,6 +90,7 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseNpgsql(conn));
 
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
+builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("S3Settings"));
 
 builder.Services.AddAuthentication(options =>
     {

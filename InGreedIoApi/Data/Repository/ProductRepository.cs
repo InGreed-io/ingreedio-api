@@ -8,6 +8,7 @@ using InGreedIoApi.Model.Enum;
 using InGreedIoApi.Services;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
+using InGreedIoApi.Services;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -16,12 +17,14 @@ public class ProductRepository : IProductRepository
     private readonly IMapper _mapper;
     private readonly ApiDbContext _context;
     private readonly IProductService _productService;
+    private readonly IUploadService _uploadService;
 
-    public ProductRepository(IMapper mapper, ApiDbContext context, IProductService productService)
+    public ProductRepository(IMapper mapper, ApiDbContext context, IProductService productService, IUploadService uploadService)
     {
         _mapper = mapper;
         _context = context;
         _productService = productService;
+        _uploadService = uploadService;
     }
 
     public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto, string? producerId = null)
@@ -107,13 +110,16 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> Create(CreateProductDTO createProductDto, string producerId)
     {
+        // TODO: catch error here
+        string iconUrl = await _uploadService.UploadFileAsync(createProductDto.Photo, createProductDto.Name);
+
         var productPOCO = new ProductPOCO()
         {
             CategoryId = createProductDto.CategoryId,
             ProducerId = producerId,
             Description = createProductDto.Description,
             Name = createProductDto.Name,
-            IconUrl = "brak",
+            IconUrl = iconUrl,
             Ingredients = _context.Ingredients.Where(x => createProductDto.Ingredients.Contains(x.Id)).ToList()
         };
         await _context.Products.AddAsync(productPOCO);
