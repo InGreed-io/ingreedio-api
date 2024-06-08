@@ -12,6 +12,11 @@ Parameters:
     Type: Number
     Default: 20
 
+  DBMaxAllocatedStorage:
+    Description: Max size to which database can scale (Gb)
+    Type: Number
+    Default: 100
+
   DBUsername:
     Description: The database username
     Type: String
@@ -25,6 +30,15 @@ Parameters:
   TaskExecutionRoleArn:
     Description: Arn of existing IAM role for ECS task execution
     Type: String
+
+  AmiId:
+    Description: AMI ID for the Bastion Host
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2' # Latest Amazon Linux 2 AMI
+
+  KeyPair:
+    Description: Name of KeyPair to enable SSH access to Bastion Host
+    Type: 'AWS::EC2::KeyPair::KeyName'
 
 Resources:
   # VPC
@@ -53,19 +67,31 @@ Resources:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
 
-  # NAT Gateway
-  NatGateway:
-    Type: AWS::EC2::NatGateway
-    DependsOn: AttachGateway
-    Properties:
-      AllocationId: !GetAtt NatEIP.AllocationId
-      SubnetId: !Ref PublicSubnet1a
-
-  # Elastic IP for NAT Gateway
-  NatEIP:
+  # Elastic IPs for NAT Gateways
+  NatEIP1a:
     Type: AWS::EC2::EIP
     Properties:
       Domain: vpc
+  
+  NatEIP1b:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  # NAT Gateways
+  NatGateway1a:
+    Type: AWS::EC2::NatGateway
+    DependsOn: AttachGateway
+    Properties:
+      AllocationId: !GetAtt NatEIP1a.AllocationId
+      SubnetId: !Ref PublicSubnet1a
+
+  NatGateway1b:
+    Type: AWS::EC2::NatGateway
+    DependsOn: AttachGateway
+    Properties:
+      AllocationId: !GetAtt NatEIP1b.AllocationId
+      SubnetId: !Ref PublicSubnet1b
 
   # Route Table for public subnets
   PublicRouteTable:
@@ -96,7 +122,7 @@ Resources:
       AvailabilityZone: !Select [ 0, !GetAZs '' ]
       MapPublicIpOnLaunch: true
 
-  # Public Subnet 1a
+  # Public Subnet 1b
   PublicSubnet1b:
     Type: AWS::EC2::Subnet
     Properties:
@@ -140,6 +166,7 @@ Resources:
       VpcId: !Ref VPC
       CidrBlock: 10.0.3.0/24
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
+  
   PrivateSubnet2a:
     Type: AWS::EC2::Subnet
     Properties:
@@ -160,48 +187,87 @@ Resources:
       CidrBlock: 10.0.5.0/24
       AvailabilityZone: !Select [ 1, !GetAZs '' ]
 
-  # Route Table for private subnets
-  PrivateRouteTable:
+  # Route Tables for private subnets
+  PrivateRouteTable1a:
     Type: AWS::EC2::RouteTable
     Properties:
       Tags:
         - Key: Name
-          Value: PrivateRouteTable
+          Value: PrivateRouteTable1a
+      VpcId: !Ref VPC
+  
+  PrivateRouteTable1b:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable1b
       VpcId: !Ref VPC
 
-  # Private Route
-  PrivateRoute:
+  # Private Routes
+  PrivateRoute1a:
     Type: AWS::EC2::Route
     Properties:
-      RouteTableId: !Ref PrivateRouteTable
+      RouteTableId: !Ref PrivateRouteTable1a
       DestinationCidrBlock: 0.0.0.0/0
-      NatGatewayId: !Ref NatGateway
+      NatGatewayId: !Ref NatGateway1a
 
+  PrivateRoute1b:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1b
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1b
+  
   # Associate Private Subnets with Private Route Table
   PrivateSubnet1aRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PrivateSubnet1a
-      RouteTableId: !Ref PrivateRouteTable
+      RouteTableId: !Ref PrivateRouteTable1a
 
   PrivateSubnet1bRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PrivateSubnet1b
-      RouteTableId: !Ref PrivateRouteTable
+      RouteTableId: !Ref PrivateRouteTable1b
 
-  PrivateSubnet2aRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
+  # Create Security Group for Bastion Host
+  BastionSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      SubnetId: !Ref PrivateSubnet2a
-      RouteTableId: !Ref PrivateRouteTable
-
-  PrivateSubnet2bRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
+      VpcId: !Ref VPC
+      GroupDescription: 'Enable SSH access via port 22'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: '0.0.0.0/0'
+      Tags:
+        - Key: Name
+          Value: BastionSecurityGroup
+  
+  # Create Bastion Host
+  BastionHost:
+    Type: 'AWS::EC2::Instance'
     Properties:
-      SubnetId: !Ref PrivateSubnet2b
-      RouteTableId: !Ref PrivateRouteTable
+      InstanceType: 't2.micro'
+      KeyName: !Ref KeyPair
+      SecurityGroupIds:
+        - !Ref BastionSecurityGroup
+      SubnetId: !Ref PublicSubnet1a
+      ImageId: !Ref AmiId
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          amazon-linux-extras install -y postgresql14
+          yum install -y postgresql
+      Tags:
+        - Key: Name
+          Value: BastionHost
 
+  # ECR Repository for backend
   BackendRepository:
     Type: AWS::ECR::Repository
     Properties:
@@ -213,6 +279,7 @@ Resources:
     Properties:
       ClusterName: ingreedio-cluster
 
+  # Frontend Bucket
   FrontendBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -284,6 +351,18 @@ Resources:
     Properties:
       LogGroupName: /ecs/backend
 
+  # Security Group for LoadBalancer
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VPC
+      GroupDescription: Allow HTTP traffic
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
   # Security Group for Backend
   BackendSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -294,12 +373,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
-        - IpProtocol: tcp
-          FromPort: 0
-          ToPort: 65535
-          CidrIp: 0.0.0.0/0
+          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
 
   # Load Balancer for Backend
   BackendLoadBalancer:
@@ -309,7 +383,7 @@ Resources:
       Subnets:
         - !Ref PublicSubnet1a
         - !Ref PublicSubnet1b
-      SecurityGroups: [!Ref BackendSecurityGroup]
+      SecurityGroups: [!Ref LoadBalancerSecurityGroup]
       Scheme: internet-facing
 
   # Target Group for Backend
@@ -349,7 +423,7 @@ Resources:
       TaskDefinition: !Ref BackendTaskDefinition
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
+          AssignPublicIp: DISABLED
           Subnets:
             - !Ref PrivateSubnet1a
             - !Ref PrivateSubnet1b
@@ -358,6 +432,31 @@ Resources:
         - TargetGroupArn: !Ref BackendTargetGroup
           ContainerName: backend
           ContainerPort: 80
+
+  # Define Scalable Target for ECS Service
+  EcsServiceScalableTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 10  # Maximum number of tasks
+      MinCapacity: 1   # Minimum number of tasks
+      ResourceId: !Sub "service/${ECSCluster}/${BackendService.Name}"
+      ScalableDimension: ecs:service:DesiredCount
+      ServiceNamespace: ecs
+      RoleARN: !Ref TaskExecutionRoleArn
+
+  # Define Scaling Policy
+  ScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: EcsServiceScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref EcsServiceScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: ECSServiceAverageCPUUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 50
 
   # RDS PostgreSQL Instance
   DBInstance:
@@ -369,6 +468,7 @@ Resources:
       MasterUserPassword: !Ref DBPassword
       DBInstanceClass: !Ref DBInstanceClass
       AllocatedStorage: !Ref DBAllocatedStorage
+      MaxAllocatedStorage: !Ref DBMaxAllocatedStorage
       MultiAZ: true
       VPCSecurityGroups:
         - !Ref DBSecurityGroup
@@ -385,6 +485,10 @@ Resources:
           FromPort: 5432
           ToPort: 5432
           SourceSecurityGroupId: !Ref BackendSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref BastionSecurityGroup
 
   # Subnet Group for RDS
   DBSubnetGroup:
@@ -431,4 +535,3 @@ Outputs:
   DBEndpoint:
     Description: Endpoint of the RDS instance
     Value: !GetAtt DBInstance.Endpoint.Address
-
