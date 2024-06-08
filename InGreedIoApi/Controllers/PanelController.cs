@@ -14,11 +14,13 @@ namespace InGreedIoApi.Controllers;
 public class PanelController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
 
-    public PanelController(IProductRepository productRepository, IMapper mapper)
+    public PanelController(IProductRepository productRepository, IUserRepository userRepository, IMapper mapper)
     {
         _productRepository = productRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
     }
 
@@ -94,6 +96,16 @@ public class PanelController : ControllerBase
 
     [Paginated]
     [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers(string? emailQuery, int pageIndex = 0, int pageSize = 10) 
+    {
+        var users = await _userRepository.GetUsers(emailQuery, pageIndex, pageSize);
+        return Ok(users);
+    }
+    
+    [Paginated]
+    [Authorize]
     [Authorize(Roles = "Producer,Admin,Moderator")]
     [HttpGet("products")]
     public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
@@ -106,5 +118,29 @@ public class PanelController : ControllerBase
             : await _productRepository.GetAll(productQueryDto);
 
         return Ok(products);
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpPatch("users/{userId}/deactivate")]
+    public async Task<IActionResult> Lock(string userId) 
+    {
+        await _userRepository.LockUser(userId);
+        var user = await _userRepository.GetUserById(userId);
+        var userDTO = _mapper.Map<ApiUserListItemDTO>(user);
+        userDTO.Role = await _userRepository.GetRole(userId);
+        return Ok(userDTO);
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpPatch("users/{userId}/activate")]
+    public async Task<IActionResult> Unlock(string userId) 
+    {
+        await _userRepository.UnlockUser(userId);
+        var user = await _userRepository.GetUserById(userId);
+        var userDTO = _mapper.Map<ApiUserListItemDTO>(user);
+        userDTO.Role = await _userRepository.GetRole(userId);
+        return Ok(userDTO);
     }
 }

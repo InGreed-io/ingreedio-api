@@ -54,7 +54,7 @@ public class UserRepositoryTests
     public async Task GetUserById_ReturnsCorrectUsers_ReturnUserWithProperId()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService);
+        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService, null);
         var userId = "User1";
 
         // Act
@@ -70,7 +70,7 @@ public class UserRepositoryTests
     public async Task GetPreferences_ReturnsCorrectPreferencesOfUser_ReturnPreferencesForUserId()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService);
+        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService, null);
         var userId = "User1";
 
         // Act
@@ -87,7 +87,7 @@ public class UserRepositoryTests
     public async Task CreatePreference_ReturnsNewPreferenceForExistingUser()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService);
+        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService, null);
         var userId = "User2";
         var createPreferenceDto = new CreatePreferenceDTO("New Preference");
 
@@ -105,7 +105,7 @@ public class UserRepositoryTests
     public async Task CreatePreference_ThrowsExceptionForNonExistentUser()
     {
         // Arrange
-        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService);
+        var repository = new UserRepository(_mockContext, _mockMapper, _mockProductService, null);
         var userId = "NonExistentUser";
         var createPreferenceDto = new CreatePreferenceDTO("New Preference");
 
@@ -114,4 +114,3 @@ public class UserRepositoryTests
         Assert.Equal("User not found", exception.Message);
     }
 }
-
