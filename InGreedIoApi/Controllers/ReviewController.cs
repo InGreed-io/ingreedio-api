@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
+using InGreedIoApi.Model.Exceptions;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InGreedIoApi.Controllers
 {
+    [TypeFilter<InGreedIoExceptionFilter>]
     [Route("/api/[controller]/")]
     [ApiController]
     public class ReviewController : ControllerBase
@@ -102,6 +103,18 @@ namespace InGreedIoApi.Controllers
                 new { reviewId = review.Id },
                 _mapper.Map<ReviewDTO>(review)
             );
+        }
+
+        [Authorize]
+        [HttpDelete("{reviewId}")]
+        public async Task<IActionResult> Delete(int reviewId)
+        {
+            var userId = User.FindFirst("Id")?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            await _reviewRepository.Delete(reviewId, userId);
+
+            return NoContent();
         }
     }
 }
