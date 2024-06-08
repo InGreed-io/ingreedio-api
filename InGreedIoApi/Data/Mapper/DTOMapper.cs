@@ -57,6 +57,11 @@ namespace InGreedIoApi.Data.Mapper
                     );
                 })
                 .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(ing => ing.Name)));
+
+            CreateMap<ApiUser, ApiUserListItemDTO>()
+                .ForMember(dst => dst.IsBlocked, opt => opt.MapFrom(src => 
+                    src.LockoutEnabled && src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow
+                ));
         }
     }
 }

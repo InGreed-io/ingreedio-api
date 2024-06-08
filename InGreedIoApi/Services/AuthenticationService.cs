@@ -80,6 +80,16 @@ public class AuthenticationService : IAuthenticationService
             };
         }
 
+        var isLockedOut = await _userManager.IsLockedOutAsync(existingUser);
+        if (isLockedOut)
+        {
+            return new AuthResult
+            {
+                Errors = ["User is deactivated"],
+                Result = false
+            };
+        }
+
         var jwtToken = await GenerateJwtToken(existingUser);
         var roles = await _userManager.GetRolesAsync(existingUser);
 

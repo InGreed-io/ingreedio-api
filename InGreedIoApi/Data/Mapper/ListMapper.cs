@@ -28,6 +28,10 @@ namespace InGreedIoApi.Data.Mapper
                 .ConstructUsing(src => new ReportedReviewDTO(
                     src.Id, src.User.UserName!, src.Text, src.Rating, src.UserID, src.ReportsCount
                 ));
+            CreateProjection<ApiUserPOCO, ApiUserListItemDTO>()
+                .ForMember(dst => dst.IsBlocked, opt => opt.MapFrom(src => 
+                    src.LockoutEnabled && src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow
+                ));
         }
     }
 }
