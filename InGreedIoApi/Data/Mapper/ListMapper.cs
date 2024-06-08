@@ -25,7 +25,9 @@ namespace InGreedIoApi.Data.Mapper
                     src.Id, src.User.UserName!, src.Text, src.Rating, src.UserID
                 ));
             CreateProjection<ApiUserPOCO, ApiUserListItemDTO>()
-                .ConstructUsing(src => new ApiUserListItemDTO(src.Id, src.Email, src.IsBlocked));
+                .ForMember(dst => dst.IsBlocked, opt => opt.MapFrom(src => 
+                    src.LockoutEnabled && src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow
+                ));
         }
     }
 }

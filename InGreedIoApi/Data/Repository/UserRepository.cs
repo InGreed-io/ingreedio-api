@@ -46,13 +46,18 @@ namespace InGreedIoApi.Data.Repository
                 .ProjectToPageAsync<ApiUserPOCO, ApiUserListItemDTO>(pageIndex, pageSize, _mapper.ConfigurationProvider);
 
             foreach (var userDTO in usersPage.Contents) {
-                var user = await _userManager.FindByIdAsync(userDTO.Id);
-                if (user == null) throw new InGreedIoException("User not found", StatusCodes.Status404NotFound);
-                var userRoles = await _userManager.GetRolesAsync(user);
-                userDTO.Role = userRoles.FirstOrDefault() ?? "No role";
+                userDTO.Role = await GetRole(userDTO.Id);
             }
 
             return usersPage;
+        }
+
+        public async Task<string?> GetRole(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) throw new InGreedIoException("User not found", StatusCodes.Status404NotFound);
+            var userRoles = await _userManager.GetRolesAsync(user);
+            return userRoles.FirstOrDefault();
         }
 
         public async Task<IEnumerable<Preference>> GetPreferences(string id)

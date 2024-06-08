@@ -1,4 +1,5 @@
 using InGreedIoApi.Data.Repository.Interface;
+using InGreedIoApi.Model.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 
 namespace InGreedIoApi.Utils.ActiveUserAuthorization 
@@ -17,8 +18,12 @@ namespace InGreedIoApi.Utils.ActiveUserAuthorization
             var userId = context.User.FindFirst("Id")?.Value;
             if (string.IsNullOrEmpty(userId)) return;
 
-            var isLocked = await _userRepository.IsUserLocked(userId);
-            if (!isLocked) context.Succeed(requirement);
+            try 
+            {
+                var isLocked = await _userRepository.IsUserLocked(userId);
+                if (!isLocked) context.Succeed(requirement);
+            }
+            catch (InGreedIoException) { return; }
         }
     }
 }

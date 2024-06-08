@@ -127,7 +127,9 @@ public class PanelController : ControllerBase
     {
         await _userRepository.LockUser(userId);
         var user = await _userRepository.GetUserById(userId);
-        return Ok(user);
+        var userDTO = _mapper.Map<ApiUserListItemDTO>(user);
+        userDTO.Role = await _userRepository.GetRole(userId);
+        return Ok(userDTO);
     }
 
     [Authorize]
@@ -137,6 +139,8 @@ public class PanelController : ControllerBase
     {
         await _userRepository.UnlockUser(userId);
         var user = await _userRepository.GetUserById(userId);
-        return Ok(user);
+        var userDTO = _mapper.Map<ApiUserListItemDTO>(user);
+        userDTO.Role = await _userRepository.GetRole(userId);
+        return Ok(userDTO);
     }
 }

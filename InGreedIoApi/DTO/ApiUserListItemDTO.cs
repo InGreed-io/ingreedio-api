@@ -1,10 +1,10 @@
 namespace InGreedIoApi.DTO
 {
-    public class ApiUserListItemDTO(string Id, string Email, bool IsBlocked)
+    public class ApiUserListItemDTO
     {
-        public string Id { get; set; } = Id;
-        public string Email { get; set; } = Email;
-        public string Role { get; set; } = string.Empty;
-        public bool IsBlocked { get; set; } = IsBlocked;
+        public string? Id { get; set; }
+        public string? Email { get; set; }
+        public string? Role { get; set; }
+        public bool IsBlocked { get; set; }
     }
 }
