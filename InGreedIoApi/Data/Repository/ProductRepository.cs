@@ -111,7 +111,7 @@ public class ProductRepository : IProductRepository
     public async Task<Product> Create(CreateProductDTO createProductDto, string producerId)
     {
         // TODO: catch error here
-        string iconUrl = await _uploadService.UploadFileAsync(createProductDto.Photo, createProductDto.Name);
+        string iconUrl = await _uploadService.UploadFileAsync(createProductDto.Photo, $"{createProductDto.Name}-{createProductDto.Photo.FileName}");
 
         var productPOCO = new ProductPOCO()
         {

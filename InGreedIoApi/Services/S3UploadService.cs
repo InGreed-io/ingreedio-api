@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using InGreedIoApi.Configurations;
+using Amazon.Runtime;
 
 namespace InGreedIoApi.Services;
 
