@@ -37,9 +37,9 @@ public class ProductRepository : IProductRepository
         if (productQueryDto.categoryId.HasValue)
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
 
-        UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
+        var wanted = UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
         //sort elements by enum
-        _productService.SortProductQueryDto(productQueryDto, ref queryable);
+        _productService.SortProductQueryDto(productQueryDto, ref queryable, wanted);
 
         return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
             productQueryDto.pageIndex, productQueryDto.pageSize, _mapper.ConfigurationProvider
@@ -232,7 +232,7 @@ public class ProductRepository : IProductRepository
     }
 
 
-    private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
+    private IEnumerable<int> UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
     {
         var wanted = productQueryDto.ingredients ?? new List<int>();
         var unwanted = new List<int>();
@@ -252,12 +252,14 @@ public class ProductRepository : IProductRepository
         // filter products that doesnt have any unwanted ingredient and has all wanted igredients
         if (wanted is not null && wanted.Count > 0)
         {
-            queryable = queryable.Where(p => p.Ingredients.All(i => wanted.Contains(i.Id)));
+            queryable = queryable.Where(p => p.Ingredients.Any(i => wanted.Contains(i.Id)));
         }
         if (unwanted.Count > 0)
         {
             queryable = queryable.Where(p => !p.Ingredients.Any(i => unwanted.Contains(i.Id)));
         }
+
+        return wanted ?? new List<int>();
     }
 
     public async Task<IEnumerable<bool>> CheckFavourites(IEnumerable<int> productIds, string userId)

@@ -50,9 +50,9 @@ namespace InGreedIoApi.Data.Repository
             if (productQueryDto.categoryId.HasValue)
                 queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
 
-            UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
+            var wanted = UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
             //sort elements by enum
-            _productService.SortProductQueryDto(productQueryDto, ref queryable);
+            _productService.SortProductQueryDto(productQueryDto, ref queryable, wanted);
 
             //filter only favourites
             queryable = queryable.Where(p => p.FavouriteBy.Any(u => u.Id == userId));
@@ -62,7 +62,7 @@ namespace InGreedIoApi.Data.Repository
             );
         }
 
-        private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
+        private IEnumerable<int> UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
         {
             var wanted = productQueryDto.ingredients;
             var unwanted = new List<int>();
@@ -82,12 +82,14 @@ namespace InGreedIoApi.Data.Repository
             // filter products that doesnt have any unwanted ingredient and has all wanted igredients
             if (wanted is not null && wanted.Count > 0)
             {
-                queryable = queryable.Where(p => p.Ingredients.All(i => wanted.Contains(i.Id)));
+                queryable = queryable.Where(p => p.Ingredients.Any(i => wanted.Contains(i.Id)));
             }
             if (unwanted.Count > 0)
             {
                 queryable = queryable.Where(p => !p.Ingredients.Any(i => unwanted.Contains(i.Id)));
             }
+
+            return wanted ?? new List<int>();
         }
 
         public async Task<Preference> CreatePreference(string userId, CreatePreferenceDTO args)
