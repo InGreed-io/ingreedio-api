@@ -240,7 +240,10 @@ public class ProductRepository : IProductRepository
         if (productQueryDto.preferenceId.HasValue)
         {
             //Get preference
-            var preferencePoco = _context.Preferences.Single(pref => pref.Id == productQueryDto.preferenceId);
+            var preferencePoco = _context.Preferences
+              .Include(p => p.Wanted)
+              .Include(p => p.Unwanted)
+              .Single(pref => pref.Id == productQueryDto.preferenceId);
             var preference = _mapper.Map<Preference>(preferencePoco);
 
             //Get wanted and unwanted
