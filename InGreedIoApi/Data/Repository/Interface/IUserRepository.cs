@@ -15,5 +15,9 @@ namespace InGreedIoApi.Data.Repository.Interface
         Task<IPage<ApiUserListItemDTO>> GetUsers(string? emailQuery, int pageIndex, int pageSize);
 
         Task<IPage<ProductDTO>> GetFavourites(ProductQueryDTO productQueryDto, string userId);
+
+        Task LockUser(string userId);
+
+        Task UnlockUser(string userId);
     }
 }

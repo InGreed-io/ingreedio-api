@@ -119,4 +119,24 @@ public class PanelController : ControllerBase
 
         return Ok(products);
     }
+
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpPatch("users/{userId}/deactivate")]
+    public async Task<IActionResult> Lock(string userId) 
+    {
+        await _userRepository.LockUser(userId);
+        var user = await _userRepository.GetUserById(userId);
+        return Ok(user);
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpPatch("users/{userId}/activate")]
+    public async Task<IActionResult> Unlock(string userId) 
+    {
+        await _userRepository.UnlockUser(userId);
+        var user = await _userRepository.GetUserById(userId);
+        return Ok(user);
+    }
 }

@@ -147,5 +147,34 @@ namespace InGreedIoApi.Data.Repository
             return _mapper.Map<Preference>(newPreference);
         }
 
+        public async Task LockUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) 
+                throw new InGreedIoException("Could not find user.", StatusCodes.Status404NotFound);
+
+            var enableLockoutResult = await _userManager.SetLockoutEnabledAsync(user, true);
+            if (!enableLockoutResult.Succeeded) 
+                throw new InGreedIoException("Could not deactivate user.", StatusCodes.Status400BadRequest);
+
+            var lockoutDateResult = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+            if (!lockoutDateResult.Succeeded) 
+                throw new InGreedIoException("Could not deactivate user.", StatusCodes.Status400BadRequest);
+        }
+
+        public async Task UnlockUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) 
+                throw new InGreedIoException("Could not find user.", StatusCodes.Status404NotFound);
+
+            var enableLockoutResult = await _userManager.SetLockoutEnabledAsync(user, true);
+            if (!enableLockoutResult.Succeeded) 
+                throw new InGreedIoException("Could not activate user.", StatusCodes.Status400BadRequest);
+
+            var lockoutDateResult = await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+            if (!lockoutDateResult.Succeeded) 
+                throw new InGreedIoException("Could not activate user.", StatusCodes.Status400BadRequest);
+        }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
-using InGreedIoApi.POCO;
 using InGreedIoApi.Utils.Pagination;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InGreedIoApi.Controllers
