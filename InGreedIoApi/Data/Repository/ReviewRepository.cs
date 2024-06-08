@@ -120,6 +120,7 @@ namespace InGreedIoApi.Data.Repository
         public async Task<IPage<ReportedReviewDTO>> GetReported(int pageIndex, int pageSize)
         {
             return await _context.Reviews
+                .Include(review => review.Product)
                 .Where(review => review.ReportsCount > 0)
                 .OrderByDescending(review => review.ReportsCount)
                 .ProjectToPageAsync<ReviewPOCO, ReportedReviewDTO>(pageIndex, pageSize, _mapper.ConfigurationProvider);

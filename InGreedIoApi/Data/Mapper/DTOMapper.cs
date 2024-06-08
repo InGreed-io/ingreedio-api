@@ -18,6 +18,16 @@ namespace InGreedIoApi.Data.Mapper
                 src.Rating,
                 src.UserID
             ));
+            CreateMap<Review, ReportedReviewDTO>().ConstructUsing(src => new ReportedReviewDTO(
+                src.Id,
+                src.User.UserName ?? "???",
+                src.Text,
+                src.Rating,
+                src.UserID,
+                src.ReportsCount,
+                src.Product.Id,
+                src.Product.Name
+            ));
             CreateMap<Ingredient, IngredientDTO>();
             CreateMap<Category, CategoryDTO>();
             CreateMap<Preference, PreferenceDTO>();
