@@ -30,12 +30,6 @@ public class PanelController : ControllerBase
         var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-        Console.WriteLine("===== PHOTO ======");
-        Console.WriteLine(createProductDto.Photo.FileName);
-        Console.WriteLine(createProductDto.Photo.Length);
-        Console.WriteLine(createProductDto.Photo.ContentType);
-        Console.WriteLine("===== PHOTO ======");
-
         var product = await _productRepository.Create(createProductDto, userId);
         if (product == null) return BadRequest("Could not add product");
 

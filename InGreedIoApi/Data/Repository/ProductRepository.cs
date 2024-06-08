@@ -110,8 +110,19 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> Create(CreateProductDTO createProductDto, string producerId)
     {
-        // TODO: catch error here
-        string iconUrl = await _uploadService.UploadFileAsync(createProductDto.Photo, $"{createProductDto.Name}-{createProductDto.Photo.FileName}");
+        string iconUrl = "";
+
+        try
+        {
+            iconUrl = await _uploadService.UploadFileAsync(createProductDto.Photo, $"{createProductDto.Name}-{createProductDto.Photo.FileName}");
+        }
+        catch
+        {
+            throw new InGreedIoException(
+                "Cannot upload image to Amazon S3",
+                StatusCodes.Status503ServiceUnavailable
+                );
+        };
 
         var productPOCO = new ProductPOCO()
         {
