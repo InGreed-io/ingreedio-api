@@ -15,12 +15,14 @@ public class PanelController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IReviewRepository _reviewRepository;
     private readonly IMapper _mapper;
 
-    public PanelController(IProductRepository productRepository, IUserRepository userRepository, IMapper mapper)
+    public PanelController(IProductRepository productRepository, IUserRepository userRepository, IReviewRepository reviewRepository, IMapper mapper)
     {
         _productRepository = productRepository;
         _userRepository = userRepository;
+        _reviewRepository = reviewRepository;
         _mapper = mapper;
     }
 
@@ -118,6 +120,25 @@ public class PanelController : ControllerBase
             : await _productRepository.GetAll(productQueryDto);
 
         return Ok(products);
+    }
+
+    [Paginated]
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpGet("reviews/reported")]
+    public async Task<IActionResult> GetReportedReviews(int pageIndex = 0, int pageSize = 10)
+    {
+        var reviews = await _reviewRepository.GetReported(pageIndex, pageSize);
+        return Ok(reviews);
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpDelete("reviews/{reviewId}")]
+    public async Task<IActionResult> DeleteReview(int reviewId)
+    {
+        await _reviewRepository.Delete(reviewId);
+        return NoContent();
     }
 
     [Authorize]
