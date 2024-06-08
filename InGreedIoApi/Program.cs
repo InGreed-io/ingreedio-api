@@ -6,12 +6,12 @@ using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Data.Seed;
 using InGreedIoApi.POCO;
 using InGreedIoApi.Services;
+using InGreedIoApi.Utils.ActiveUserAuthorization;
 using InGreedIoApi.Utils.Pagination;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -66,6 +66,7 @@ builder.Services.AddScoped<IUserSeeder, ApiUserSeeder>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAuthorizationHandler, ActiveUserHandler>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
@@ -110,6 +111,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
         .RequireAuthenticatedUser()
+        .AddRequirements(new ActiveUserRequirement())
         .Build();
 });
 

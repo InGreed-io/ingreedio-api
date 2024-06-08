@@ -19,5 +19,7 @@ namespace InGreedIoApi.Data.Repository.Interface
         Task LockUser(string userId);
 
         Task UnlockUser(string userId);
+
+        Task<bool> IsUserLocked(string userId);
     }
 }

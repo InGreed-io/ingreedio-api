@@ -176,5 +176,15 @@ namespace InGreedIoApi.Data.Repository
             if (!lockoutDateResult.Succeeded) 
                 throw new InGreedIoException("Could not activate user.", StatusCodes.Status400BadRequest);
         }
+
+        public async Task<bool> IsUserLocked(string userId) 
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) 
+                throw new InGreedIoException("Could not find user.", StatusCodes.Status404NotFound);
+            
+            var isLockedOut = await _userManager.IsLockedOutAsync(user);
+            return isLockedOut;
+        }
     }
 }
