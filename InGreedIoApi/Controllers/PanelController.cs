@@ -124,7 +124,7 @@ public class PanelController : ControllerBase
 
     [Paginated]
     [Authorize]
-    [Authorize(Roles = "Producer,Admin")]
+    [Authorize(Roles = "Moderator,Admin")]
     [HttpGet("reviews/reported")]
     public async Task<IActionResult> GetReportedReviews(int pageIndex = 0, int pageSize = 10)
     {
@@ -133,7 +133,7 @@ public class PanelController : ControllerBase
     }
 
     [Authorize]
-    [Authorize(Roles = "Producer,Admin")]
+    [Authorize(Roles = "Moderator,Admin")]
     [HttpDelete("reviews/{reviewId}")]
     public async Task<IActionResult> DeleteReview(int reviewId)
     {
