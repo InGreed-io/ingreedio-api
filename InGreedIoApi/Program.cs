@@ -158,7 +158,10 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<ApiDbContext>();
-    context.Database.Migrate();
+    if (context.Database.GetPendingMigrations().Any())
+    {
+        context.Database.Migrate();
+    }
 
     var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();
     seeder.SeedAsync().Wait();

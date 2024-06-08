@@ -21,10 +21,10 @@ namespace InGreedIoApi.Data.Seed
         {
             var users = new List<(string username, string email, string role)>
             {
-                ("bartek@example.com", "bartek@example.com", "User"),
-                ("bartosz@example.com", "bartosz@example.com", "Admin"),
-                ("bmajosek@example.com", "bmajosek@example.com", "Moderator"),
-                ("bmajos@example.com", "bmajos@example.com", "Producer")
+                ("user@example.com", "user@example.com", "User"),
+                ("admin@example.com", "admin@example.com", "Admin"),
+                ("moderator@example.com", "moderator@example.com", "Moderator"),
+                ("producer@example.com", "producer@example.com", "Producer")
             };
 
             foreach (var user in users)
