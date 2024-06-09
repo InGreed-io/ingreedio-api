@@ -170,15 +170,9 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<ApiDbContext>();
-    if (context.Database.IsNpgsql())
+    if (context.Database.GetPendingMigrations().Any())
     {
-        if (context.Database.GetPendingMigrations().Any())
-        {
-            context.Database.Migrate();
-        }
-    }
-    else
-    {
+        context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
     }
     var seeder = scope.ServiceProvider.GetRequiredService<IUserSeeder>();
