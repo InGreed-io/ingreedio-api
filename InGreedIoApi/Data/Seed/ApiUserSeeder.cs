@@ -1,6 +1,5 @@
 ﻿using InGreedIoApi.POCO;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 
 namespace InGreedIoApi.Data.Seed
 {
@@ -8,23 +7,21 @@ namespace InGreedIoApi.Data.Seed
     {
         private readonly UserManager<ApiUserPOCO> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
 
-        public ApiUserSeeder(UserManager<ApiUserPOCO> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public ApiUserSeeder(UserManager<ApiUserPOCO> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-            _configuration = configuration;
         }
 
         public async Task SeedAsync()
         {
-            var users = new List<(string username, string email, string role)>
+            var users = new List<(string username, string email, string password, string role)>
             {
-                ("user@example.com", "user@example.com", "User"),
-                ("admin@example.com", "admin@example.com", "Admin"),
-                ("moderator@example.com", "moderator@example.com", "Moderator"),
-                ("producer@example.com", "producer@example.com", "Producer")
+                ("user@example.com", "user@example.com", "Password123!", "User"),
+                ("admin@example.com", "admin@example.com", "Password123!", "Admin"),
+                ("moderator@example.com", "moderator@example.com", "Password123!", "Moderator"),
+                ("producer@example.com", "producer@example.com", "Password123!", "Producer")
             };
 
             foreach (var user in users)
@@ -37,8 +34,7 @@ namespace InGreedIoApi.Data.Seed
                         Email = user.email
                     };
 
-                    var password = _configuration[$"UserSecrets:{user.username}:Password"];
-                    var createResult = await _userManager.CreateAsync(apiUser, password);
+                    var createResult = await _userManager.CreateAsync(apiUser, user.password);
                     if (createResult.Succeeded)
                     {
                         if (!await _roleManager.RoleExistsAsync(user.role))
