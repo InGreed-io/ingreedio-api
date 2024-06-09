@@ -128,7 +128,7 @@ namespace InGreedIoApi.Data.Repository
         public async Task Delete(int reviewId, string? userId = null)
         {
             var review = await _context.Reviews.FindAsync(reviewId);
-            if (review == null) 
+            if (review == null)
                 throw new InGreedIoException("Could not find review.", StatusCodes.Status404NotFound);
 
             if (!string.IsNullOrEmpty(userId) && review.UserID != userId)
