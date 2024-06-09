@@ -52,7 +52,6 @@ namespace InGreedIoApi.Data.Mapper
             CreateMap<Product, ProductDetailsDTO>()
                 .ConstructUsing((product, context) =>
                 {
-                    var ingredientNames = product.Ingredients.Select(ing => ing.Name).ToList();
                     return new ProductDetailsDTO(
                         product.Id,
                         product.Name,
@@ -62,14 +61,14 @@ namespace InGreedIoApi.Data.Mapper
                         product.Featuring != null,
                         product.Producer?.Company?.Name ?? "Unknown",
                         product.Description,
-                        ingredientNames,
+                        new List<IngredientDTO>(),
                         false
                     );
                 })
-                .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(ing => ing.Name)));
+                .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients));
 
             CreateMap<ApiUser, ApiUserListItemDTO>()
-                .ForMember(dst => dst.IsBlocked, opt => opt.MapFrom(src => 
+                .ForMember(dst => dst.IsBlocked, opt => opt.MapFrom(src =>
                     src.LockoutEnabled && src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow
                 ));
         }

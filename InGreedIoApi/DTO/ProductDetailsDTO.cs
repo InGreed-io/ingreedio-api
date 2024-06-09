@@ -12,10 +12,10 @@ namespace InGreedIoApi.DTO
         public bool Featured { get; set; }
         public string CompanyName { get; set; }
         public string Description { get; set; }
-        public List<string> Ingredients { get; set; }
+        public List<IngredientDTO> Ingredients { get; set; }
         public bool? Favourite { get; set; } = null;
 
-        public ProductDetailsDTO(int id, string name, string iconUrl, float rating, int ratingsCount, bool featured, string companyName, string description, List<string> ingredients, bool? favourite)
+        public ProductDetailsDTO(int id, string name, string iconUrl, float rating, int ratingsCount, bool featured, string companyName, string description, List<IngredientDTO> ingredients, bool? favourite)
         {
             Id = id;
             Name = name;

@@ -100,12 +100,12 @@ public class PanelController : ControllerBase
     [Authorize]
     [Authorize(Roles = "Moderator,Admin")]
     [HttpGet("users")]
-    public async Task<IActionResult> GetUsers(string? emailQuery, int pageIndex = 0, int pageSize = 10) 
+    public async Task<IActionResult> GetUsers(string? emailQuery, int pageIndex = 0, int pageSize = 10)
     {
         var users = await _userRepository.GetUsers(emailQuery, pageIndex, pageSize);
         return Ok(users);
     }
-    
+
     [Paginated]
     [Authorize]
     [Authorize(Roles = "Producer,Admin,Moderator")]
@@ -144,7 +144,7 @@ public class PanelController : ControllerBase
     [Authorize]
     [Authorize(Roles = "Moderator,Admin")]
     [HttpPatch("users/{userId}/deactivate")]
-    public async Task<IActionResult> Lock(string userId) 
+    public async Task<IActionResult> Lock(string userId)
     {
         await _userRepository.LockUser(userId);
         var user = await _userRepository.GetUserById(userId);
@@ -156,7 +156,7 @@ public class PanelController : ControllerBase
     [Authorize]
     [Authorize(Roles = "Moderator,Admin")]
     [HttpPatch("users/{userId}/activate")]
-    public async Task<IActionResult> Unlock(string userId) 
+    public async Task<IActionResult> Unlock(string userId)
     {
         await _userRepository.UnlockUser(userId);
         var user = await _userRepository.GetUserById(userId);
