@@ -26,7 +26,7 @@ namespace InGreedIoApi.Data.Mapper
                 ));
             CreateProjection<ReviewPOCO, ReportedReviewDTO>()
                 .ConstructUsing(src => new ReportedReviewDTO(
-                    src.Id, src.User.UserName!, src.Text, src.Rating, src.UserID, src.ReportsCount
+                    src.Id, src.User.UserName!, src.Text, src.Rating, src.UserID, src.ReportsCount, src.Product.Id, src.Product.Name
                 ));
             CreateProjection<ApiUserPOCO, ApiUserListItemDTO>()
                 .ForMember(dst => dst.IsBlocked, opt => opt.MapFrom(src => 
