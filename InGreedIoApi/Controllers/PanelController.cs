@@ -14,20 +14,24 @@ namespace InGreedIoApi.Controllers;
 public class PanelController : ControllerBase
 {
     private readonly IProductRepository _productRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IReviewRepository _reviewRepository;
     private readonly IMapper _mapper;
 
-    public PanelController(IProductRepository productRepository, IMapper mapper)
+    public PanelController(IProductRepository productRepository, IUserRepository userRepository, IReviewRepository reviewRepository, IMapper mapper)
     {
         _productRepository = productRepository;
+        _userRepository = userRepository;
+        _reviewRepository = reviewRepository;
         _mapper = mapper;
     }
 
     [Authorize]
     [Authorize(Roles = "Producer,Admin")]
     [HttpPost("products")]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductDTO createProductDto)
+    public async Task<IActionResult> CreateProduct([FromForm] CreateProductDTO createProductDto)
     {
-        var userId = User.FindFirst("Id")?.Value; 
+        var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
         var product = await _productRepository.Create(createProductDto, userId);
@@ -48,7 +52,7 @@ public class PanelController : ControllerBase
         var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-        var product = User.IsInRole("Producer") 
+        var product = User.IsInRole("Producer")
             ? await _productRepository.Update(updateProductDTO, productId, userId)
             : await _productRepository.Update(updateProductDTO, productId);
 
@@ -63,11 +67,11 @@ public class PanelController : ControllerBase
         var userId = User.FindFirst("Id")?.Value;
         if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-        if (User.IsInRole("Producer")) 
+        if (User.IsInRole("Producer"))
         {
             await _productRepository.Delete(productId, userId);
         }
-        else 
+        else
         {
             await _productRepository.Delete(productId);
         }
@@ -94,6 +98,16 @@ public class PanelController : ControllerBase
 
     [Paginated]
     [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers(string? emailQuery, int pageIndex = 0, int pageSize = 10) 
+    {
+        var users = await _userRepository.GetUsers(emailQuery, pageIndex, pageSize);
+        return Ok(users);
+    }
+    
+    [Paginated]
+    [Authorize]
     [Authorize(Roles = "Producer,Admin,Moderator")]
     [HttpGet("products")]
     public async Task<IActionResult> GetProducts([FromQuery] ProductQueryDTO productQueryDto)
@@ -106,5 +120,48 @@ public class PanelController : ControllerBase
             : await _productRepository.GetAll(productQueryDto);
 
         return Ok(products);
+    }
+
+    [Paginated]
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpGet("reviews/reported")]
+    public async Task<IActionResult> GetReportedReviews(int pageIndex = 0, int pageSize = 10)
+    {
+        var reviews = await _reviewRepository.GetReported(pageIndex, pageSize);
+        return Ok(reviews);
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpDelete("reviews/{reviewId}")]
+    public async Task<IActionResult> DeleteReview(int reviewId)
+    {
+        await _reviewRepository.Delete(reviewId);
+        return NoContent();
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpPatch("users/{userId}/deactivate")]
+    public async Task<IActionResult> Lock(string userId) 
+    {
+        await _userRepository.LockUser(userId);
+        var user = await _userRepository.GetUserById(userId);
+        var userDTO = _mapper.Map<ApiUserListItemDTO>(user);
+        userDTO.Role = await _userRepository.GetRole(userId);
+        return Ok(userDTO);
+    }
+
+    [Authorize]
+    [Authorize(Roles = "Moderator,Admin")]
+    [HttpPatch("users/{userId}/activate")]
+    public async Task<IActionResult> Unlock(string userId) 
+    {
+        await _userRepository.UnlockUser(userId);
+        var user = await _userRepository.GetUserById(userId);
+        var userDTO = _mapper.Map<ApiUserListItemDTO>(user);
+        userDTO.Role = await _userRepository.GetRole(userId);
+        return Ok(userDTO);
     }
 }

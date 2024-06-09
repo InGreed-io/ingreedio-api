@@ -5,8 +5,10 @@ using InGreedIoApi.POCO;
 using Microsoft.EntityFrameworkCore;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Model.Enum;
+using InGreedIoApi.Services;
 using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.Utils.Pagination;
+using InGreedIoApi.Services;
 
 namespace InGreedIoApi.Data.Repository;
 
@@ -14,11 +16,15 @@ public class ProductRepository : IProductRepository
 {
     private readonly IMapper _mapper;
     private readonly ApiDbContext _context;
+    private readonly IProductService _productService;
+    private readonly IUploadService _uploadService;
 
-    public ProductRepository(IMapper mapper, ApiDbContext context)
+    public ProductRepository(IMapper mapper, ApiDbContext context, IProductService productService, IUploadService uploadService)
     {
         _mapper = mapper;
         _context = context;
+        _productService = productService;
+        _uploadService = uploadService;
     }
 
     public async Task<IPage<ProductDTO>> GetAll(ProductQueryDTO productQueryDto, string? producerId = null)
@@ -28,14 +34,15 @@ public class ProductRepository : IProductRepository
         if (!string.IsNullOrEmpty(producerId))
             queryable = queryable.Where(p => p.ProducerId == producerId);
 
-        queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
+        if (!string.IsNullOrEmpty(productQueryDto.query))
+            queryable = queryable.Where(p => p.Name.ToLower().Contains(productQueryDto.query.ToLower()));
 
         if (productQueryDto.categoryId.HasValue)
             queryable = queryable.Where(p => p.CategoryId == productQueryDto.categoryId.Value);
 
-        UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
+        var wanted = UpdateWantedAndUnwantedFromPreference(productQueryDto, ref queryable);
         //sort elements by enum
-        SortProductQueryDto(productQueryDto, ref queryable);
+        _productService.SortProductQueryDto(productQueryDto, ref queryable, wanted);
 
         return await queryable.ProjectToPageAsync<ProductPOCO, ProductDTO>(
             productQueryDto.pageIndex, productQueryDto.pageSize, _mapper.ConfigurationProvider
@@ -45,6 +52,7 @@ public class ProductRepository : IProductRepository
     public async Task<Product> GetProduct(int productId)
     {
         var product = await _context.Products
+            .Include(x => x.Reviews)
             .Include(x => x.Featuring)
             .Include(x => x.Ingredients)
             .Include(x => x.Producer)
@@ -102,13 +110,27 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> Create(CreateProductDTO createProductDto, string producerId)
     {
+        string iconUrl = "";
+
+        try
+        {
+            iconUrl = await _uploadService.UploadFileAsync(createProductDto.Photo, $"{createProductDto.Name}-{createProductDto.Photo.FileName}");
+        }
+        catch
+        {
+            throw new InGreedIoException(
+                "Cannot upload image to Amazon S3",
+                StatusCodes.Status503ServiceUnavailable
+                );
+        };
+
         var productPOCO = new ProductPOCO()
         {
             CategoryId = createProductDto.CategoryId,
             ProducerId = producerId,
             Description = createProductDto.Description,
             Name = createProductDto.Name,
-            IconUrl = "brak",
+            IconUrl = iconUrl,
             Ingredients = _context.Ingredients.Where(x => createProductDto.Ingredients.Contains(x.Id)).ToList()
         };
         await _context.Products.AddAsync(productPOCO);
@@ -139,9 +161,9 @@ public class ProductRepository : IProductRepository
             .Include(product => product.Ingredients)
             .SingleOrDefaultAsync(x => x.Id == productId);
 
-        if (product == null) 
+        if (product == null)
             throw new InGreedIoException("Could not find product.", StatusCodes.Status404NotFound);
-        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId) 
+        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId)
             throw new InGreedIoException("Could not access product.", StatusCodes.Status403Forbidden);
 
         product.Description = updateProductDTO.Description;
@@ -158,24 +180,87 @@ public class ProductRepository : IProductRepository
     {
         var product = await _context.Products.SingleOrDefaultAsync(x => x.Id == productId);
 
-        if (product == null) 
+        if (product == null)
             throw new InGreedIoException("Could not find product.", StatusCodes.Status404NotFound);
-        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId) 
+        if (!string.IsNullOrEmpty(producerId) && producerId != product.ProducerId)
             throw new InGreedIoException("Could not access product.", StatusCodes.Status403Forbidden);
 
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
     }
 
-    private void UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
+    public async Task<bool> AddToFavourites(int productId, string userId)
     {
-        var wanted = productQueryDto.ingredients;
+        var product = await _context.Products
+            .Include(p => p.FavouriteBy)
+            .SingleOrDefaultAsync(x => x.Id == productId);
+        if (product == null) return false;
+
+        var user = await _context.ApiUsers
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId);
+
+        if (user == null) return false;
+
+        if (product.FavouriteBy.Contains(user)) return false;
+        if (user.FavouriteProducts.Contains(product)) return false;
+
+        product.FavouriteBy.Add(user);
+        user.FavouriteProducts.Add(product);
+
+        _context.Update(product);
+        _context.Update(user);
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public async Task<bool> RemoveFromFavourites(int productId, string userId)
+    {
+        var product = await _context.Products
+            .Include(p => p.FavouriteBy)
+            .SingleOrDefaultAsync(x => x.Id == productId);
+        if (product == null) return false;
+
+        var user = await _context.ApiUsers
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId);
+        if (user == null) return false;
+
+        if (!product.FavouriteBy.Contains(user) && !user.FavouriteProducts.Contains(product)) return false;
+
+        product.FavouriteBy.Remove(user);
+        user.FavouriteProducts.Remove(product);
+
+        _context.Update(product);
+        _context.Update(user);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+
+    private IEnumerable<int> UpdateWantedAndUnwantedFromPreference(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
+    {
+        var wanted = productQueryDto.ingredients ?? new List<int>();
         var unwanted = new List<int>();
 
         if (productQueryDto.preferenceId.HasValue)
         {
             //Get preference
-            var preferencePoco = _context.Preferences.Single(pref => pref.Id == productQueryDto.preferenceId);
+            var preferencePoco = _context.Preferences
+              .Include(p => p.Wanted)
+              .Include(p => p.Unwanted)
+              .Single(pref => pref.Id == productQueryDto.preferenceId);
             var preference = _mapper.Map<Preference>(preferencePoco);
 
             //Get wanted and unwanted
@@ -187,31 +272,23 @@ public class ProductRepository : IProductRepository
         // filter products that doesnt have any unwanted ingredient and has all wanted igredients
         if (wanted is not null && wanted.Count > 0)
         {
-            queryable = queryable.Where(p => p.Ingredients.All(i => wanted.Contains(i.Id)));
+            queryable = queryable.Where(p => p.Ingredients.Any(i => wanted.Contains(i.Id)));
         }
         if (unwanted.Count > 0)
         {
             queryable = queryable.Where(p => !p.Ingredients.Any(i => unwanted.Contains(i.Id)));
         }
+
+        return wanted ?? new List<int>();
     }
 
-    private void SortProductQueryDto(ProductQueryDTO productQueryDto, ref IQueryable<ProductPOCO> queryable)
+    public async Task<IEnumerable<bool>> CheckFavourites(IEnumerable<int> productIds, string userId)
     {
-        if (productQueryDto.SortBy.HasValue)
-        {
-            queryable = productQueryDto.SortBy switch
-            {
-                QuerySortType.Featured => queryable.OrderBy(p => p.Featuring != null).ThenBy(p => p.Id),
-                QuerySortType.Rating => queryable.OrderBy(p => p.Reviews.Average(r => r.Rating)).ThenBy(p => p.Id),
-                QuerySortType.RatingCount => queryable.OrderBy(p => p.Reviews.Count).ThenBy(p => p.Id),
-                QuerySortType.BestMatch => queryable.OrderBy(p => p.Id),
-                QuerySortType.Names => queryable.OrderBy(p => p.Name).ThenBy(p => p.Id),
-                _ => throw new ArgumentOutOfRangeException("sorty is not defined properly")
-            };
-        }
-        else
-        {
-            queryable = queryable.OrderBy(p => p.Id);
-        }
+        var user = await _context.Users
+            .Include(u => u.FavouriteProducts)
+            .SingleOrDefaultAsync(x => x.Id == userId) ??
+            throw new InGreedIoException("User not found", StatusCodes.Status404NotFound);
+
+        return productIds.Select(p => user.FavouriteProducts.Any(product => product.Id == p));
     }
 }

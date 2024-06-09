@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
-using InGreedIoApi.POCO;
+using InGreedIoApi.Utils.Pagination;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InGreedIoApi.Controllers
@@ -58,6 +57,26 @@ namespace InGreedIoApi.Controllers
             }
             var preference = await _userRepository.CreatePreference(userId, args);
             return Ok(_mapper.Map<PreferenceDTO>(preference));
+        }
+
+        [Paginated]
+        [Authorize]
+        [HttpGet("favourites")]
+        public async Task<IActionResult> GetFavourites([FromQuery] ProductQueryDTO productQueryDto)
+        {
+            var userId = User.FindFirst("Id")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+            var products = await _userRepository.GetFavourites(productQueryDto, userId);
+
+            foreach (var product in products.Contents)
+            {
+                product.Favourite = true;
+            }
+
+            return Ok(products);
         }
     }
 }

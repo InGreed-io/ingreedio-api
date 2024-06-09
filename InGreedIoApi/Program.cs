@@ -6,17 +6,19 @@ using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.Data.Seed;
 using InGreedIoApi.POCO;
 using InGreedIoApi.Services;
+using InGreedIoApi.Utils.ActiveUserAuthorization;
 using InGreedIoApi.Utils.Pagination;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.S3;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +67,15 @@ builder.Services.AddSingleton<ISeeder<IngredientPOCO>, IngredientSeeder>();
 builder.Services.AddScoped<IUserSeeder, ApiUserSeeder>();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAuthorizationHandler, ActiveUserHandler>();
 builder.Services.AddTransient<IProductRepository, ProductRepository>();
+
+// AWS Config
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.AddTransient<IUploadService, S3UploadService>();
+
 builder.Services.AddSingleton<IEntityTypeConfiguration<ProductPOCO>, ProductConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<ReviewPOCO>, ReviewConfiguration>();
 builder.Services.AddSingleton<IEntityTypeConfiguration<CategoryPOCO>, CategoryConfiguration>();
@@ -83,6 +93,7 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseNpgsql(conn));
 
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
+builder.Services.Configure<S3Settings>(builder.Configuration.GetSection("S3Settings"));
 
 builder.Services.AddAuthentication(options =>
     {
@@ -109,6 +120,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
         .RequireAuthenticatedUser()
+        .AddRequirements(new ActiveUserRequirement())
         .Build();
 });
 

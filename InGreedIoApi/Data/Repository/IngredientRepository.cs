@@ -28,13 +28,15 @@ namespace InGreedIoApi.Data.Repository
                 );
             }
 
-            if (getIngredientsQuery.Include != null) {
+            if (getIngredientsQuery.Include != null)
+            {
                 ingredientsQuery = ingredientsQuery.Where(
                     x => getIngredientsQuery.Include.Contains(x.Id)
                 );
             }
 
-            if (getIngredientsQuery.Exclude != null) {
+            if (getIngredientsQuery.Exclude != null)
+            {
                 ingredientsQuery = ingredientsQuery.Where(
                     x => !getIngredientsQuery.Exclude.Contains(x.Id)
                 );

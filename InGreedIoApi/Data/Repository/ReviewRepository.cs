@@ -2,7 +2,9 @@
 using InGreedIoApi.Data.Repository.Interface;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
+using InGreedIoApi.Model.Exceptions;
 using InGreedIoApi.POCO;
+using InGreedIoApi.Utils.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace InGreedIoApi.Data.Repository
@@ -113,6 +115,28 @@ namespace InGreedIoApi.Data.Repository
                 return null;
             }
             return _mapper.Map<Review>(newReview);
+        }
+
+        public async Task<IPage<ReportedReviewDTO>> GetReported(int pageIndex, int pageSize)
+        {
+            return await _context.Reviews
+                .Include(review => review.Product)
+                .Where(review => review.ReportsCount > 0)
+                .OrderByDescending(review => review.ReportsCount)
+                .ProjectToPageAsync<ReviewPOCO, ReportedReviewDTO>(pageIndex, pageSize, _mapper.ConfigurationProvider);
+        }
+
+        public async Task Delete(int reviewId, string? userId = null)
+        {
+            var review = await _context.Reviews.FindAsync(reviewId);
+            if (review == null) 
+                throw new InGreedIoException("Could not find review.", StatusCodes.Status404NotFound);
+
+            if (!string.IsNullOrEmpty(userId) && review.UserID != userId)
+                throw new InGreedIoException("Could not access review.", StatusCodes.Status403Forbidden);
+
+            _context.Remove(review);
+            await _context.SaveChangesAsync();
         }
     }
 }

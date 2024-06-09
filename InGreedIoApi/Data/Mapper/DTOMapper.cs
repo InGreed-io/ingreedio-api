@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using InGreedIoApi.DTO;
 using InGreedIoApi.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace InGreedIoApi.Data.Mapper
 {
@@ -16,6 +18,16 @@ namespace InGreedIoApi.Data.Mapper
                 src.Rating,
                 src.UserID
             ));
+            CreateMap<Review, ReportedReviewDTO>().ConstructUsing(src => new ReportedReviewDTO(
+                src.Id,
+                src.User.UserName ?? "???",
+                src.Text,
+                src.Rating,
+                src.UserID,
+                src.ReportsCount,
+                src.Product.Id,
+                src.Product.Name
+            ));
             CreateMap<Ingredient, IngredientDTO>();
             CreateMap<Category, CategoryDTO>();
             CreateMap<Preference, PreferenceDTO>();
@@ -27,12 +39,14 @@ namespace InGreedIoApi.Data.Mapper
 
             CreateMap<Product, ProductDTO>()
                 .ConstructUsing((product, context) => new ProductDTO(
+
                     product.Id,
                     product.Name,
                     product.IconUrl,
                     product.Rating,
                     product.Reviews.Count(),
-                    product.Featuring != null
+                    product.Featuring != null,
+                    false
                 ));
 
             CreateMap<Product, ProductDetailsDTO>()
@@ -53,6 +67,11 @@ namespace InGreedIoApi.Data.Mapper
                     );
                 })
                 .ForMember(dto => dto.Ingredients, opt => opt.MapFrom(src => src.Ingredients.Select(ing => ing.Name)));
+
+            CreateMap<ApiUser, ApiUserListItemDTO>()
+                .ForMember(dst => dst.IsBlocked, opt => opt.MapFrom(src => 
+                    src.LockoutEnabled && src.LockoutEnd.HasValue && src.LockoutEnd.Value > DateTimeOffset.UtcNow
+                ));
         }
     }
 }
